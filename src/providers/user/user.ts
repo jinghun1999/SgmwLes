@@ -1,7 +1,7 @@
 import 'rxjs/add/operator/toPromise';
 
 import { Injectable } from '@angular/core';
-
+import { Storage } from '@ionic/storage';
 import { Api } from '../api/api';
 
 /**
@@ -27,18 +27,14 @@ import { Api } from '../api/api';
 export class User {
   _user: any;
 
-  constructor(public api: Api) { }
+  constructor(public api: Api,
+              private storage: Storage) { }
 
-  /**
-   * Send a POST request to our login endpoint with the data
-   * the user entered on the form.
-   */
   login(accountInfo: any) {
-    let seq = this.api.post('login', accountInfo).share();
+    let seq = this.api.get(`account/login?name=${accountInfo.name}&password=${accountInfo.password}`).share();
 
     seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
+      if (res.access_token) {
         this._loggedIn(res);
       } else {
       }
@@ -49,29 +45,9 @@ export class User {
     return seq;
   }
 
-  /**
-   * Send a POST request to our signup endpoint with the data
-   * the user entered on the form.
-   */
-  signup(accountInfo: any) {
-    let seq = this.api.post('signup', accountInfo).share();
 
-    seq.subscribe((res: any) => {
-      // If the API returned a successful response, mark the user as logged in
-      if (res.status == 'success') {
-        this._loggedIn(res);
-      }
-    }, err => {
-      console.error('ERROR', err);
-    });
-
-    return seq;
-  }
-
-  /**
-   * Log the user out, which forgets the session
-   */
   logout() {
+    this.storage.remove('jwt').then();
     this._user = null;
   }
 
@@ -79,6 +55,7 @@ export class User {
    * Process a login/signup response to store user data
    */
   _loggedIn(resp) {
+    this.storage.set('jwt', `${resp.token_type} ${resp.access_token}`).then();
     this._user = resp.user;
   }
 }
