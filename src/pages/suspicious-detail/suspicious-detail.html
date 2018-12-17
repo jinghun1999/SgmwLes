@@ -1,0 +1,66 @@
+<!--
+  Generated template for the SuspiciousDetailPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>可疑件详情</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <!-- List of Text Items -->
+  <ion-list ng-if="data">
+    <ion-item>
+      <ion-label>封存条</ion-label>
+      <ion-label text-end><b>{{data.code}}</b></ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>工厂</ion-label>
+      <ion-label text-end>{{data.plant}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>车间</ion-label>
+      <ion-label text-end>{{data.workshop}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>供应商</ion-label>
+      <ion-label text-end>{{data.supplier_name}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>零件号</ion-label>
+      <ion-label text-end>{{data.part_no}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>零件名称</ion-label>
+      <ion-label text-end>{{data.part_name}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>剩余封存数</ion-label>
+      <ion-label text-end>{{data.part_qty}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>解封状态</ion-label>
+      <ion-label text-end>{{data.status_text_jf}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>退货状态</ion-label>
+      <ion-label text-end>{{data.status_text_th}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <button ion-button block (click)="goUnlock()">解封</button>
+      </ion-col>
+      <ion-col>
+        <button ion-button color="danger" block (click)="goReturn()">退货</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

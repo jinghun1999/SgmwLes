@@ -15,6 +15,7 @@ import { of } from 'rxjs/observable/of';
 import { Storage } from '@ionic/storage';
 import { NavController, ToastController, App } from 'ionic-angular';
 import {LoginPage} from "../../pages/login/login";
+import {TutorialPage} from "../../pages/tutorial/tutorial";
 
 /**
  * 全局http拦截器: 监视和转换从应用发送到服务器的 HTTP 请求
@@ -23,10 +24,14 @@ import {LoginPage} from "../../pages/login/login";
  */
 @Injectable()
 export class GlobalHttpIntercept implements HttpInterceptor {
-
+  token: string = ''
   constructor(public appCtrl : App,
               private storage: Storage,
               private toastCtrl: ToastController) {
+    this.storage.get('TOKEN').then(value=>{
+      this.token = value;
+      this.alertMsg(value);
+    });
   }
 
   alertMsg(message: string) {
@@ -41,7 +46,7 @@ export class GlobalHttpIntercept implements HttpInterceptor {
   private goTo() {
     // 退出到登录页面
     this.getNavCtrl();
-    setTimeout(() => this.navCtrl.push(LoginPage));
+    setTimeout(() => this.navCtrl.setRoot('TutorialPage'));
   }
   navCtrl: NavController;
   private getNavCtrl() {
@@ -56,26 +61,31 @@ export class GlobalHttpIntercept implements HttpInterceptor {
       case 400: // Bad Request
         if (event['error'].error) {
           errMsg = event['error'].error;
-          return Observable.throw(errMsg);
         }
         break;
       case 401: // 未登录状态码
-        this.goTo();
+        errMsg = '登录超时，请重新登录';
         break;
       case 403:
+        errMsg = '403 ERROR.';
       case 404:
+        errMsg = '不存在的访问请求';
+        break;
       case 500:
         if (event['error'].msg) {
           errMsg = event['error'].msg;
         }
-        // this.goTo(`/${event.status}`);
+        errMsg = '未知错误';
         break;
       default:
         if (event instanceof HttpErrorResponse) {
-          errMsg = '未可知错误，大部分是由于后端不支持CORS或无效配置引起',
-          this.alertMsg(event.message);
+          errMsg = '未可知错误，大部分是由于后端不支持CORS或无效配置引起';
         }
         break;
+    }
+    if(errMsg){
+      return Observable.throw(errMsg);
+      //this.alertMsg(errMsg);
     }
     return of(event);
   }
@@ -106,13 +116,12 @@ export class GlobalHttpIntercept implements HttpInterceptor {
     let globalReq = req;
 
     globalReq = globalReq.clone({setHeaders: {'Content-Type': 'application/json'}});
+
     if (!req.url.includes('assets/i18n') &&
       !req.url.includes('api/account/login')
     ){
-      // console.log(`服务器需要校验jwt`);
-      this.storage.get('jwt').then((token)=>{
-        globalReq = globalReq.clone({setHeaders: {Authorization: token}});
-      });
+      debugger;
+      globalReq = globalReq.clone({setHeaders: {Authorization: this.token}});
       // if (req.url.includes('excel/export')) {
       //   globalReq = globalReq.clone({responseType: 'blob'});
       // }

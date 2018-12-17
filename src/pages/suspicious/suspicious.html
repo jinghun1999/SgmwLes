@@ -1,0 +1,37 @@
+<!--
+  Generated template for the SuspiciousPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>可疑件</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="addItem()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+    <ion-item *ngFor="let o of list" (click)="detail(o)">
+      <ion-label>
+        <h2>{{o.part_name}}({{o.part_no}}) 封存数{{o.part_qty}} </h2>
+        <h3>{{o.code}}  {{o.plant}}工厂  {{o.workshop}}车间  供应商：{{o.supplier_name}}</h3>
+        <p>{{o.part_no}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+    <ion-infinite-scroll threshold="100px" (ionInfinite)="doInfinite($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+        loadingText="正在加载数据...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+</ion-content>

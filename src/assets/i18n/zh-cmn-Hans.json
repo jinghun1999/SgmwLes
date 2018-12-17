@@ -8,16 +8,15 @@
   "LOGIN": "登 录",
   "SIGNUP": "注 册",
 
-  "TAB1_TITLE": "项目",
-  "TAB2_TITLE": "搜索",
-  "TAB3_TITLE": "设置",
+  "TAB1_TITLE": "首页",
+  "TAB2_TITLE": "设置",
 
   "MAP_TITLE": "地图",
 
   "TUTORIAL_SKIP_BUTTON": "跳过",
   "TUTORIAL_CONTINUE_BUTTON": "继续",
 
-  "TUTORIAL_SLIDE1_TITLE": "欢迎使用上汽通用五菱河西物流系统",
+  "TUTORIAL_SLIDE1_TITLE": "上汽通用五菱河西物流系统",
   "TUTORIAL_SLIDE1_DESCRIPTION": "<b>LES</b> 提供了物流管理的基本功能。",
 
   "TUTORIAL_SLIDE2_TITLE": "如何使用 LES 入门教程",

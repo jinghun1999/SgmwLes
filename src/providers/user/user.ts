@@ -31,7 +31,7 @@ export class User {
               private storage: Storage) { }
 
   login(accountInfo: any) {
-    let seq = this.api.get(`account/login?name=${accountInfo.name}&password=${accountInfo.password}`).share();
+    let seq = this.api.get('account/login', accountInfo).share();
 
     seq.subscribe((res: any) => {
       if (res.access_token) {
@@ -47,15 +47,22 @@ export class User {
 
 
   logout() {
-    this.storage.remove('jwt').then();
-    this._user = null;
+    let seq = this.api.post('account/logout', null).share();
+    seq.subscribe((res: any)=>{
+      this.storage.remove('TOKEN').then(res=>{
+        this._user = null;
+      });
+    }, err => {
+      console.error('ERROR', err);
+    });
+    return seq;
   }
 
   /**
    * Process a login/signup response to store user data
    */
   _loggedIn(resp) {
-    this.storage.set('jwt', `${resp.token_type} ${resp.access_token}`).then();
-    this._user = resp.user;
+    this.storage.set('TOKEN', `${resp.token_type} ${resp.access_token}`).then();
+    this._user = resp;
   }
 }

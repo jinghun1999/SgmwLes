@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-import { Item } from '../../models/item';
-import { Items } from '../../providers';
+import { Menu } from '../../models/menu';
+import { Menus } from '../../providers';
 
 @IonicPage()
 @Component({
@@ -13,7 +13,7 @@ export class SearchPage {
 
   currentItems: any = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public items: Items) { }
+  constructor(public navCtrl: NavController, public navParams: NavParams, public items: Menus) { }
 
   /**
    * Perform a service for the proper items.
@@ -32,7 +32,7 @@ export class SearchPage {
   /**
    * Navigate to the detail page for this item.
    */
-  openItem(item: Item) {
+  openItem(item: Menu) {
     this.navCtrl.push('ItemDetailPage', {
       item: item
     });

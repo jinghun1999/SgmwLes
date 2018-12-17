@@ -9,9 +9,10 @@ import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
-import { Items } from '../mocks/providers/items';
+import { Menus } from '../mocks/providers/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
+import { SuspiciousProvider } from '../providers/suspicious/suspicious';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
@@ -35,9 +36,16 @@ export function provideSettings(storage: Storage) {
 }
 
 @NgModule({
+  // declarations: 数组类型的选项, 用来声明属于这个模块的指令,管道等等.
+  //               然后我们就可以在这个模块中使用它们了.
   declarations: [
     MyApp
   ],
+  // imports: 数组类型的选项,我们的模块需要依赖的一些其他的模块,这样做的目的使我们这个模块
+  //          可以直接使用别的模块提供的一些指令,组件等等.
+  // exports: 数组类型的选项,我们这个模块需要导出的一些组件,指令,模块等;
+  //          如果别的模块导入了我们这个模块,
+  //          那么别的模块就可以直接使用我们在这里导出的组件,指令模块等.
   imports: [
     BrowserModule,
     HttpClientModule,
@@ -51,13 +59,18 @@ export function provideSettings(storage: Storage) {
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot()
   ],
+  // bootstrap: 数组类型选项, 指定了这个模块启动的时候应该启动的组件.当然这些组件会被自动的加入到entryComponents中去
   bootstrap: [IonicApp],
+  // entryComponents: 数组类型的选项,指定一系列的组件,这些组件将会在这个模块定义的时候进行编译
+  //                  Angular会为每一个组件创建一个ComponentFactory然后把它存储在ComponentFactoryResolver
   entryComponents: [
     MyApp
   ],
+  // providers: 这个选项是一个数组,需要我们列出我们这个模块的一些需要共用的服务
+  //            然后我们就可以在这个模块的各个组件中通过依赖注入使用了.
   providers: [
     Api,
-    Items,
+    Menus,
     User,
     Camera,
     SplashScreen,
@@ -66,6 +79,7 @@ export function provideSettings(storage: Storage) {
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     InterceptorService,
+    SuspiciousProvider,
   ]
 })
 export class AppModule { }

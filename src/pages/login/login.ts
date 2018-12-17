@@ -20,20 +20,14 @@ export class LoginPage extends BaseUI{
     password: ''
   };
 
-  // Our translated text strings
-  private loginErrorString: string;
-
   constructor(public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public translateService: TranslateService) {
-    super();
+      super();
 
-    this.translateService.get('LOGIN_ERROR').subscribe((value) => {
-      this.loginErrorString = value;
-    })
-  }
+    }
 
   // Attempt to login in through our User service
   doLogin() {
@@ -42,11 +36,14 @@ export class LoginPage extends BaseUI{
 
     this.user.login(this.account).subscribe((resp) => {
       loading.dismiss();
-      this.navCtrl.push(MainPage);
+      //this.navCtrl.push(MainPage);
+      this.navCtrl.setRoot(MainPage, {}, {
+        animate: true,
+        direction: 'forward'
+      });
     }, (err) => {
-      alert(err)
       loading.dismiss();
-      super.showToast(this.toastCtrl, this.loginErrorString);
+      super.showToast(this.toastCtrl, '登录失败');
     });
   }
 }

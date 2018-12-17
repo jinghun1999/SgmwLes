@@ -1,0 +1,23 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>首页</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="goSetting()">
+        <ion-icon name="ios-contact"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-grid text-center>
+    <ion-row *ngFor="let rowList of getRowListByGridList(3)">
+      <ion-col *ngFor="let item of rowList" (click)="openItem(item)">
+        <p><ion-icon name="{{item.icon}}" class="ion-icon-big"></ion-icon></p>
+        <p>{{item.name}}</p>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

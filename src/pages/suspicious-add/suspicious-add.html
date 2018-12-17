@@ -1,0 +1,81 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>添加可疑件</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+    <ion-list>
+      <ion-item>
+        <ion-label color="primary">工厂</ion-label>
+        <ion-select [(ngModel)]="item.plant" interface="popover" (ngModelChange)="changePlant($event)" okText="选择" cancelText="取消">
+          <ion-option *ngFor="let p of plant_choose" value="{{p.value}}">{{p.text}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">车间</ion-label>
+        <ion-select [(ngModel)]="item.workshop" interface="popover" okText="选择" cancelText="取消">
+          <ion-option *ngFor="let p of workshop_choose" value="{{p.value}}">{{p.text}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">零件号</ion-label>
+        <ion-input type="number" [(ngModel)]="item.part_no" placeholder="请输入零件号"></ion-input>
+        <button ion-button outline item-end (click)="search()">
+          <ion-icon name="ios-search"></ion-icon>&nbsp;搜索
+        </button>
+        <button ion-button outline item-end (click)="search()">
+          <ion-icon name="md-qr-scanner"></ion-icon>&nbsp;扫码
+        </button>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">所属供应商</ion-label>
+        <ion-select [(ngModel)]="item.supplier" interface="popover" (ngModelChange)="changeSupplier($event)" okText="选择" cancelText="取消">
+          <ion-option *ngFor="let p of supplier_choose" value="{{p.supplier_id}}">{{p.supplier_name}}</ion-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">零件名称</ion-label>
+        <ion-note item-end class="note note-md">{{current_supplier.part_name}}</ion-note>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">标准包装数</ion-label>
+        <ion-note item-end class="note note-md">{{current_supplier.pack_std_qty}}</ion-note>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">当前箱数</ion-label>
+        <ion-note item-end class="note note-md">{{current_supplier.boxes}}</ion-note>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">当前件数</ion-label>
+        <ion-note item-end class="note note-md">{{current_supplier.parts}}</ion-note>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">当前散件数</ion-label>
+        <ion-note item-end class="note note-md">{{current_supplier.frags}}</ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-label color="primary">可疑箱数</ion-label>
+        <ion-input type="number" text-right [(ngModel)]="item.pack_qty" placeholder="请输入可疑件箱数"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">可疑散件数</ion-label>
+        <ion-input type="number" text-right [(ngModel)]="item.frag_qty" placeholder="请输入可疑散件数"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">可疑总数</ion-label>
+        <ion-input type="number" text-right [(ngModel)]="part_count" placeholder="请输入可疑件数量" disabled></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label color="primary">问题分类</ion-label>
+        <ion-select [(ngModel)]="item.issue_class" interface="popover" okText="选择" cancelText="取消">
+          <ion-option *ngFor="let p of issue_choose" value="{{p.value}}">{{p.text}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+    <button ion-button full (click)="save()">提交可疑件</button>
+</ion-content>
