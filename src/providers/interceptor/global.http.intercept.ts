@@ -28,10 +28,10 @@ export class GlobalHttpIntercept implements HttpInterceptor {
   constructor(public appCtrl : App,
               private storage: Storage,
               private toastCtrl: ToastController) {
-    this.storage.get('TOKEN').then(value=>{
-      this.token = value;
-      this.alertMsg(value);
-    });
+    // this.storage.get('TOKEN').then(value=>{
+    //   this.token = value;
+    //   this.alertMsg(value);
+    // });
   }
 
   alertMsg(message: string) {
@@ -120,8 +120,7 @@ export class GlobalHttpIntercept implements HttpInterceptor {
     if (!req.url.includes('assets/i18n') &&
       !req.url.includes('api/account/login')
     ){
-      debugger;
-      globalReq = globalReq.clone({setHeaders: {Authorization: this.token}});
+      globalReq = globalReq.clone({setHeaders: {Authorization: window.localStorage.getItem('TOKEN')}});
       // if (req.url.includes('excel/export')) {
       //   globalReq = globalReq.clone({responseType: 'blob'});
       // }

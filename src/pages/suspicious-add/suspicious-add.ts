@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, LoadingController, NavController, ToastController} from 'ionic-angular';
+import {IonicPage, LoadingController, NavController, ViewController, ToastController} from 'ionic-angular';
 //import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
@@ -26,6 +26,7 @@ export class SuspiciousAddPage extends BaseUI{
   constructor(public navCtrl: NavController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
+              public viewCtrl: ViewController,
               public api: Api) {
     super();
   }
@@ -99,15 +100,37 @@ export class SuspiciousAddPage extends BaseUI{
   save() {
     this.item.part_qty = this.part_count;
 
-    let loading = super.showLoading(this.loadingCtrl,"提交中...");
-    this.api.get('suspicious/post', this.item).subscribe((res: any) =>{
+    let loading = super.showLoading(this.loadingCtrl, "提交中...");
+    this.api.post('suspicious/post', {
+      code: null,
+      plant: this.item.plant,
+      workshop: this.item.workshop,
+      dloc: this.current_supplier.dloc,
+
+      supplier: this.item.supplier,
+      supplier_name: this.current_supplier.supplier_name,
+
+      part_no: this.item.part_no,
+      part_name: this.current_supplier.part_name,
+      confirmed: 0,
+      pack_std_qty: this.current_supplier.pack_std_qty,
+      pack_qty: this.item.pack_qty,
+      part_qty: this.item.part_qty,
+      frag_qty: this.item.frag_qty,
+
+      status_text_jf: 0,
+      status_text_th: 0,
+
+      issue_class: this.item.issue_class,
+    }).subscribe((res: any) => {
       loading.dismiss();
-      if(res.successful) {
+      if (res.successful) {
         this.supplier_choose = res.data
+        this.viewCtrl.dismiss(this.item);
       } else {
         super.showToast(this.toastCtrl, res.message);
       }
-    }, err=>{
+    }, err => {
       loading.dismiss();
       super.showToast(this.toastCtrl, err)
     });

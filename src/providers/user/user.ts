@@ -1,8 +1,8 @@
 import 'rxjs/add/operator/toPromise';
 
-import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
-import { Api } from '../api/api';
+import {Injectable} from '@angular/core';
+import {Storage} from '@ionic/storage';
+import {Api} from '../api/api';
 
 /**
  * Most apps have the concept of a User. This is a simple provider
@@ -28,7 +28,8 @@ export class User {
   _user: any;
 
   constructor(public api: Api,
-              private storage: Storage) { }
+              private storage: Storage) {
+  }
 
   login(accountInfo: any) {
     let seq = this.api.get('account/login', accountInfo).share();
@@ -48,10 +49,11 @@ export class User {
 
   logout() {
     let seq = this.api.post('account/logout', null).share();
-    seq.subscribe((res: any)=>{
-      this.storage.remove('TOKEN').then(res=>{
-        this._user = null;
-      });
+    seq.subscribe((res: any) => {
+      // this.storage.remove('TOKEN').then(res => {
+      //   this._user = null;
+      // });
+      window.localStorage.removeItem('TOKEN');
     }, err => {
       console.error('ERROR', err);
     });
@@ -62,7 +64,8 @@ export class User {
    * Process a login/signup response to store user data
    */
   _loggedIn(resp) {
-    this.storage.set('TOKEN', `${resp.token_type} ${resp.access_token}`).then();
+    //this.storage.set('TOKEN', `${resp.token_type} ${resp.access_token}`).then();
+    window.localStorage.setItem('TOKEN', `${resp.token_type} ${resp.access_token}`);
     this._user = resp;
   }
 }

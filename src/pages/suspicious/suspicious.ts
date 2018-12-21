@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
 
 import { SuspiciousProvider } from '../../providers';
 /**
@@ -15,15 +15,16 @@ import { SuspiciousProvider } from '../../providers';
   templateUrl: 'suspicious.html',
 })
 export class SuspiciousPage {
-  item: any;
-  list =[];
+  item : any;
+  list : any[] = [];
   pageNum: number;
   pageSize = 5;
   total: number;
   option=[];
   showNoContent: boolean =false;
   constructor(public navCtrl: NavController, public navParams: NavParams,
-              public susProvider: SuspiciousProvider) {
+              public susProvider: SuspiciousProvider,
+              public modalCtrl: ModalController) {
   }
 
   ionViewDidLoad() {
@@ -49,7 +50,14 @@ export class SuspiciousPage {
   }
 
   addItem(){
-    this.navCtrl.push('SuspiciousAddPage');
+    //this.navCtrl.push('SuspiciousAddPage');
+    let addModal = this.modalCtrl.create('SuspiciousAddPage');
+    addModal.onDidDismiss(item => {
+      if (item) {
+        this.list.unshift(item);
+      }
+    })
+    addModal.present();
   }
   detail(o: any){
     this.navCtrl.push('SuspiciousDetailPage', {item: o });
