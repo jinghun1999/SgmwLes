@@ -1,4 +1,4 @@
-import { Loading, LoadingController, ToastController, Toast } from 'ionic-angular';
+import { Loading, LoadingController, ToastController, Toast, AlertController, Alert} from 'ionic-angular';
 
 // /**
 //  * UI 层的所有公用方法的抽象类
@@ -48,5 +48,17 @@ export abstract class BaseUI {
     });
     toast.present();
     return toast;
+  }
+
+  public showMessageBox(alertCtrl:AlertController, message: string, title: string): Alert{
+    let alert = alertCtrl.create({
+      title: title,
+      message:message,
+      buttons:[{
+        text:'确认'
+      }]
+    });
+    alert.present();
+    return alert;
   }
 }
