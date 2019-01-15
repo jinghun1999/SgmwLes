@@ -26,7 +26,7 @@ export class Menus {
       {
         "name": "物料入库",
         "icon": "md-log-in",
-        "url": "ReceivePage"
+        "url": "InboundPage"
       },
       {
         "name": "物料移库",

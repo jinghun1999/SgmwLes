@@ -1,10 +1,10 @@
-import {Component, ChangeDetectorRef} from '@angular/core';
-import {IonicPage, LoadingController,  NavParams, ToastController, AlertController, ModalController } from 'ionic-angular';
-import {Api} from "../../providers";
+import {ChangeDetectorRef, Component} from '@angular/core';
+import {AlertController, IonicPage, LoadingController, ModalController, NavParams, ToastController} from 'ionic-angular';
 import {BaseUI} from "../baseUI";
+import {Api} from "../../providers";
 
 /**
- * Generated class for the OutPage page.
+ * Generated class for the InboundPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -12,10 +12,10 @@ import {BaseUI} from "../baseUI";
 
 @IonicPage()
 @Component({
-  selector: 'page-out',
-  templateUrl: 'out.html',
+  selector: 'page-inbound',
+  templateUrl: 'inbound.html',
 })
-export class OutPage extends BaseUI {
+export class InboundPage extends BaseUI{
   ScanNo: string = "";                      //记录扫描编号
   ScanFlag: number = 0;                   //扫描标记：0初始标记，1已扫单，2已扫箱
   ScanPlaceHolder:string = "请扫描请求单号";   //扫描文本框placeholder属性
@@ -31,6 +31,11 @@ export class OutPage extends BaseUI {
               public changeDetectorRef:ChangeDetectorRef) {
     super();
   }
+
+  ionViewDidLoad() {
+    console.log('ionViewDidLoad InboundPage');
+  }
+
   //扫描
   Scan() {
     if (this.CheckScanCode()) {
@@ -43,27 +48,6 @@ export class OutPage extends BaseUI {
     } else {
       this.ScanNo = "";   //置空扫描框
     }
-  }
-
-  //扫单
-  ScanSheet() {
-    let loading = super.showLoading(this.loadingCtrl, "提交中...");
-    this.api.get('WM/GetAboutIssueRequest', {requestNo: this.ScanNo, userId: 713}).subscribe((res: any) => {
-        if (res.successful) {
-          this.Sheet = res.data.Sheet;
-          this.SheetDetail = res.data.SheetDetail;
-          this.ScanFlag = 1;
-          this.ScanPlaceHolder = "请扫描料箱";
-          this.ScanNo = "";                                 //扫描框设置为空
-        } else {
-          super.showToast(this.toastCtrl, res.message);
-        }
-        loading.dismiss();
-      },
-      err => {
-        super.showMessageBox(this.alertCtrl,err,'错误提示');
-        loading.dismiss();
-      });
   }
 
   //校验扫描
@@ -87,13 +71,34 @@ export class OutPage extends BaseUI {
     return true;
   }
 
+  //扫单
+  ScanSheet() {
+    let loading = super.showLoading(this.loadingCtrl, "提交中...");
+    this.api.get('WM/GetAboutInboundRequest', {requestNo: this.ScanNo, userId: 713}).subscribe((res: any) => {
+        if (res.successful) {
+          this.Sheet = res.data.Sheet;
+          this.SheetDetail = res.data.SheetDetail;
+          this.ScanFlag = 1;
+          this.ScanPlaceHolder = "请扫描料箱";
+          this.ScanNo = "";                                 //扫描框设置为空
+        } else {
+          super.showToast(this.toastCtrl, res.message);
+        }
+        loading.dismiss();
+      },
+      err => {
+        super.showMessageBox(this.alertCtrl,err,'错误提示');
+        loading.dismiss();
+      });
+  }
+
   //扫箱
   ScanBarCode() {
     let supplier_number = this.ScanNo.substr(2, 9).replace(/(^0*)/, "");
     let part_num = this.ScanNo.substr(11, 8).replace(/(^0*)/, "");
     let part = this.SheetDetail.find(item => item.part_no === part_num && item.is_operate === false);
     let partIndex = this.SheetDetail.findIndex(item => item.part_no === part_num);
-    let isAdd = this.SheetDetail.indexOf(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
+    let isAdd = this.SheetDetail.findIndex(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
 
     if (partIndex < 0) {
       super.showToast(this.toastCtrl, "单据中不存在该零件！");
@@ -110,7 +115,7 @@ export class OutPage extends BaseUI {
       sheetId: this.Sheet.id,
       sheetDetailId: part.sheet_detail_id,
       isAdd: isAdd,
-      isOutStock: true
+      isOutStock: false
     }).subscribe((res: any) => {
         if (res.successful) {
           if(res.data.length>0) {
@@ -152,63 +157,6 @@ export class OutPage extends BaseUI {
     this.changeDetectorRef.markForCheck();
   }
 
-  //切换供应商
-  SwitchSupplier(id) {
-    let curr_part_index = this.SheetDetail.findIndex(item => item.id === id);
-    let curr_part = this.SheetDetail[curr_part_index];
-    if((this.Sheet.is_scanbox && curr_part.is_scan) || !this.Sheet.is_scanbox) {
-      let alert_tool = this.alertCtrl.create();
-      alert_tool.setSubTitle('选择供应商');
-      for (let supplier of curr_part.supplier_list) {
-        alert_tool.addInput({
-          type: 'radio',
-          label: supplier.supplier_name,
-          value: supplier.supplier_code,
-          checked: supplier.supplier_code === curr_part.supplier_id ? true : false,
-        });
-      }
-      alert_tool.addButton({text: '取消', role: 'cancel'});
-      alert_tool.addButton({
-        text: '确认',
-        role: 'role',
-        handler: data => {
-          this.ExcuseSwitchSupplier(curr_part, curr_part_index, data)
-        }
-      });
-      alert_tool.present();
-    }
-    else {
-      super.showToast(this.toastCtrl, "请先扫描箱标签！")
-    }
-  }
-
-  //执行更新供应商
-  ExcuseSwitchSupplier(curr_part,index,supplier_code) {
-    let suppliers = curr_part.supplier_list.find(item=>item.supplier_code===supplier_code);
-    if(typeof(suppliers)!="undefined" && suppliers!=null){
-      let loading = super.showLoading(this.loadingCtrl, "提交中...");
-      this.api.get('WM/GetModifySupplier', {
-        id:curr_part.id,
-        supplierName:suppliers.supplier_name,
-        supplierCode:suppliers.supplier_code,
-        IsOutStock:true
-      }).subscribe((res: any) => {
-          if (res.successful) {
-            this.SheetDetail[index].supplier_id = suppliers.supplier_code;
-            this.SheetDetail[index].suplier_name = suppliers.supplier_name;
-            this.RefreshDataModal();
-          } else {
-            super.showToast(this.toastCtrl, res.message);
-          }
-          loading.dismiss();
-        },
-        err => {
-          super.showMessageBox(this.alertCtrl,err,'错误提示');
-          loading.dismiss();
-        });
-    }
-  }
-
   //非标跳转Modal页
   UnStandModify(id){
     let curr_part_index = this.SheetDetail.findIndex(item => item.id === id);        //当前呈现数据源操作零件的index
@@ -216,11 +164,7 @@ export class OutPage extends BaseUI {
     if((this.Sheet.is_scanbox && curr_part.is_scan) || !this.Sheet.is_scanbox) {
       let MaxAllowNumber = 0;
       //统计已收数量
-      if (curr_part.is_operate === true) {
-        MaxAllowNumber = curr_part.allow_part_qty - this.SheetDetail.find(item => item.part_no === curr_part.part_no && item.is_operate === false).received_part_count;
-      } else {
-        MaxAllowNumber = curr_part.allow_part_qty;
-      }
+      MaxAllowNumber = curr_part.allow_part_qty;
 
       let unstdModal = this.modalCtrl.create('UnstandPage', {
         BoxNumber: curr_part.received_pack_count,
@@ -247,7 +191,7 @@ export class OutPage extends BaseUI {
       id:id,
       boxNum:box_number,
       partNum:part_number,
-      IsOutStock:true
+      IsOutStock:false
     }).subscribe((res: any) => {
         if (res.successful) {
           if(res.data.length>0){
@@ -271,8 +215,8 @@ export class OutPage extends BaseUI {
       });
   }
 
-  //出库
-  OutStock() {
+  //入库
+  Inbound() {
     let NotStand = this.SheetDetail.find(item => item.received_part_count > item.allow_part_qty);
     let NotFull = this.SheetDetail.find(item => item.received_part_count < item.allow_part_qty);
     if (Array.isArray(NotStand) && NotStand.length > 0) {
@@ -282,7 +226,7 @@ export class OutPage extends BaseUI {
     if (Array.isArray(NotFull) && NotFull.length > 0 && !this.Sheet.is_wave_operate) {
       this.alertCtrl.create({
         title:'提示',
-        message:'单据存在零件的实出数没有满足需求数，出库后该单据将会完成，不能再次操作！',
+        message:'单据存在零件的实出数没有满足需求数，入库后该单据将会完成，不能再次操作！',
         buttons:[{
           text:'取消',
           handler:()=>{
@@ -291,19 +235,19 @@ export class OutPage extends BaseUI {
         },{
           text:'确认',
           handler:()=>{
-            this.ExcuseOutStock();
+            this.ExcuseInbound();
           }
         }]
       });
     }
     else{
-      this.ExcuseOutStock();
+      this.ExcuseInbound();
     }
   }
   //执行出库
-  ExcuseOutStock(){
+  ExcuseInbound(){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
-    this.api.get('WM/GetExcuseOutStock', {
+    this.api.get('WM/GetExcuseInbound', {
       id:this.Sheet.id,
       user:'718'
     }).subscribe((res: any) => {
@@ -314,7 +258,7 @@ export class OutPage extends BaseUI {
           this.ScanPlaceHolder = '请扫描单号';
           this.ScanFlag = 0;
 
-          super.showToast(this.toastCtrl, '出库成功！');
+          super.showToast(this.toastCtrl, '入库成功！');
         } else {
           super.showMessageBox(this.alertCtrl, res.message, '错误提示');
         }
@@ -324,11 +268,6 @@ export class OutPage extends BaseUI {
         super.showMessageBox(this.alertCtrl,err,'错误提示');
         loading.dismiss();
       });
-  }
-
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad OutPage');
   }
 
 }
