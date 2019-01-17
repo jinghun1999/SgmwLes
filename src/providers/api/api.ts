@@ -6,9 +6,11 @@ import { Injectable } from '@angular/core';
  */
 @Injectable()
 export class Api {
-  url: string = 'http://localhost:58593/api';
+  //url: string = 'http://192.168.137.55:58593/api';
+  url: string = 'http://10.16.224.28/lesapi/api';
 
   constructor(public http: HttpClient) {
+    
   }
 
   get(endpoint: string, params?: any, reqOpts?: any) {

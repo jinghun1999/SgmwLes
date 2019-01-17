@@ -11,11 +11,13 @@
 </ion-header>
 
 
-<ion-content padding >
-  <ion-list-header>
-    <ion-label color="primary">扫描</ion-label>
-    <ion-input type="text" [(ngModel)]="ScanNo" placeholder="{{ScanPlaceHolder}}" (blur)="Scan()"></ion-input>
-  </ion-list-header>
+<ion-content padding>
+  <form (submit)="Scan()">
+    <ion-list-header>
+        <ion-label color="primary">扫描</ion-label>
+        <ion-input type="text" [(ngModel)]="ScanNo" name="scan" placeholder="{{ScanPlaceHolder}}"></ion-input>
+    </ion-list-header>
+  </form>
   <ion-list>
     <ion-list-header *ngIf="ScanFlag>0">
         <ion-label>单号：{{Sheet.sheet_no}}</ion-label>
