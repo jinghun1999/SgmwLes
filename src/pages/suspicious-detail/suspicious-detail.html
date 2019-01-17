@@ -8,6 +8,11 @@
 
   <ion-navbar>
     <ion-title>可疑件详情</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="goUnlock()">
+        <ion-icon name="open"></ion-icon> 解封
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -53,14 +58,4 @@
       <ion-label text-end>{{data.status_text_th}}</ion-label>
     </ion-item>
   </ion-list>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <button ion-button block (click)="goUnlock()">解封</button>
-      </ion-col>
-      <ion-col>
-        <button ion-button color="danger" block (click)="goReturn()">退货</button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>

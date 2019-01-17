@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>库存盘点</ion-title>
+    <ion-buttons end>
+      <button ion-button (click)="commit()">
+        保存
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+    <ion-col col-10>
+      <ion-searchbar (ionInput)="getItems($event)" placeholder="请输入盘点通知单号">
+      </ion-searchbar>
+    </ion-col>
+    <ion-col col-2 align-items-end align-self-center>
+      <button class="scan" (click)="scan()">
+        <ion-icon name="qr-scanner"></ion-icon>
+      </button>
+    </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-list *ngIf="currentItem">
+    <ion-item>
+      <ion-label>工厂</ion-label>
+      <ion-label text-end>{{currentItem.plant}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>车间</ion-label>
+      <ion-label text-end>{{currentItem.workshop}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>盘点类型</ion-label>
+      <ion-label text-end>{{currentItem.type}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>盘点模式</ion-label>
+      <ion-label text-end>{{currentItem.mode}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-item-group>
+    <ion-item-divider color="light">盘点零件</ion-item-divider>
+    <ion-item>
+      <ion-label>右仪表板饰板</ion-label>
+      <ion-label text-end></ion-label>
+    </ion-item>
+    <ion-item class="bg-light-gray">
+      <ion-label>车顶饰条安装卡扣</ion-label>
+      <ion-label text-end>11</ion-label>
+    </ion-item>
+    <ion-item class="bg-light-gray">
+      <ion-label>左天窗安装支架</ion-label>
+      <ion-label text-end>102</ion-label>
+    </ion-item>
+    <ion-item>制动硬管组件</ion-item>
+    <ion-item>收音机后侧门扬声器总成</ion-item>
+  </ion-item-group>
+</ion-content>

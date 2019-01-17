@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {IonicPage, ModalController, NavController, NavParams} from 'ionic-angular';
 
 /**
  * Generated class for the SuspiciousDetailPage page.
@@ -15,7 +15,8 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class SuspiciousDetailPage {
   data: any;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams,
+              public modalCtrl: ModalController,) {
       this.data = navParams.get('item');
   }
 
@@ -24,9 +25,11 @@ export class SuspiciousDetailPage {
   }
 
   goUnlock(){
-
-  }
-  goReturn(){
-
+    let addModal = this.modalCtrl.create('SuspiciousUnlockPage', {dt: this.data});
+    addModal.onDidDismiss(item => {
+      if (item) {
+      }
+    })
+    addModal.present();
   }
 }

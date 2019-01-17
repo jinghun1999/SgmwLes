@@ -16,7 +16,7 @@ export class Menus {
       {
         "name": "库存盘点",
         "icon": "ios-calculator",
-        "url": "SearchPage"
+        "url": "InventoryPage"
       },
       {
         "name": "物料出库",
@@ -26,12 +26,17 @@ export class Menus {
       {
         "name": "物料入库",
         "icon": "md-log-in",
-        "url": "ReceivePage"
+        "url": "InboundPage"
       },
       {
         "name": "物料移库",
         "icon": "md-redo",
         "url": "MovePage"
+      },
+      {
+        "name": "",
+        "icon": "",
+        "url": ""
       },
     ];
 

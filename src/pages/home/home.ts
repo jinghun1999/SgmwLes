@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
 import { Menus } from '../../providers';
 import { Menu } from '../../models/menu';
+import {SetProfilePage} from "../set-profile/set-profile";
 //import {SettingsPage} from "../settings/settings";
 
 @IonicPage()
@@ -30,7 +31,7 @@ export class HomePage {
    * modal and then adds the new item to our data source if the user created one.
    */
   addItem() {
-    let addModal = this.modalCtrl.create('ItemCreatePage');
+    let addModal = this.modalCtrl.create('SetProfilePage',{}, );
     addModal.onDidDismiss(item => {
       if (item) {
         this.items.add(item);
@@ -50,7 +51,8 @@ export class HomePage {
    * Navigate to the detail page for this item.
    */
   openItem(item: Menu) {
-    this.navCtrl.push(item.url, { });
+    if(item.url)
+      this.navCtrl.push(item.url, { });
   }
 
   getRowListByGridList(size) {

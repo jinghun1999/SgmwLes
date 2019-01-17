@@ -44,7 +44,7 @@ export class SuspiciousAddPage extends BaseUI{
             this.workshop_choose = res.data[0].children;
             this.item.workshop = res.data[0].children[0].value;
           }else{
-
+            super.showToast(this.toastCtrl, res.message);
           }
         },
         err=>{
@@ -54,6 +54,8 @@ export class SuspiciousAddPage extends BaseUI{
       this.api.get('system/getEnums', {code: 'wm_suspicious_issuesclass'}).subscribe((res: any) =>{
           if(res.successful) {
             this.issue_choose = res.data;
+          }else{
+            super.showToast(this.toastCtrl, res.message);
           }
         },
         err=>{
@@ -134,5 +136,9 @@ export class SuspiciousAddPage extends BaseUI{
       loading.dismiss();
       super.showToast(this.toastCtrl, err)
     });
+  }
+
+  cancel(){
+    this.viewCtrl.dismiss();
   }
 }

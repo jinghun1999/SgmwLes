@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {IonicPage, NavController, NavParams, ViewController} from 'ionic-angular';
 
 /**
  * Generated class for the SuspiciousUnlockPage page.
@@ -14,12 +14,20 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
   templateUrl: 'suspicious-unlock.html',
 })
 export class SuspiciousUnlockPage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  data: any;
+  constructor(public navCtrl: NavController, public viewCtrl: ViewController,
+              public navParams: NavParams) {
+    this.data = this.navParams.get('dt');
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SuspiciousUnlockPage');
   }
 
+  unlock(){
+    alert('unlocked');
+  }
+  cancel(){
+    this.viewCtrl.dismiss();
+  }
 }

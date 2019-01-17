@@ -95,3 +95,15 @@ code (ex: en/gb/de/es/etc.).
 To change the language of the app, edit `src/app/app.component.ts` and modify
 `translate.use('en')` to use the LANGCODE from `src/assets/i18n/`
 "# SgmwLes" 
+
+### How to start
+
+ionic start <项目名称>
+cd <项目名称>                                    // 进入工程目录  
+ionic cordova platform add android              // 添加Android Platform （iOS:ionic platform add ios）     
+ionic build android                             // build项目 (iOS:ionic build ios)  
+ionic emulate android                           // 用模拟器运行 (iOS:ionic emulate ios)  
+ionic run android                               // 用Android真机运行（与模拟器二选一就好啦~~）
+
+查看已经添加的插件：cordova plugin ls
+cordova plugin add <要添加的插件>

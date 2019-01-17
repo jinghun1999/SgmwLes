@@ -12,12 +12,14 @@
 </ion-header>
 
 <ion-content>
+  <button ion-button color="secondary" (click)="addItem()">设置车间</button>
   <ion-grid text-center>
-    <ion-row *ngFor="let rowList of getRowListByGridList(3)">
+    <ion-row *ngFor="let rowList of getRowListByGridList(2)">
       <ion-col *ngFor="let item of rowList" (click)="openItem(item)">
         <p><ion-icon name="{{item.icon}}" class="ion-icon-big"></ion-icon></p>
         <p>{{item.name}}</p>
       </ion-col>
     </ion-row>
   </ion-grid>
+
 </ion-content>

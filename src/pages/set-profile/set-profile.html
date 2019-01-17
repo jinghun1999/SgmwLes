@@ -1,0 +1,37 @@
+<!--
+  Generated template for the SetProfilePage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>设置工厂车间</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <h3>工厂</h3>
+  <ion-list radio-group [(ngModel)]="plant" (ionChange)="plantSelect()">
+    <ion-item *ngFor="let item of plant_choose">
+      <ion-label>{{item.text}}</ion-label>
+      <ion-radio value="{{item.value}}"></ion-radio>
+    </ion-item>
+  </ion-list>
+  <h3>选择默认车间</h3>
+  <ion-list radio-group [(ngModel)]="workshop">
+    <ion-item *ngFor="let item of workshop_choose">
+      <ion-label>{{item.text}}</ion-label>
+      <ion-radio value="{{item.value}}"></ion-radio>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <button ion-button full (click)="save()">保存更改</button>
+  </ion-toolbar>
+</ion-footer>

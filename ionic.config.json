@@ -1,5 +1,7 @@
 {
   "name": "SgmwLes",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "ionic-angular"
 }

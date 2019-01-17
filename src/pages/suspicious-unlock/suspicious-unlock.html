@@ -7,12 +7,56 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>suspicious-unlock</ion-title>
+    <ion-title>解封零件</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="cancel()">
+        <ion-icon name="md-close"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-
+  <!-- List of Text Items -->
+  <ion-list ng-if="data">
+    <ion-item>
+      <ion-label>封存条</ion-label>
+      <ion-label text-end><b>{{data.code}}</b></ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>工厂</ion-label>
+      <ion-label text-end>{{data.plant}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>车间</ion-label>
+      <ion-label text-end>{{data.workshop}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>供应商</ion-label>
+      <ion-label text-end>{{data.supplier_name}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>零件号</ion-label>
+      <ion-label text-end>{{data.part_no}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>零件名称</ion-label>
+      <ion-label text-end>{{data.part_name}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>剩余封存数</ion-label>
+      <ion-label text-end>{{data.part_qty}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>解封状态</ion-label>
+      <ion-label text-end>{{data.status_text_jf}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label color="primary">解封数量</ion-label>
+      <ion-input type="number" text-right [(ngModel)]="data.unlock_count" placeholder="请输入解封数量"></ion-input>
+    </ion-item>
+  </ion-list>
+  <button ion-button full (click)="unlock()">提交解封</button>
 </ion-content>

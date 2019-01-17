@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController, NavParams } from 'ionic-angular';
+import {IonicPage, LoadingController, ModalController, NavController, NavParams, ToastController} from 'ionic-angular';
 
 import { SuspiciousProvider } from '../../providers';
+import {BaseUI} from "../baseUI";
 /**
  * Generated class for the SuspiciousPage page.
  *
@@ -14,17 +15,21 @@ import { SuspiciousProvider } from '../../providers';
   selector: 'page-suspicious',
   templateUrl: 'suspicious.html',
 })
-export class SuspiciousPage {
-  item : any;
-  list : any[] = [];
+export class SuspiciousPage extends BaseUI {
+  item: any;
+  list: any = [];
   pageNum: number;
   pageSize = 5;
-  total: number;
-  option=[];
-  showNoContent: boolean =false;
+  total = 0;
+  option = [];
+  showNoContent: boolean = false;
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public susProvider: SuspiciousProvider,
-              public modalCtrl: ModalController) {
+              public loadingCtrl: LoadingController,
+              public modalCtrl: ModalController,
+              public toastCtrl: ToastController,) {
+    super();
   }
 
   ionViewDidLoad() {
@@ -36,20 +41,26 @@ export class SuspiciousPage {
     this.pageNum = 1;
     this.loadData();
   }
-  handleSuccess(result: any){
-    if(result.successful && result.data.rows.length==0){
-      this.showNoContent=true;
+
+  handleSuccess(result: any, loading: any) {
+    if (loading)
+      loading.dismiss();
+    if (result.successful && result.data.rows.length == 0) {
+      this.showNoContent = true;
     }
     debugger;
     this.pageNum++;
-    this.total=result.data.total;
+    this.total = result.data.total;
     this.list.splice(this.list.length, 0, ...result.data.rows);
   }
-  handleError(err: any){
+
+  handleError(err: any, loading: any) {
+    if (loading)
+      loading.dismiss();
     alert('err')
   }
 
-  addItem(){
+  addItem() {
     //this.navCtrl.push('SuspiciousAddPage');
     let addModal = this.modalCtrl.create('SuspiciousAddPage');
     addModal.onDidDismiss(item => {
@@ -59,24 +70,28 @@ export class SuspiciousPage {
     })
     addModal.present();
   }
-  detail(o: any){
-    this.navCtrl.push('SuspiciousDetailPage', {item: o });
+
+  detail(o: any) {
+    this.navCtrl.push('SuspiciousDetailPage', {item: o});
   }
-  loadData(){
+
+  loadData() {
+    let loading = super.showLoading(this.loadingCtrl, "正在加载...");
     this.susProvider.getSuspiciousPager({page: this.pageNum, size: this.pageSize}
     ).subscribe(
-      res=> this.handleSuccess(res),
-      error => this.handleError(error)
+      res => this.handleSuccess(res, loading),
+      error => this.handleError(error, loading)
     );
   }
 
-  doInfinite(event){
+  doInfinite(event) {
     setTimeout(() => {
+      debugger;
       console.log('Done');
       event.complete();
-      if(this.list.length === this.total){
+      if (this.list.length === this.total) {
         event.disabled = true;
-      }else {
+      } else {
         this.loadData();
       }
     }, 1000);
