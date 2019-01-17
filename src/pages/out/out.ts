@@ -1,5 +1,5 @@
-import {Component, ChangeDetectorRef} from '@angular/core';
-import {IonicPage, LoadingController,  NavParams, ToastController, AlertController, ModalController } from 'ionic-angular';
+import {Component, ChangeDetectorRef } from '@angular/core';
+import {IonicPage, LoadingController,  NavParams, ToastController, AlertController, ModalController, ActionSheetController } from 'ionic-angular';
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
 
@@ -28,7 +28,8 @@ export class OutPage extends BaseUI {
               public api: Api,
               public alertCtrl: AlertController,
               public modalCtrl:ModalController,
-              public changeDetectorRef:ChangeDetectorRef) {
+              public changeDetectorRef:ChangeDetectorRef,
+              public actionSheetController:ActionSheetController) {
     super();
   }
   //扫描
@@ -48,7 +49,7 @@ export class OutPage extends BaseUI {
   //扫单
   ScanSheet() {
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
-    this.api.get('WM/GetAboutIssueRequest', {requestNo: this.ScanNo, userId: 713}).subscribe((res: any) => {
+    this.api.get('WM/GetAboutIssueRequest', {requestNo: this.ScanNo}).subscribe((res: any) => {
         if (res.successful) {
           this.Sheet = res.data.Sheet;
           this.SheetDetail = res.data.SheetDetail;
@@ -157,25 +158,36 @@ export class OutPage extends BaseUI {
     let curr_part_index = this.SheetDetail.findIndex(item => item.id === id);
     let curr_part = this.SheetDetail[curr_part_index];
     if((this.Sheet.is_scanbox && curr_part.is_scan) || !this.Sheet.is_scanbox) {
-      let alert_tool = this.alertCtrl.create();
-      alert_tool.setSubTitle('选择供应商');
-      for (let supplier of curr_part.supplier_list) {
-        alert_tool.addInput({
-          type: 'radio',
-          label: supplier.supplier_name,
-          value: supplier.supplier_code,
-          checked: supplier.supplier_code === curr_part.supplier_id ? true : false,
-        });
+      // let alert_tool = this.alertCtrl.create();
+      // alert_tool.setSubTitle('选择供应商');
+      // for (let supplier of curr_part.supplier_list) {
+      //   alert_tool.addInput({
+      //     type: 'radio',
+      //     label: supplier.supplier_name,
+      //     value: supplier.supplier_code,
+      //     checked: supplier.supplier_code === curr_part.supplier_id ? true : false,
+      //   });
+      // }
+      // alert_tool.addButton({text: '取消', role: 'cancel'});
+      // alert_tool.addButton({
+      //   text: '确认',
+      //   role: 'role',
+      //   handler: data => {
+      //     this.ExcuseSwitchSupplier(curr_part, curr_part_index, data)
+      //   }
+      // });
+      // alert_tool.present();
+      let actAlert = this.actionSheetController.create();
+      actAlert.setTitle('供应商');
+      for(let supplier of curr_part.supplier_list){
+        actAlert.addButton({
+          text:supplier.supplier_name,
+          handler:() =>{
+            this.ExcuseSwitchSupplier(curr_part, curr_part_index, supplier.supplier_code);
+          }
+        })
       }
-      alert_tool.addButton({text: '取消', role: 'cancel'});
-      alert_tool.addButton({
-        text: '确认',
-        role: 'role',
-        handler: data => {
-          this.ExcuseSwitchSupplier(curr_part, curr_part_index, data)
-        }
-      });
-      alert_tool.present();
+      actAlert.present();
     }
     else {
       super.showToast(this.toastCtrl, "请先扫描箱标签！")
@@ -304,8 +316,7 @@ export class OutPage extends BaseUI {
   ExcuseOutStock(){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetExcuseOutStock', {
-      id:this.Sheet.id,
-      user:'718'
+      id:this.Sheet.id
     }).subscribe((res: any) => {
         if (res.successful && res.data) {
           this.Sheet = {};

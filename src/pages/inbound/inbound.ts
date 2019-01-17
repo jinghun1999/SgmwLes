@@ -74,7 +74,7 @@ export class InboundPage extends BaseUI{
   //扫单
   ScanSheet() {
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
-    this.api.get('WM/GetAboutInboundRequest', {requestNo: this.ScanNo, userId: 713}).subscribe((res: any) => {
+    this.api.get('WM/GetAboutInboundRequest', {requestNo: this.ScanNo}).subscribe((res: any) => {
         if (res.successful) {
           this.Sheet = res.data.Sheet;
           this.SheetDetail = res.data.SheetDetail;
@@ -248,8 +248,7 @@ export class InboundPage extends BaseUI{
   ExcuseInbound(){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetExcuseInbound', {
-      id:this.Sheet.id,
-      user:'718'
+      id:this.Sheet.id
     }).subscribe((res: any) => {
         if (res.successful && res.data) {
           this.Sheet = {};
