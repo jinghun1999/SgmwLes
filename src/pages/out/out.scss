@@ -1,3 +1,23 @@
 page-out {
-
+  .divleft{
+    margin: 0px;
+    padding: 5px 10px 0px 0px;
+    width: 90%;
+    float: left;
+  }
+  .divright{
+    width: 20%;
+    float: right;
+  }
+  .received{
+    margin: 0px auto;
+    width:80px;
+    height: 50px;
+    margin: 10px 5px 10px 5px;
+    padding: 10px 10px;
+    background-color: #8c8c8c;
+  }
+  .font-red{
+    color:red;
+  }
 }
