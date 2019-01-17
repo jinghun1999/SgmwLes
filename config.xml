@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="io.ionic.starter" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>MyApp</name>
-    <description>An awesome Ionic/Cordova app.</description>
-    <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content original-src="index.html" src="http://192.168.137.55:8100" />
+    <name>Sgmw LES</name>
+    <description>上汽通用五菱物流执行终端</description>
+    <author email="hi@ionicframework" href="http://ionicframework.com/">Microsoft service team</author>
+    <content original-src="index.html" src="http://192.168.0.104:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -82,6 +82,6 @@
     <plugin name="cordova-plugin-splashscreen" spec="5.0.2" />
     <plugin name="cordova-plugin-ionic-webview" spec="^2.0.0" />
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
-    <allow-navigation href="http://192.168.137.55:8100" sessionid="d66aaf9a" />
+    <allow-navigation href="http://192.168.0.104:8100" sessionid="58988877" />
     <engine name="android" spec="7.1.4" />
 </widget>
