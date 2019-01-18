@@ -12,10 +12,9 @@
 
 
 <ion-content padding>
-  <form (submit)="Scan()">
+  <form (submit)="scan()">
     <ion-list-header>
-        <ion-label color="primary">扫描</ion-label>
-        <ion-input type="text" [(ngModel)]="ScanNo" name="scan" placeholder="{{ScanPlaceHolder}}"></ion-input>
+      <ion-searchbar placeholder="{{ScanPlaceHolder}}" [(ngModel)]="ScanNo" name="scan"></ion-searchbar>
     </ion-list-header>
   </form>
   <ion-list>
@@ -27,18 +26,18 @@
     <ion-item *ngFor="let oitem of SheetDetail;let i=index" [attr.data-index]="i">
       <div item-left>
         <ion-label>{{oitem.part_no}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{oitem.part_name}}</ion-label>
-        <ion-label color="primary" (click)="SwitchSupplier(oitem.id)">供应商：{{oitem.suplier_name}}</ion-label>
+        <ion-label color="primary" (click)="switchsupplier(oitem.id)">供应商：{{oitem.suplier_name}}</ion-label>
         <ion-label>
           需求箱数：{{oitem.required_pack_count}}&nbsp;&nbsp;&nbsp;&nbsp;需求件数：{{oitem.required_part_count}}&nbsp;&nbsp;&nbsp;&nbsp;包装数：{{oitem.pack_stand_qty}}
         </ion-label>
       </div>
       <div item-right>
-        <ion-label (click)="UnStandModify(oitem.id)" class="received" [ngStyle]="{'background-color':oitem.received_part_count > oitem.required_part_count?'red':oitem.received_part_count===oitem.required_part_count?'green':oitem.received_part_count===0?'white':'yellow'}" color="primary">
+        <ion-label (click)="unstandmodify(oitem.id)" class="received" [ngStyle]="{'background-color':oitem.received_part_count > oitem.required_part_count?'red':oitem.received_part_count===oitem.required_part_count?'green':oitem.received_part_count===0?'white':'yellow'}" color="primary">
           <h2>箱数：{{oitem.received_pack_count}}</h2>
           <h2>件数：{{oitem.received_part_count}}</h2>
         </ion-label>
       </div>
     </ion-item>
   </ion-list>
-  <button ion-button full (click)="OutStock()" *ngIf="ScanFlag>0">出库</button>
+  <button ion-button full (click)="outstock()" *ngIf="ScanFlag>0">出库</button>
 </ion-content>

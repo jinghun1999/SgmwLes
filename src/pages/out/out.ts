@@ -33,13 +33,13 @@ export class OutPage extends BaseUI {
     super();
   }
   //扫描
-  Scan() {
-    if (this.CheckScanCode()) {
+  scan() {
+    if (this.checkscancode()) {
       //扫单
       if (this.ScanFlag == 0) {
-        this.ScanSheet()
+        this.scansheet()
       } else {   //扫箱
-        this.ScanBarCode();
+        this.scanbarcode();
       }
     } else {
       this.ScanNo = "";   //置空扫描框
@@ -47,7 +47,7 @@ export class OutPage extends BaseUI {
   }
 
   //扫单
-  ScanSheet() {
+  scansheet() {
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetAboutIssueRequest', {requestNo: this.ScanNo}).subscribe((res: any) => {
         if (res.successful) {
@@ -68,7 +68,7 @@ export class OutPage extends BaseUI {
   }
 
   //校验扫描
-  CheckScanCode() {
+  checkscancode() {
     if (this.ScanNo == "" && this.ScanFlag == 0) {
       super.showToast(this.toastCtrl, "请扫描单据号！")
       return false;
@@ -89,12 +89,12 @@ export class OutPage extends BaseUI {
   }
 
   //扫箱
-  ScanBarCode() {
+  scanbarcode() {
     let supplier_number = this.ScanNo.substr(2, 9).replace(/(^0*)/, "");
     let part_num = this.ScanNo.substr(11, 8).replace(/(^0*)/, "");
     let part = this.SheetDetail.find(item => item.part_no === part_num && item.is_operate === false);
     let partIndex = this.SheetDetail.findIndex(item => item.part_no === part_num);
-    let isAdd = this.SheetDetail.indexOf(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
+    let isAdd = this.SheetDetail.findIndex(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
 
     if (partIndex < 0) {
       super.showToast(this.toastCtrl, "单据中不存在该零件！");
@@ -133,7 +133,7 @@ export class OutPage extends BaseUI {
               }
             }
             this.ScanNo = "";      //扫描框设置为空
-            this.RefreshDataModal();    //手工调用页面加载数据模型
+            this.refresh_datamodal();    //手工调用页面加载数据模型
           }
         }
         else {
@@ -148,13 +148,13 @@ export class OutPage extends BaseUI {
   }
 
   //手工调用，重新加载数据模型
-  RefreshDataModal(){
+  refresh_datamodal(){
     this.changeDetectorRef.detectChanges();
     this.changeDetectorRef.markForCheck();
   }
 
   //切换供应商
-  SwitchSupplier(id) {
+  switchsupplier(id) {
     let curr_part_index = this.SheetDetail.findIndex(item => item.id === id);
     let curr_part = this.SheetDetail[curr_part_index];
     if((this.Sheet.is_scanbox && curr_part.is_scan) || !this.Sheet.is_scanbox) {
@@ -183,7 +183,7 @@ export class OutPage extends BaseUI {
         actAlert.addButton({
           text:supplier.supplier_name,
           handler:() =>{
-            this.ExcuseSwitchSupplier(curr_part, curr_part_index, supplier.supplier_code);
+            this.excuse_switchsupplier(curr_part, curr_part_index, supplier.supplier_code);
           }
         })
       }
@@ -195,7 +195,7 @@ export class OutPage extends BaseUI {
   }
 
   //执行更新供应商
-  ExcuseSwitchSupplier(curr_part,index,supplier_code) {
+  excuse_switchsupplier(curr_part,index,supplier_code) {
     let suppliers = curr_part.supplier_list.find(item=>item.supplier_code===supplier_code);
     if(typeof(suppliers)!="undefined" && suppliers!=null){
       let loading = super.showLoading(this.loadingCtrl, "提交中...");
@@ -208,7 +208,7 @@ export class OutPage extends BaseUI {
           if (res.successful) {
             this.SheetDetail[index].supplier_id = suppliers.supplier_code;
             this.SheetDetail[index].suplier_name = suppliers.supplier_name;
-            this.RefreshDataModal();
+            this.refresh_datamodal();
           } else {
             super.showToast(this.toastCtrl, res.message);
           }
@@ -222,7 +222,7 @@ export class OutPage extends BaseUI {
   }
 
   //非标跳转Modal页
-  UnStandModify(id){
+  unstandmodify(id){
     let curr_part_index = this.SheetDetail.findIndex(item => item.id === id);        //当前呈现数据源操作零件的index
     let curr_part = this.SheetDetail[curr_part_index];                                           //获取呈现数据的当前操作零件的行;
     if((this.Sheet.is_scanbox && curr_part.is_scan) || !this.Sheet.is_scanbox) {
@@ -242,7 +242,7 @@ export class OutPage extends BaseUI {
       });
       unstdModal.onDidDismiss(data => {
         if (data != null) {
-          this.UnStandReSetNumber(curr_part.id, data.BoxNumber, data.PartNumber);
+          this.unstand_resetnumber(curr_part.id, data.BoxNumber, data.PartNumber);
         }
       });
       unstdModal.present();
@@ -253,7 +253,7 @@ export class OutPage extends BaseUI {
   }
 
   //修改成功后的回调
-  UnStandReSetNumber(id,box_number,part_number){
+  unstand_resetnumber(id,box_number,part_number){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetUnStandModifyNumber', {
       id:id,
@@ -268,7 +268,7 @@ export class OutPage extends BaseUI {
               if(index>0){
                 this.SheetDetail[index].received_pack_count=partInfo.received_pack_count;
                 this.SheetDetail[index].received_part_count=partInfo.received_part_count;
-                this.RefreshDataModal();
+                this.refresh_datamodal();
               }
             }
           }
@@ -284,7 +284,7 @@ export class OutPage extends BaseUI {
   }
 
   //出库
-  OutStock() {
+  outstock() {
     let NotStand = this.SheetDetail.find(item => item.received_part_count > item.allow_part_qty);
     let NotFull = this.SheetDetail.find(item => item.received_part_count < item.allow_part_qty);
     if (Array.isArray(NotStand) && NotStand.length > 0) {
@@ -303,17 +303,17 @@ export class OutPage extends BaseUI {
         },{
           text:'确认',
           handler:()=>{
-            this.ExcuseOutStock();
+            this.excuse_outstock();
           }
         }]
       });
     }
     else{
-      this.ExcuseOutStock();
+      this.excuse_outstock();
     }
   }
   //执行出库
-  ExcuseOutStock(){
+  excuse_outstock(){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetExcuseOutStock', {
       id:this.Sheet.id

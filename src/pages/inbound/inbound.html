@@ -12,10 +12,11 @@
 
 
 <ion-content padding >
-  <ion-list-header>
-    <ion-label color="primary">扫描</ion-label>
-    <ion-input type="text" [(ngModel)]="ScanNo" placeholder="{{ScanPlaceHolder}}" (blur)="Scan()" #txt_scan></ion-input>
-  </ion-list-header>
+  <form (submit)="scan()">
+    <ion-list-header>
+      <ion-searchbar placeholder="{{ScanPlaceHolder}}" [(ngModel)]="ScanNo" name="scan"></ion-searchbar>
+    </ion-list-header>
+  </form>
   <ion-list>
     <ion-list-header *ngIf="ScanFlag>0">
       <ion-label>单号：{{Sheet.sheet_no}}</ion-label>
@@ -31,12 +32,12 @@
         </ion-label>
       </div>
       <div item-right>
-        <ion-label (click)="UnStandModify(oitem.id)" class="received" [ngStyle]="{'background-color':oitem.received_part_count > oitem.required_part_count?'red':oitem.received_part_count===oitem.required_part_count?'green':oitem.received_part_count===0?'white':'yellow'}" color="primary">
+        <ion-label (click)="unstand_modify(oitem.id)" class="received" [ngStyle]="{'background-color':oitem.received_part_count > oitem.required_part_count?'red':oitem.received_part_count===oitem.required_part_count?'green':oitem.received_part_count===0?'white':'yellow'}" color="primary">
           <h2>箱数：{{oitem.received_pack_count}}</h2>
           <h2>件数：{{oitem.received_part_count}}</h2>
         </ion-label>
       </div>
     </ion-item>
   </ion-list>
-  <button ion-button full *ngIf="ScanFlag>0" (click)="Inbound()">入库</button>
+  <button ion-button full *ngIf="ScanFlag>0" (click)="inbound()">入库</button>
 </ion-content>

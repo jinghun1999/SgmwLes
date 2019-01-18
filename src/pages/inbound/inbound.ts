@@ -37,13 +37,13 @@ export class InboundPage extends BaseUI{
   }
 
   //扫描
-  Scan() {
-    if (this.CheckScanCode()) {
+  scan() {
+    if (this.checkscancode()) {
       //扫单
       if (this.ScanFlag == 0) {
-        this.ScanSheet()
+        this.scan_sheet()
       } else {   //扫箱
-        this.ScanBarCode();
+        this.scan_barcode();
       }
     } else {
       this.ScanNo = "";   //置空扫描框
@@ -51,7 +51,7 @@ export class InboundPage extends BaseUI{
   }
 
   //校验扫描
-  CheckScanCode() {
+  checkscancode() {
     if (this.ScanNo == "" && this.ScanFlag == 0) {
       super.showToast(this.toastCtrl, "请扫描单据号！")
       return false;
@@ -72,7 +72,7 @@ export class InboundPage extends BaseUI{
   }
 
   //扫单
-  ScanSheet() {
+  scan_sheet() {
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetAboutInboundRequest', {requestNo: this.ScanNo}).subscribe((res: any) => {
         if (res.successful) {
@@ -93,7 +93,7 @@ export class InboundPage extends BaseUI{
   }
 
   //扫箱
-  ScanBarCode() {
+  scan_barcode() {
     let supplier_number = this.ScanNo.substr(2, 9).replace(/(^0*)/, "");
     let part_num = this.ScanNo.substr(11, 8).replace(/(^0*)/, "");
     let part = this.SheetDetail.find(item => item.part_no === part_num && item.is_operate === false);
@@ -137,7 +137,7 @@ export class InboundPage extends BaseUI{
               }
             }
             this.ScanNo = "";      //扫描框设置为空
-            this.RefreshDataModal();    //手工调用页面加载数据模型
+            this.refresh_datamodal();    //手工调用页面加载数据模型
           }
         }
         else {
@@ -152,13 +152,13 @@ export class InboundPage extends BaseUI{
   }
 
   //手工调用，重新加载数据模型
-  RefreshDataModal(){
+  refresh_datamodal(){
     this.changeDetectorRef.detectChanges();
     this.changeDetectorRef.markForCheck();
   }
 
   //非标跳转Modal页
-  UnStandModify(id){
+  unstand_modify(id){
     let curr_part_index = this.SheetDetail.findIndex(item => item.id === id);        //当前呈现数据源操作零件的index
     let curr_part = this.SheetDetail[curr_part_index];                                           //获取呈现数据的当前操作零件的行;
     if((this.Sheet.is_scanbox && curr_part.is_scan) || !this.Sheet.is_scanbox) {
@@ -174,7 +174,7 @@ export class InboundPage extends BaseUI{
       });
       unstdModal.onDidDismiss(data => {
         if (data != null) {
-          this.UnStandReSetNumber(curr_part.id, data.BoxNumber, data.PartNumber);
+          this.unstand_resetnumber(curr_part.id, data.BoxNumber, data.PartNumber);
         }
       });
       unstdModal.present();
@@ -185,7 +185,7 @@ export class InboundPage extends BaseUI{
   }
 
   //修改成功后的回调
-  UnStandReSetNumber(id,box_number,part_number){
+  unstand_resetnumber(id,box_number,part_number){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetUnStandModifyNumber', {
       id:id,
@@ -200,7 +200,7 @@ export class InboundPage extends BaseUI{
               if(index>0){
                 this.SheetDetail[index].received_pack_count=partInfo.received_pack_count;
                 this.SheetDetail[index].received_part_count=partInfo.received_part_count;
-                this.RefreshDataModal();
+                this.refresh_datamodal();
               }
             }
           }
@@ -216,7 +216,7 @@ export class InboundPage extends BaseUI{
   }
 
   //入库
-  Inbound() {
+  inbound() {
     let NotStand = this.SheetDetail.find(item => item.received_part_count > item.allow_part_qty);
     let NotFull = this.SheetDetail.find(item => item.received_part_count < item.allow_part_qty);
     if (Array.isArray(NotStand) && NotStand.length > 0) {
@@ -235,17 +235,17 @@ export class InboundPage extends BaseUI{
         },{
           text:'确认',
           handler:()=>{
-            this.ExcuseInbound();
+            this.excuse_inbound();
           }
         }]
       });
     }
     else{
-      this.ExcuseInbound();
+      this.excuse_inbound();
     }
   }
   //执行出库
-  ExcuseInbound(){
+  excuse_inbound(){
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.get('WM/GetExcuseInbound', {
       id:this.Sheet.id
