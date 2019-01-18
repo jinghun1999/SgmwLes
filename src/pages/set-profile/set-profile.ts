@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {IonicPage, LoadingController, NavController, NavParams, ToastController} from 'ionic-angular';
+import {IonicPage, LoadingController, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
 import {BaseUI} from "../baseUI";
 import {Api} from "../../providers";
 
@@ -27,12 +27,13 @@ export class SetProfilePage extends BaseUI {
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
+              public viewCtrl: ViewController,
               public api: Api) {
     super();
   }
 
   ionViewDidLoad() {
-    let loading = super.showLoading(this.loadingCtrl,"正在初始化...");
+    let loading = super.showLoading(this.loadingCtrl,"正在加载数据...");
     setTimeout(()=> {
       this.api.get('system/getPlants').subscribe((res: any) => {
           loading.dismiss();
@@ -61,5 +62,8 @@ export class SetProfilePage extends BaseUI {
 
   save(){
 
+  }
+  cancel() {
+    this.viewCtrl.dismiss();
   }
 }
