@@ -12,16 +12,14 @@
 
 </ion-header>
 
-
-<ion-content padding>
-  <h3>工厂</h3>
-  <ion-list radio-group [(ngModel)]="plant" (ionChange)="plantSelect()">
-    <ion-item *ngFor="let item of plant_choose">
-      <ion-label>{{item.text}}</ion-label>
-      <ion-radio value="{{item.value}}"></ion-radio>
+<ion-content padding-top>
+  <ion-list>
+    <ion-item>
+      <ion-label>工厂</ion-label>
+      <ion-note item-end>{{plant}}</ion-note>
     </ion-item>
   </ion-list>
-  <h3>选择默认车间</h3>
+  <h3 padding-left>选择默认车间</h3>
   <ion-list radio-group [(ngModel)]="workshop">
     <ion-item *ngFor="let item of workshop_choose">
       <ion-label>{{item.text}}</ion-label>

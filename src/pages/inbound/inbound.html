@@ -5,17 +5,15 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="primary">
     <ion-title>常规入库</ion-title>
   </ion-navbar>
 </ion-header>
 
 
-<ion-content padding >
+<ion-content>
   <form (submit)="scan()">
-    <ion-list-header>
-      <ion-searchbar placeholder="{{ScanPlaceHolder}}" [(ngModel)]="ScanNo" name="scan"></ion-searchbar>
-    </ion-list-header>
+    <ion-searchbar placeholder="{{ScanPlaceHolder}}" [(ngModel)]="ScanNo" name="scan"></ion-searchbar>
   </form>
   <ion-list>
     <ion-list-header *ngIf="ScanFlag>0">

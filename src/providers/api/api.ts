@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
  */
 @Injectable()
 export class Api {
+  public plant: string = '8000';
   url: string = 'http://localhost:58593/api';
   url0: string = 'http://192.168.0.104:58593/api';
   url1: string = 'http://10.16.224.28/lesapi/api';//dl

@@ -18,7 +18,7 @@ import {BaseUI} from "../baseUI";
 export class OutPage extends BaseUI {
   ScanNo: string = "";                      //记录扫描编号
   ScanFlag: number = 0;                   //扫描标记：0初始标记，1已扫单，2已扫箱
-  ScanPlaceHolder:string = "请扫描请求单号";   //扫描文本框placeholder属性
+  ScanPlaceHolder:string = "请扫描出库请求单号";   //扫描文本框placeholder属性
   Sheet: any = {};                              //出库请求单
   SheetDetail: any[];                     //出库请求单零件列表
 

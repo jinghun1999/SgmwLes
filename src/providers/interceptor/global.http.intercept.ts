@@ -46,7 +46,7 @@ export class GlobalHttpIntercept implements HttpInterceptor {
   private goTo() {
     // 退出到登录页面
     this.getNavCtrl();
-    setTimeout(() => this.navCtrl.setRoot('TutorialPage'));
+    setTimeout(() => this.navCtrl.setRoot('LoginPage'));
   }
   navCtrl: NavController;
   private getNavCtrl() {
@@ -65,6 +65,7 @@ export class GlobalHttpIntercept implements HttpInterceptor {
         break;
       case 401: // 未登录状态码
         errMsg = '登录超时，请重新登录';
+        this.goTo();
         break;
       case 403:
         errMsg = '403 ERROR.';

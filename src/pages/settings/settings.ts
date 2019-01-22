@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
-
-import {Settings, User} from '../../providers';
+//import { FormBuilder, FormGroup } from '@angular/forms';
+import {IonicPage, NavController, NavParams, App, ModalController} from 'ionic-angular';
+import {Storage} from "@ionic/storage";
+import {Settings, User, Api} from '../../providers';
 import {BaseUI} from "../baseUI";
 import {FirstRunPage} from "../index";
 
@@ -19,19 +19,27 @@ import {FirstRunPage} from "../index";
 export class SettingsPage extends BaseUI {
   // Our local settings object
   options: any;
+  data: any = {
 
+  };
   constructor(
     private app: App,
     public navCtrl: NavController,
+    public modalCtrl: ModalController,
     public settings: Settings,
-    public formBuilder: FormBuilder,
+    public api: Api,
     public navParams: NavParams,
+    public storage: Storage,
     public user: User) {
     super();
   }
 
   ionViewDidLoad() {
+    this.data.plant = this.api.plant;
 
+    this.storage.get('WORKSHOP').then((val)=>{
+      this.data.workshop = val;
+    })
   }
 
   ionViewWillEnter() {
@@ -40,6 +48,16 @@ export class SettingsPage extends BaseUI {
 
   ngOnChanges() {
     console.log('Ng All Changes');
+  }
+
+  change(){
+    let addModal = this.modalCtrl.create('SetProfilePage',{}, );
+    addModal.onDidDismiss(ds => {
+      if (ds) {
+        this.data.workshop = ds;
+      }
+    })
+    addModal.present();
   }
 
   logout() {

@@ -14,20 +14,23 @@ import {IonicPage, ModalController, NavController, NavParams} from 'ionic-angula
   templateUrl: 'suspicious-detail.html',
 })
 export class SuspiciousDetailPage {
-  data: any;
+  data: any = {};
+
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public modalCtrl: ModalController,) {
-      this.data = navParams.get('item');
+    this.data = navParams.get('item');
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SuspiciousDetailPage');
   }
 
-  goUnlock(){
+  goUnlock() {
     let addModal = this.modalCtrl.create('SuspiciousUnlockPage', {dt: this.data});
-    addModal.onDidDismiss(item => {
-      if (item) {
+    addModal.onDidDismiss(v => {
+      if (v) {
+        this.data.part_qty -= v;
+        this.data.status_text_jf = this.data.part_qty > 0 ? '部分解封' : '已解封';
       }
     })
     addModal.present();

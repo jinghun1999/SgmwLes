@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, ModalController, NavController } from 'ionic-angular';
+import {Storage} from "@ionic/storage";
 import { Menus } from '../../providers';
 import { Menu } from '../../models/menu';
 import {SetProfilePage} from "../set-profile/set-profile";
@@ -15,7 +16,8 @@ export class HomePage {
   gridList: Menu[];
 
   constructor(public navCtrl: NavController, public items: Menus,
-              public modalCtrl: ModalController) {
+              public modalCtrl: ModalController,
+              private storage: Storage) {
     this.currentItems = this.items.query();
     this.gridList = this.currentItems;
   }
@@ -24,17 +26,24 @@ export class HomePage {
    * The view loaded, let's query our items for the list
    */
   ionViewDidLoad() {
+    this.storage.get('WORKSHOP').then((res) => {
+      if (!res) {
+        this.setProfile();
+      } else {
+        //alert(res)
+      }
+    });
   }
 
   /**
    * Prompt the user to add a new item. This shows our ItemCreatePage in a
    * modal and then adds the new item to our data source if the user created one.
    */
-  addItem() {
+  setProfile() {
     let addModal = this.modalCtrl.create('SetProfilePage',{}, );
     addModal.onDidDismiss(item => {
       if (item) {
-        this.items.add(item);
+        //this.items.add(item);
       }
     })
     addModal.present();
@@ -42,11 +51,11 @@ export class HomePage {
 
   /**
    * Delete an item from the list of items.
-   */
+
   deleteItem(item) {
     this.items.delete(item);
   }
-
+   */
   /**
    * Navigate to the detail page for this item.
    */

@@ -6,19 +6,14 @@
 -->
 <ion-header>
 
-  <ion-navbar>
+  <ion-navbar color="primary">
     <ion-title>可疑件详情</ion-title>
-    <ion-buttons end>
-      <button ion-button icon-only (click)="goUnlock()">
-        <ion-icon name="open"></ion-icon> 解封
-      </button>
-    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding>
+<ion-content padding-top>
   <!-- List of Text Items -->
   <ion-list ng-if="data">
     <ion-item>
@@ -39,11 +34,7 @@
     </ion-item>
     <ion-item>
       <ion-label>零件号</ion-label>
-      <ion-label text-end>{{data.part_no}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>零件名称</ion-label>
-      <ion-label text-end>{{data.part_name}}</ion-label>
+      <ion-label text-end>{{data.part_no}}({{data.part_name}})</ion-label>
     </ion-item>
     <ion-item>
       <ion-label>剩余封存数</ion-label>
@@ -59,3 +50,11 @@
     </ion-item>
   </ion-list>
 </ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" (click)="goUnlock()">解封</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

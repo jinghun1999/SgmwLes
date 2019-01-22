@@ -34,17 +34,17 @@ export class SuspiciousPage extends BaseUI {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad SuspiciousPage');
-  }
-
-  //获取数据
-  ngOnInit(): void {
     this.pageNum = 1;
     this.loadData();
   }
 
-  handleSuccess(result: any, loading: any) {
-    if (loading)
-      loading.dismiss();
+  //获取数据
+  ngOnInit(): void {
+
+  }
+
+  handleSuccess(result: any) {
+
     if (result.successful && result.data.rows.length == 0) {
       this.showNoContent = true;
     }
@@ -54,10 +54,9 @@ export class SuspiciousPage extends BaseUI {
     this.list.splice(this.list.length, 0, ...result.data.rows);
   }
 
-  handleError(err: any, loading: any) {
-    if (loading)
-      loading.dismiss();
-    alert('err')
+  handleError(err: any) {
+
+    //alert(JSON.stringify(err))
   }
 
   addItem() {
@@ -76,11 +75,10 @@ export class SuspiciousPage extends BaseUI {
   }
 
   loadData() {
-    let loading = super.showLoading(this.loadingCtrl, "正在加载...");
-    this.susProvider.getSuspiciousPager({page: this.pageNum, size: this.pageSize}
-    ).subscribe(
-      res => this.handleSuccess(res, loading),
-      error => this.handleError(error, loading)
+    //let loading = super.showLoading(this.loadingCtrl, "正在加载...");
+    this.susProvider.getSuspiciousPager({page: this.pageNum, size: this.pageSize}).subscribe(
+      res => this.handleSuccess(res),
+      error => this.handleError(error)
     );
   }
 
