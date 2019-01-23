@@ -1,47 +1,31 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar color="primary">
     <ion-title>库存盘点</ion-title>
-    <ion-buttons end>
-      <button ion-button (click)="commit()">
-        保存
-      </button>
-    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid>
-    <ion-row>
-    <ion-col col-10>
-      <ion-searchbar (ionInput)="getItems($event)" placeholder="请输入盘点通知单号">
-      </ion-searchbar>
-    </ion-col>
-    <ion-col col-2 align-items-end align-self-center>
-      <button class="scan" (click)="scan()">
-        <ion-icon name="qr-scanner"></ion-icon>
-      </button>
-    </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <ion-list *ngIf="currentItem">
+  <form (submit)="search()">
+    <ion-searchbar placeholder="扫描或录入盘点单号" [(ngModel)]="data.code" name="code"></ion-searchbar>
+  </form>
+  <ion-list *ngIf="data.plant">
     <ion-item>
-      <ion-label>工厂</ion-label>
-      <ion-label text-end>{{currentItem.plant}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>车间</ion-label>
-      <ion-label text-end>{{currentItem.workshop}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>盘点类型</ion-label>
-      <ion-label text-end>{{currentItem.type}}</ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>盘点模式</ion-label>
-      <ion-label text-end>{{currentItem.mode}}</ion-label>
+      <ion-grid>
+        <ion-row>
+          <ion-col><h1>{{data.plant}}<small>工厂</small></h1></ion-col>
+          <ion-col><h1>{{data.workshop}}<small>车间</small></h1></ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>盘点类型：{{data.type}}</ion-col>
+          <ion-col>盘点模式：{{data.mode}}</ion-col>
+        </ion-row>
+        <ion-row *ngIf="data.remark">
+          <ion-col>备注：{{data.remark}}</ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
   </ion-list>
+
   <ion-item-group>
     <ion-item-divider color="light">盘点零件</ion-item-divider>
     <ion-item>
@@ -60,3 +44,14 @@
     <ion-item>收音机后侧门扬声器总成</ion-item>
   </ion-item-group>
 </ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" (click)="save()">提交盘点结果</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

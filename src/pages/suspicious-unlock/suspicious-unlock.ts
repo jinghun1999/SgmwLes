@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {IonicPage, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
+import {IonicPage, LoadingController, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
 
@@ -20,6 +20,7 @@ export class SuspiciousUnlockPage extends BaseUI {
   constructor(public navCtrl: NavController,
               public viewCtrl: ViewController,
               public toastCtrl: ToastController,
+              private loadingCtrl: LoadingController,
               private api: Api,
               public navParams: NavParams) {
     super();
@@ -40,7 +41,9 @@ export class SuspiciousUnlockPage extends BaseUI {
       unlock_count: this.data.unlock_count,
       why: this.data.why,
     };
+    let loading = super.showLoading(this.loadingCtrl,"提交中...");
     this.api.post('suspicious/postUnlock', json).subscribe((res: any)=>{
+      loading.dismissAll();
       if(res.successful) {
         if(!res.data){
           this.viewCtrl.dismiss(json.unlock_count);
@@ -50,7 +53,9 @@ export class SuspiciousUnlockPage extends BaseUI {
       } else {
         super.showToast(this.toastCtrl, res.message);
       }
-    }, ()=>{});
+    }, ()=>{
+      loading.dismissAll();
+    });
   }
   cancel(){
     this.viewCtrl.dismiss();

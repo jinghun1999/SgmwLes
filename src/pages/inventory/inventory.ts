@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {IonicPage, LoadingController, NavController, NavParams, ToastController} from 'ionic-angular';
 
 import {BaseUI} from "../baseUI";
+import {Api} from "../../providers";
 
 @IonicPage()
 @Component({
@@ -10,38 +11,39 @@ import {BaseUI} from "../baseUI";
 })
 export class InventoryPage extends BaseUI {
 
-  currentItem: any = {
-    plant: 8000,
-    workshop: 'loc1',
-    type: '动态盘点',
-    mode: '明盘'
+  data: any = {
+    code: null,
   };
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public toastCtrl: ToastController,
-              public loadingCtrl: LoadingController,) {
+              public loadingCtrl: LoadingController,
+              private api: Api) {
     super();
   }
 
-  /**
-   * Perform a service for the proper items.
-   */
-  getItems(ev) {
-    let val = ev.target.value;
-    if (!val || !val.trim()) {
-      //this.currentItem = [];
-      return;
+  ionViewDidLoad() {
+    //get plant and workshop
+  }
+
+  search() {
+    let loading = super.showLoading(this.loadingCtrl,"查询中...");
+    if (this.data.code) {
+      this.api.get('inventory/getScanCode', {code: this.data.code}).subscribe((res: any)=>{
+        loading.dismissAll();
+       if(res.successful){
+         this.data = res.data;
+       }else{
+         super.showToast(this.toastCtrl, res.message);
+       }
+      });
     }
-    // this.currentItems = this.items.query({
-    //   name: val
-    // });
   }
 
-  /**
-   * Navigate to the detail page for this item.
-   */
-  scan() {
-    super.showToast(this.toastCtrl, '暂未实现');
-  }
+  cancel(){
 
+  }
+  save(){
+
+  }
 }
