@@ -6,11 +6,14 @@
 
 <ion-content>
   <form (submit)="search()">
-    <ion-searchbar placeholder="扫描或录入盘点单号" [(ngModel)]="data.code" name="code"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="扫描或录入盘点单号" [(ngModel)]="label" name="code"></ion-searchbar>
   </form>
   <ion-list *ngIf="data.plant">
     <ion-item>
       <ion-grid>
+        <ion-row>
+          <ion-col><h1>{{data.code}}</h1></ion-col>
+        </ion-row>
         <ion-row>
           <ion-col><h1>{{data.plant}}<small>工厂</small></h1></ion-col>
           <ion-col><h1>{{data.workshop}}<small>车间</small></h1></ion-col>
@@ -24,25 +27,38 @@
         </ion-row>
       </ion-grid>
     </ion-item>
-  </ion-list>
+  </ion-list><div></div>
 
-  <ion-item-group>
-    <ion-item-divider color="light">盘点零件</ion-item-divider>
+  <ion-grid no-padding no-margin *ngIf="data.parts[current_part_index]">
+    <ion-row no-padding no-margin>
+      <ion-col no-padding no-margin>盘点零件(<b>{{current_part_index+1}}</b>/<b>{{part_total}}</b>) 已盘:{{rightCount}}</ion-col>
+      <ion-col no-padding no-margin>
+        <ion-buttons end no-margin>
+          <button ion-button small (click)="prev()" [disabled]="current_part_index===0">上一个</button>
+          <button ion-button small (click)="next()" [disabled]="current_part_index===part_total-1">下一个</button>
+        </ion-buttons>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-list *ngIf="data.parts[current_part_index]">
     <ion-item>
-      <ion-label>右仪表板饰板</ion-label>
-      <ion-label text-end></ion-label>
+      <ion-label col-4>零件名称</ion-label>
+      <ion-label col-8 text-end>({{data.parts[current_part_index].part_no}}){{data.parts[current_part_index].part_name}}</ion-label>
     </ion-item>
-    <ion-item class="bg-light-gray">
-      <ion-label>车顶饰条安装卡扣</ion-label>
-      <ion-label text-end>11</ion-label>
+    <ion-item>
+      <ion-label col-4>供应商</ion-label>
+      <ion-label col-8 text-end>({{data.parts[current_part_index].supplier_id}}){{data.parts[current_part_index].supplier_name}}</ion-label>
     </ion-item>
-    <ion-item class="bg-light-gray">
-      <ion-label>左天窗安装支架</ion-label>
-      <ion-label text-end>102</ion-label>
+    <ion-item *ngIf="data.parts[current_part_index].part_qty">
+      <ion-label color="primary">快照件数</ion-label>
+      <ion-label text-end>{{data.parts[current_part_index].part_qty}}</ion-label>
     </ion-item>
-    <ion-item>制动硬管组件</ion-item>
-    <ion-item>收音机后侧门扬声器总成</ion-item>
-  </ion-item-group>
+    <ion-item>
+      <ion-label color="primary">实盘件数</ion-label>
+      <ion-input type="number" [color]="data.parts[current_part_index].real_qty? 'secondary' : 'danger'" text-right (blur)="changeQ()" [(ngModel)]="data.parts[current_part_index].real_qty" placeholder="请输入实盘零件数"></ion-input>
+    </ion-item>
+  </ion-list>
 </ion-content>
 
 <ion-footer>
@@ -50,8 +66,11 @@
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
     </ion-col>
+    <ion-col no-padding hidden>
+      <button no-margin ion-button full large color="light" (click)="close()">关闭</button>
+    </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="save()">提交盘点结果</button>
+      <button no-margin ion-button full large [disabled]="noSubmit" color="primary" (click)="save()">盘点完成</button>
     </ion-col>
   </ion-row>
 </ion-footer>

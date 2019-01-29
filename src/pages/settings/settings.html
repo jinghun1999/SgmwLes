@@ -9,10 +9,12 @@
 <ion-content>
   <ion-list padding-top>
     <ion-item>
+      <ion-icon name="ios-home" item-start></ion-icon>
       <ion-label>当前工厂</ion-label>
       <ion-note item-end>{{data.plant}}</ion-note>
     </ion-item>
     <ion-item (click)="change()">
+      <ion-icon name="ios-grid" item-start></ion-icon>
       <ion-label color="primary">当前车间</ion-label>
       <ion-note item-end class="note note-md">{{data.workshop}}</ion-note>
     </ion-item>

@@ -1,41 +1,51 @@
-<!--
-  Generated template for the InboundPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
   <ion-navbar color="primary">
     <ion-title>常规入库</ion-title>
   </ion-navbar>
 </ion-header>
 
-
 <ion-content>
   <form (submit)="scan()">
-    <ion-searchbar placeholder="{{ScanPlaceHolder}}" [(ngModel)]="ScanNo" name="scan"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan"></ion-searchbar>
   </form>
-  <ion-list>
-    <ion-list-header *ngIf="ScanFlag>0">
-      <ion-label>单号：{{Sheet.sheet_no}}</ion-label>
-      <ion-label>工厂：{{Sheet.plant}}</ion-label>
-      <ion-label>车间：{{Sheet.supplier_id}}</ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let oitem of SheetDetail">
-      <div item-left>
-        <ion-label>{{oitem.part_no}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{oitem.part_name}}</ion-label>
-        <ion-label>供应商：{{oitem.suplier_name}}</ion-label>
-        <ion-label>
-          需求箱数：{{oitem.required_pack_count}}&nbsp;&nbsp;&nbsp;&nbsp;需求件数：{{oitem.required_part_count}}&nbsp;&nbsp;&nbsp;&nbsp;包装数：{{oitem.pack_stand_qty}}
-        </ion-label>
-      </div>
-      <div item-right>
-        <ion-label (click)="unstand_modify(oitem.id)" class="received" [ngStyle]="{'background-color':oitem.received_part_count > oitem.required_part_count?'red':oitem.received_part_count===oitem.required_part_count?'green':oitem.received_part_count===0?'white':'yellow'}" color="primary">
-          <h2>箱数：{{oitem.received_pack_count}}</h2>
-          <h2>件数：{{oitem.received_part_count}}</h2>
-        </ion-label>
-      </div>
+
+  <ion-list *ngIf="scanFlag>0">
+    <ion-item no-padding>
+      <ion-grid>
+        <ion-row>
+          <ion-col><h2>{{sheet.sheet_no}}</h2></ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col><h2>{{sheet.plant}}<small>工厂</small></h2></ion-col>
+          <ion-col><h2>{{sheet.supplier_id}}<small>车间</small></h2></ion-col>
+        </ion-row>
+      </ion-grid>
     </ion-item>
   </ion-list>
-  <button ion-button full *ngIf="ScanFlag>0" (click)="inbound()">入库</button>
+
+  <div>
+    <div class="ds-box" *ngFor="let p of parts">
+      <h4 no-margin>零件：{{p.part_no}} {{p.part_name}}</h4>
+      <h5>
+        <ion-icon name="contact"></ion-icon> {{p.supplier_name? p.supplier_name: '（请选择供应商）'}}
+      </h5>
+      <p>
+        需求{{p.required_pack_count}}箱，共{{p.required_part_count}}件（包装数{{p.pack_stand_qty}}）
+      </p>
+      <button ion-button outline (click)="changeQty(p)" [color]="bgColor(p)">
+        本次出库{{p.received_pack_count}}箱，共{{p.received_part_count}}件
+      </button>
+    </div>
+  </div>
 </ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">关闭</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" (click)="inbound()">提交入库</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

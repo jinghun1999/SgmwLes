@@ -6,10 +6,11 @@
 
 <ion-content>
   <form (submit)="scan()">
-    <ion-searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan"></ion-searchbar>
   </form>
+
   <ion-list *ngIf="scanFlag>0">
-    <ion-item>
+    <ion-item no-padding>
       <ion-grid>
         <ion-row>
           <ion-col><h2>{{sheet.sheet_no}}</h2></ion-col>
@@ -22,21 +23,20 @@
     </ion-item>
   </ion-list>
 
-  <ion-list>
-    <ion-item *ngFor="let p of parts; let i=index" [attr.data-index]="i" margin-bottom>
-        <h2>{{p.part_no}} {{p.part_name}}</h2>
-        <h2 color="primary" (click)="switchSupplier(p.id)">
-          <ion-icon name="contact"></ion-icon> {{p.suplier_name}}
-        </h2>
-        <ion-label>
-          需求{{p.required_pack_count}}箱，共{{p.required_part_count}}件（包装：{{p.pack_stand_qty}}）
-        </ion-label>
-        <ion-label (click)="changeQty(p.id)" class="received" [ngStyle]="{'background-color': p.received_part_count > p.required_part_count ? 'red': p.received_part_count===p.required_part_count ? 'green' : p.received_part_count===0 ? 'white' : 'yellow'}" color="primary">
-          <h2>箱数：{{p.received_pack_count}}</h2>
-          <h2>件数：{{p.received_part_count}}</h2>
-        </ion-label>
-    </ion-item>
-  </ion-list>
+  <div>
+    <div class="ds-box" *ngFor="let p of parts; let i=index" [attr.data-index]="i">
+        <h4 no-margin>零件：{{p.part_no}} {{p.part_name}}</h4>
+        <h5 (click)="switchSupplier(p)">
+          <ion-icon name="contact"></ion-icon> {{p.supplier_name? p.supplier_name: '（请选择供应商）'}}
+        </h5>
+        <p>
+          需求{{p.required_pack_count}}箱，共{{p.required_part_count}}件（包装数{{p.pack_stand_qty}}）
+        </p>
+        <button ion-button item-end (click)="changeQty(p)" [color]="bgColor(p)">
+          本次出库{{p.received_pack_count}}箱，共{{p.received_part_count}}件
+        </button>
+    </div>
+  </div>
 </ion-content>
 
 <ion-footer>

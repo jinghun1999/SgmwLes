@@ -43,7 +43,7 @@ export class LoginPage extends BaseUI{
       });
     }, (err) => {
       loading.dismiss();
-      super.showToast(this.toastCtrl, '登录失败');
+      super.showToast(this.toastCtrl, '登录失败'+err);
     });
   }
 }
