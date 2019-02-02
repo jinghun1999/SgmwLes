@@ -43,7 +43,7 @@ export class MovePage extends BaseUI {
   }
 
   ionViewDidLoad() {
-    this.storage.get('WORKSHOP').then((val)=>{
+    this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.source = val;
       this.getTrans();
@@ -56,7 +56,7 @@ export class MovePage extends BaseUI {
     });
   }
 
-  private getTrans(){
+  private getTrans() {
     let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('move/getTransList', {plant: this.item.plant, source: this.item.source}).subscribe((res: any) => {
         if (res.successful) {
@@ -71,8 +71,9 @@ export class MovePage extends BaseUI {
         loading.dismiss();
       });
   }
-  onChangeTrans($event){
-    let i = this.trans_list.findIndex(p=>p.transaction_code === this.item.trans_code);
+
+  onChangeTrans($event) {
+    let i = this.trans_list.findIndex(p => p.transaction_code === this.item.trans_code);
     this.item.target = this.trans_list[i].target;
     this.item.trans_name = this.trans_list[i].transaction_name;
   }
@@ -82,10 +83,11 @@ export class MovePage extends BaseUI {
       let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
       let _part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
 
-      let i = this.item.parts.findIndex(p=>p.part_no === _part_num && p.supplier_id === _supplier_number);
-      if(i>=0){
+      let i = this.item.parts.findIndex(p => p.part_no === _part_num && p.supplier_id === _supplier_number);
+      if (i >= 0) {
         super.showToast(this.toastCtrl, '该标签已扫描，不能重复添加');
         this.label = '';
+        this.searchbar.setFocus();
         return;
       }
       //合法标签
@@ -118,17 +120,23 @@ export class MovePage extends BaseUI {
             super.showToast(this.toastCtrl, res.message);
           }
           loading.dismiss();
+          this.label = '';
+          this.searchbar.setFocus();
         },
         (error) => {
           alert('系统错误,' + error);
           loading.dismiss();
+          this.label = '';
+          this.searchbar.setFocus();
         });
     } else {
       super.showToast(this.toastCtrl, '无效的箱标签，请重试');
       this.label = '';
+      this.searchbar.setFocus();
     }
   }
-  changeQty(part){
+
+  changeQty(part) {
     let _m = this.modalCtrl.create('UnstandPage', {
       boxes: part.require_boxes,
       parts: part.require_parts,
@@ -143,14 +151,15 @@ export class MovePage extends BaseUI {
     });
     _m.present();
   }
-  save(){
+
+  save() {
     let err = '';
-    if(!this.item.trans_code){
+    if (!this.item.trans_code) {
       err += '请选择移动类型';
-    }else if(!this.item.parts.length){
+    } else if (!this.item.parts.length) {
       err += '请添加移动的零件';
     }
-    if(err.length){
+    if (err.length) {
       super.showToast(this.toastCtrl, err);
       return;
     }
@@ -170,8 +179,9 @@ export class MovePage extends BaseUI {
         loading.dismiss();
       });
   }
+
   cancel() {
-    if(this.navCtrl.canGoBack())
+    if (this.navCtrl.canGoBack())
       this.navCtrl.pop();
   }
 }

@@ -7,8 +7,10 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class Api {
   public plant: string = '8000';
-  url: string = 'http://localhost:58593/api';
-  url0: string = 'http://10.1.126.171/lesapi/api';
+  public api_host0: string = 'http://localhost:58593';
+  public api_host: string = 'http://10.1.126.171/lesapi';
+  url: string = this.api_host + '/api';
+
 
   constructor(public http: HttpClient) {
 

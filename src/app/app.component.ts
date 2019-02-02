@@ -5,8 +5,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { Config, Nav, Platform } from 'ionic-angular';
 //import {Storage} from "@ionic/storage";
 import {FirstRunPage, MainPage} from '../pages';
-import { Settings } from '../providers';
+import {Api, Settings} from '../providers';
 import {BaseUI} from "../pages/baseUI";
+import {AppUpdate} from "@ionic-native/app-update";
 
 @Component({
   template: `
@@ -18,14 +19,17 @@ export class MyApp extends BaseUI {
   @ViewChild(Nav) nav: Nav;
 
   constructor(private translate: TranslateService, platform: Platform, settings: Settings,
-              private config: Config, private statusBar: StatusBar, private splashScreen: SplashScreen) {
+              private config: Config, private statusBar: StatusBar,
+              private api: Api,
+              //private appUpdate: AppUpdate,
+              private splashScreen: SplashScreen) {
     super();
     platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      if(window.localStorage.getItem('TOKEN')){
+      if (window.localStorage.getItem('TOKEN')) {
         this.rootPage = MainPage;
-      }else{
+      } else {
         this.rootPage = FirstRunPage;
       }
       // this.storage.get('TOKEN').then(token=> { if(token){
@@ -33,5 +37,10 @@ export class MyApp extends BaseUI {
       //   this.rootPage = MainPage;
       // }}).catch(e=> console.error(e.toString()))
     });
+
+    const updateUrl = this.api.api_host + '/update.xml';
+    // this.appUpdate.checkAppUpdate(updateUrl).then(() => {
+    //   console.log('Update available')
+    // });
   }
 }

@@ -25,7 +25,7 @@ export class InventoryPage extends BaseUI {
     parts: [],
   };
 
-  part_total:number = 0;
+  part_total: number = 0;
   current_part_index: number = 0;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
@@ -42,10 +42,12 @@ export class InventoryPage extends BaseUI {
     });
   }
   search() {
+    debugger;
     let loading = super.showLoading(this.loadingCtrl,"查询中...");
     if (this.label) {
       this.api.get('inventory/getScanCode', {code: this.label}).subscribe((res: any)=>{
         loading.dismissAll();
+        debugger;
        if(res.successful){
          this.label = '';
          this.data = res.data;
@@ -55,8 +57,14 @@ export class InventoryPage extends BaseUI {
          //this.current_part = this.data.parts[this.current_part_index];
        }else{
          super.showToast(this.toastCtrl, res.message);
+         this.label = ''
+         this.searchbar.setFocus();
        }
-      }, err=>{alert(err)});
+      }, err=>{
+        alert(err)
+        this.label = ''
+        this.searchbar.setFocus();
+      });
     }
   }
 
@@ -120,15 +128,6 @@ export class InventoryPage extends BaseUI {
       return;
     }
     let o = this.data.parts[this.current_part_index];
-    let ds = {
-      id: o.id,
-      supplier_id: o.supplier_id,
-      supplier_name: o.supplier_name,
-      part_no: o.part_no,
-      part_name: o.part_name,
-      part_qty: o.part_qty,
-      real_qty: o.real_qty,
-    }
     this.api.post('inventory/postRealQty', o).subscribe((res: any)=>{
       if(res.successful){
         super.showToast(this.toastCtrl, '已更新');
