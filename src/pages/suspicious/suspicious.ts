@@ -23,7 +23,7 @@ export class SuspiciousPage extends BaseUI {
   total = 0;
   option = [];
   showNoContent: boolean = false;
-
+  loading: any;
   constructor(public navCtrl: NavController, public navParams: NavParams,
               public susProvider: SuspiciousProvider,
               public loadingCtrl: LoadingController,
@@ -33,30 +33,9 @@ export class SuspiciousPage extends BaseUI {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SuspiciousPage');
     this.pageNum = 1;
+    this.loading = super.showLoading(this.loadingCtrl, "正在加载...");
     this.loadData();
-  }
-
-  //获取数据
-  ngOnInit(): void {
-
-  }
-
-  handleSuccess(result: any) {
-
-    if (result.successful && result.data.rows.length == 0) {
-      this.showNoContent = true;
-    }
-    debugger;
-    this.pageNum++;
-    this.total = result.data.total;
-    this.list.splice(this.list.length, 0, ...result.data.rows);
-  }
-
-  handleError(err: any) {
-
-    //alert(JSON.stringify(err))
   }
 
   addItem() {
@@ -75,10 +54,19 @@ export class SuspiciousPage extends BaseUI {
   }
 
   loadData() {
-    //let loading = super.showLoading(this.loadingCtrl, "正在加载...");
-    this.susProvider.getSuspiciousPager({page: this.pageNum, size: this.pageSize}).subscribe(
-      res => this.handleSuccess(res),
-      error => this.handleError(error)
+    this.susProvider.getSuspiciousPager({page: this.pageNum, size: this.pageSize}).subscribe((result: any) => {
+        this.loading && this.loading.dismiss();
+        if (result.successful && result.data.rows.length == 0) {
+          this.showNoContent = true;
+        }
+        debugger;
+        this.pageNum++;
+        this.total = result.data.total;
+        this.list.splice(this.list.length, 0, ...result.data.rows);
+      },
+      (error: any) => {
+        alert('获取数据失败');
+      }
     );
   }
 
