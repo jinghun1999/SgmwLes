@@ -16,7 +16,7 @@ export class Menus {
       {
         "name": "库存盘点",
         "icon": "ios-calculator",
-        "url": "InventoryPage"
+        "url": "InventoryListPage"
       },
       {
         "name": "物料出库",

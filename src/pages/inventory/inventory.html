@@ -5,8 +5,8 @@
 </ion-header>
 
 <ion-content>
-  <form (submit)="search()">
-    <ion-searchbar #searchbar placeholder="扫描或录入盘点单号" [(ngModel)]="label" name="code"></ion-searchbar>
+  <form (submit)="searchPart()">
+    <ion-searchbar #searchbar placeholder="扫描或录入零件箱标签" [(ngModel)]="label" name="code" maxlength="19"></ion-searchbar>
   </form>
   <ion-list *ngIf="data.plant">
     <ion-item>
@@ -29,7 +29,7 @@
     </ion-item>
   </ion-list><div></div>
 
-  <ion-grid no-padding no-margin *ngIf="data.parts[current_part_index]">
+  <ion-grid no-padding no-margin *ngIf="false">
     <ion-row no-padding no-margin>
       <ion-col no-padding no-margin>盘点零件(<b>{{current_part_index+1}}</b>/<b>{{part_total}}</b>) 已盘:{{rightCount}}</ion-col>
       <ion-col no-padding no-margin>
@@ -41,14 +41,26 @@
     </ion-row>
   </ion-grid>
 
+  <div>
+    <label>共{{part_total}},已盘{{ok_count}},剩余{{part_total-ok_count}}</label>
+  </div>
+
   <ion-list *ngIf="data.parts[current_part_index]">
     <ion-item>
+      <ion-label col-4>库位</ion-label>
+      <ion-label col-8 text-end>{{data.parts[current_part_index].dloc}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label col-4>零件号</ion-label>
+      <ion-label col-8 text-end>{{data.parts[current_part_index].part_no}}</ion-label>
+    </ion-item>
+    <ion-item>
       <ion-label col-4>零件名称</ion-label>
-      <ion-label col-8 text-end>({{data.parts[current_part_index].part_no}}){{data.parts[current_part_index].part_name}}</ion-label>
+      <ion-label col-8 text-end>{{data.parts[current_part_index].part_name}}</ion-label>
     </ion-item>
     <ion-item>
       <ion-label col-4>供应商</ion-label>
-      <ion-label col-8 text-end>({{data.parts[current_part_index].supplier_id}}){{data.parts[current_part_index].supplier_name}}</ion-label>
+      <ion-label col-8 text-end>{{data.parts[current_part_index].supplier_id}}</ion-label>
     </ion-item>
     <ion-item *ngIf="data.parts[current_part_index].part_qty">
       <ion-label color="primary">快照件数</ion-label>
@@ -64,10 +76,7 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
-    </ion-col>
-    <ion-col no-padding hidden>
-      <button no-margin ion-button full large color="light" (click)="close()">关闭</button>
+      <button no-margin ion-button full large color="danger" (click)="close()">关闭</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large [disabled]="noSubmit" color="primary" (click)="save()">盘点完成</button>
