@@ -1,13 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
-import { TranslateService } from '@ngx-translate/core';
-import { Config, Nav, Platform } from 'ionic-angular';
+//import { TranslateService } from '@ngx-translate/core';
+import { Nav, Platform } from 'ionic-angular';
 //import {Storage} from "@ionic/storage";
 import {FirstRunPage, MainPage} from '../pages';
-import {Api, Settings} from '../providers';
+import {Api} from '../providers';
 import {BaseUI} from "../pages/baseUI";
-import {AppUpdate} from "@ionic-native/app-update";
+//import {AppUpdate} from "@ionic-native/app-update";
 
 @Component({
   template: `
@@ -18,8 +18,8 @@ export class MyApp extends BaseUI {
 
   @ViewChild(Nav) nav: Nav;
 
-  constructor(private translate: TranslateService, platform: Platform, settings: Settings,
-              private config: Config, private statusBar: StatusBar,
+  constructor(platform: Platform,
+              private statusBar: StatusBar,
               private api: Api,
               //private appUpdate: AppUpdate,
               private splashScreen: SplashScreen) {
@@ -38,7 +38,7 @@ export class MyApp extends BaseUI {
       // }}).catch(e=> console.error(e.toString()))
     });
 
-    const updateUrl = this.api.api_host + '/update.xml';
+    // const updateUrl = this.api.api_host + '/update.xml';
     // this.appUpdate.checkAppUpdate(updateUrl).then(() => {
     //   console.log('Update available')
     // });

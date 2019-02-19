@@ -26,11 +26,9 @@ export class MovePage extends BaseUI {
     source: '',
     target: '',
 
-    trans_code: '',
-
     parts: [],
   };
-  trans_list: any[] = [];
+  workshop_list: any[] = [];
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -46,19 +44,19 @@ export class MovePage extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.source = val;
-      this.getTrans();
+      this.getWorkshops();
     });
   }
 
   ionViewDidEnter() {
     setTimeout(() => {
-      this.searchbar.setFocus();
+      //this.searchbar.setFocus();
     });
   }
 
-  private getTrans() {
+  private getWorkshops() {
     let loading = super.showLoading(this.loadingCtrl, '加载中...');
-    this.api.get('move/getTransList', {plant: this.item.plant, source: this.item.source}).subscribe((res: any) => {
+    /*this.api.get('move/getTransList', {plant: this.item.plant, source: this.item.source}).subscribe((res: any) => {
         if (res.successful) {
           this.trans_list = res.data;
         } else {
@@ -69,14 +67,31 @@ export class MovePage extends BaseUI {
       (error) => {
         alert('系统错误,' + error);
         loading.dismiss();
+      });*/
+    this.api.get('system/getPlants', {plant: this.api.plant}).subscribe((res: any) => {
+        loading.dismiss();
+
+        if (res.successful) {
+          this.workshop_list = res.data;
+
+        } else {
+          super.showToast(this.toastCtrl, res.message);
+        }
+      },
+      err => {
+        loading.dismiss();
+        alert(JSON.stringify(err))
       });
   }
 
+  /*
   onChangeTrans($event) {
     let i = this.trans_list.findIndex(p => p.transaction_code === this.item.trans_code);
     this.item.target = this.trans_list[i].target;
     this.item.trans_name = this.trans_list[i].transaction_name;
-  }
+
+    //this.searchbar.setFocus();
+  }*/
 
   scan() {
     if (this.label && this.label.length === 19 && this.label.substr(0, 2).toUpperCase() === 'LN') {

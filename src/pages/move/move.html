@@ -5,26 +5,23 @@
 </ion-header>
 
 <ion-content>
-  <form (submit)="scan()" *ngIf="item.trans_code">
+  <form (submit)="scan()" *ngIf="item.target">
     <ion-searchbar #searchbar placeholder="扫描或输入箱标签码以添加零件" [(ngModel)]="label" name="label"></ion-searchbar>
   </form>
   <ion-list>
     <ion-item>
-      <ion-label color="primary">移动类型</ion-label>
-      <ion-select [(ngModel)]="item.trans_code" interface="popover" (ngModelChange)="onChangeTrans($event)" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of trans_list" value="{{t.transaction_code}}">{{t.transaction_name}}</ion-option>
-      </ion-select>
+      <ion-label color="primary">工厂</ion-label>
+      <ion-note item-end>{{item.plant}}</ion-note>
     </ion-item>
-    <ion-item no-padding *ngIf="item.trans_code">
-      <ion-grid>
-        <ion-row>
-          <ion-col><h2>{{item.plant}}<small>工厂</small></h2></ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col><h2>{{item.source}}<small>源车间</small></h2></ion-col>
-          <ion-col><h2>{{item.target}}<small>目标车间</small></h2></ion-col>
-        </ion-row>
-      </ion-grid>
+    <ion-item>
+      <ion-label color="primary">源仓库</ion-label>
+      <ion-note item-end>{{item.source}}</ion-note>
+    </ion-item>
+    <ion-item>
+      <ion-label color="primary">目的仓库</ion-label>
+      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}">{{t.text}}</ion-option>
+      </ion-select>
     </ion-item>
   </ion-list>
 

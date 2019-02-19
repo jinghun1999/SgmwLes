@@ -235,6 +235,11 @@ export class InboundPage extends BaseUI {
 
   //入库
   inbound() {
+    if (this.scanFlag === 0) {
+      super.showToast(this.toastCtrl, '请先扫描出库请求单二维码');
+      return;
+    }
+
     let notStand = this.parts.find(item => item.received_part_count > item.allow_part_qty);
     let notFull = this.parts.find(item => item.received_part_count < item.allow_part_qty);
     if (Array.isArray(notStand) && notStand.length > 0) {

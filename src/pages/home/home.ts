@@ -3,7 +3,7 @@ import { IonicPage, ModalController, NavController } from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import { Menus } from '../../providers';
 import { Menu } from '../../models/menu';
-import {SetProfilePage} from "../set-profile/set-profile";
+//import {SetProfilePage} from "../set-profile/set-profile";
 //import {SettingsPage} from "../settings/settings";
 
 @IonicPage()

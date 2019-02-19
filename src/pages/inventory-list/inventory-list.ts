@@ -1,34 +1,27 @@
 import { Component } from '@angular/core';
 import {IonicPage, LoadingController, ModalController, NavController, NavParams, ToastController} from 'ionic-angular';
-
-import { SuspiciousProvider } from '../../providers';
 import {BaseUI} from "../baseUI";
-/**
- * Generated class for the SuspiciousPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {Api} from "../../providers";
 
 @IonicPage()
 @Component({
-  selector: 'page-suspicious',
-  templateUrl: 'suspicious.html',
+  selector: 'page-inventory-list',
+  templateUrl: 'inventory-list.html',
 })
-export class SuspiciousPage extends BaseUI {
+export class InventoryListPage extends BaseUI {
   item: any;
   list: any = [];
   pageNum: number;
-  pageSize = 5;
+  pageSize = 15;
   total = 0;
   option = [];
   showNoContent: boolean = false;
   loading: any;
   constructor(public navCtrl: NavController, public navParams: NavParams,
-              public susProvider: SuspiciousProvider,
               public loadingCtrl: LoadingController,
               public modalCtrl: ModalController,
-              public toastCtrl: ToastController,) {
+              public toastCtrl: ToastController,
+              public api: Api) {
     super();
   }
 
@@ -38,23 +31,12 @@ export class SuspiciousPage extends BaseUI {
     this.loadData();
   }
 
-  addItem() {
-    //this.navCtrl.push('SuspiciousAddPage');
-    let addModal = this.modalCtrl.create('SuspiciousAddPage');
-    addModal.onDidDismiss(item => {
-      if (item) {
-        this.list.unshift(item);
-      }
-    })
-    addModal.present();
-  }
-
   detail(o: any) {
-    this.navCtrl.push('SuspiciousDetailPage', {item: o});
+    this.navCtrl.push('InventoryPage', {item: o});
   }
 
   loadData() {
-    this.susProvider.getSuspiciousPager({page: this.pageNum, size: this.pageSize}).subscribe((result: any) => {
+    this.api.get('inventory/getTaskPager', {page: this.pageNum, size: this.pageSize}).subscribe((result: any) => {
         this.loading && this.loading.dismiss();
         if (result.successful && result.data.rows.length == 0) {
           this.showNoContent = true;
