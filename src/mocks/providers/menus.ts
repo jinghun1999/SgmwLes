@@ -34,6 +34,11 @@ export class Menus {
         "url": "MovePage"
       },
       {
+        "name": "JIS出库",
+        "icon": "md-log-out",
+        "url": "JisOutStockPage"
+      },
+      {
         "name": "",
         "icon": "",
         "url": ""
