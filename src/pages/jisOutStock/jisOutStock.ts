@@ -61,9 +61,7 @@ export class JisOutStockPage extends BaseUI {
     } else {
       let prefix = this.code.substr(0, 2).toUpperCase();
 
-      if (prefix != 'RP' && prefix != 'LN') {
-        err = '无效的扫描，请重试！';
-      } else if (prefix == 'RP' && this.code.length != 19) {
+      if (prefix != 'LN') {
         err = '无效的扫描，请重试！';
       } else if (prefix == 'LN' && this.code.length != 24) {
         err = '无效的扫描，请重试！';
@@ -72,7 +70,7 @@ export class JisOutStockPage extends BaseUI {
 
     if (err.length > 0) {
       super.showToast(this.toastCtrl, err);
-      this.code = ''
+      this.code = '';
       this.searchbar.setFocus();
       return false;
     }

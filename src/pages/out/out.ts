@@ -81,7 +81,7 @@ export class OutPage extends BaseUI {
 
     if (err.length > 0) {
       super.showToast(this.toastCtrl, err);
-      this.code = ''
+      this.code = '';
       this.searchbar.setFocus();
       return false;
     }

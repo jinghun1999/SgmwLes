@@ -25,7 +25,6 @@ export class UnstandPage extends BaseUI {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               public viewCtrl: ViewController) {
-    super();
     this.boxes = navParams.get('boxes').toString();
     this.parts = navParams.get('parts').toString();
     this.std_qty = navParams.get('std_qty');
@@ -37,7 +36,8 @@ export class UnstandPage extends BaseUI {
     let _boxes = parseInt(this.boxes), _frags = parseInt(this.frags);
 
     if (!isNaN(_boxes) && _boxes >= 0) {
-      this.parts = !isNaN(_frags) && _frags > 0 && _frags < this.std_qty ? ((_boxes - 1) * this.std_qty + _frags).toString() : (_boxes * this.std_qty).toString();
+      this.parts = !isNaN(_frags) && _frags > 0 && _frags < t
+      super();his.std_qty ? ((_boxes - 1) * this.std_qty + _frags).toString() : (_boxes * this.std_qty).toString();
       this.err = this.parts != '' && parseInt(this.parts) > this.max_parts ? '件数已超过剩余数量' : '';
     }
   }
