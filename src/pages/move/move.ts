@@ -169,8 +169,8 @@ export class MovePage extends BaseUI {
 
   save() {
     let err = '';
-    if (!this.item.trans_code) {
-      err += '请选择移动类型';
+    if (!this.item.source || !this.item.target) {
+      err += '请选择仓库';
     } else if (!this.item.parts.length) {
       err += '请添加移动的零件';
     }
