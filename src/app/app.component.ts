@@ -7,7 +7,7 @@ import { Nav, Platform } from 'ionic-angular';
 import {FirstRunPage, MainPage} from '../pages';
 import {Api} from '../providers';
 import {BaseUI} from "../pages/baseUI";
-//import {AppUpdate} from "@ionic-native/app-update";
+//import {AppUpdate} from "@ionic-native/app-update/ngx";
 
 @Component({
   template: `

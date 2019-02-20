@@ -97,8 +97,8 @@ export class JisOutStockPage extends BaseUI {
 
     let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.get('wm/getJisOutStockScanPart', {
-      plant: this.data.plant,
-      workshop: this.data.workshop,
+      //plant: this.data.plant,
+      //workshop: this.data.workshop,
       barcode: this.code
     }).subscribe((res: any) => {
         if (res.successful) {

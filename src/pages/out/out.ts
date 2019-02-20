@@ -304,7 +304,7 @@ export class OutPage extends BaseUI {
       return;
     }
     if (Array.isArray(NotFull) && NotFull.length > 0 && !this.sheet.is_wave_operate) {
-      this.alertCtrl.create({
+      let prompt = this.alertCtrl.create({
         title: '提示',
         message: '单据存在零件的实出数没有满足需求数，出库后该单据将会完成，不能再次操作！',
         buttons: [{
@@ -319,9 +319,23 @@ export class OutPage extends BaseUI {
           }
         }]
       });
+      prompt.present();
     }
     else {
-      this.excOutStock();
+      let prompt = this.alertCtrl.create({
+        title: '确认提示',
+        message: '您确认要执行出库操作吗？',
+        buttons: [{
+          text: '取消',
+          handler: () => {}
+        }, {
+          text: '确认出库',
+          handler: () => {
+            this.excOutStock();
+          }
+        }]
+      });
+      prompt.present();
     }
   }
 

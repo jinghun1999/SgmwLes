@@ -6,9 +6,9 @@ import { Injectable } from '@angular/core';
  */
 @Injectable()
 export class Api {
-  public plant: string = '8000';
-  public api_host: string = 'http://localhost:58593';
-  public api_host0: string = 'http://10.1.126.171/lesapi';
+  public plant: string = '1000';
+  public api_host1: string = 'http://localhost:58593';
+  public api_host: string = 'http://10.1.126.171/lesapi';
   url: string = this.api_host + '/api';
 
 

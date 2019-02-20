@@ -38,7 +38,7 @@ export class InventoryAddPartPage extends BaseUI {
       super.showToast(this.toastCtrl, '请完善信息后再添加');
       return;
     }
-    this.api.get('inventory/postAddPart', this.item).subscribe((res: any)=>{
+    this.api.post('inventory/postAddPart', this.item).subscribe((res: any)=>{
       if(res.successful){
         super.showToast(this.toastCtrl, '操作成功');
         this.viewCtrl.dismiss(res);
