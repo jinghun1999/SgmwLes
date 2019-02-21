@@ -29,7 +29,6 @@ export class JisOutStockPage extends BaseUI {
     parts: [],                            //出库零件列表
   };
 
-
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
               public toastCtrl: ToastController,
