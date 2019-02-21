@@ -21,11 +21,14 @@ export class JisOutStockPage extends BaseUI {
 
   label: string = '';                      //记录扫描编号
   barTextHolderText: string = '请扫描包装标签';   //扫描文本框placeholder属性
+  workshop_list: any[] = [];
   item: any = {
     plant: '',                            //工厂
     workshop: '',                         //车间
+    target:'',                            //去向车间
     parts: [],                            //出库零件列表
   };
+
 
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
@@ -37,11 +40,30 @@ export class JisOutStockPage extends BaseUI {
     super();
   }
 
-  ionViewDidEnter() {
+  ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val)=>{
       this.item.plant = this.api.plant;
       this.item.workshop = val;
+      this.getWorkshops();
     });
+  }
+
+  private getWorkshops() {
+    let loading = super.showLoading(this.loadingCtrl, '加载中...');
+    this.api.get('system/getPlants', {plant: this.api.plant}).subscribe((res: any) => {
+        loading.dismiss();
+
+        if (res.successful) {
+          this.workshop_list = res.data;
+
+        } else {
+          super.showToast(this.toastCtrl, res.message);
+        }
+      },
+      err => {
+        loading.dismiss();
+        alert(JSON.stringify(err))
+      });
   }
 
   //扫描
@@ -104,12 +126,14 @@ export class JisOutStockPage extends BaseUI {
             let pts = res.data;
             if (pts.length > 0) {
               this.item.parts.push({
+                plant: pts[0].plant,
                 workshop: pts[0].workshop,
                 part_no: pts[0].part_no,
                 part_name: pts[0].part_name,
                 supplier_id: pts[0].supplier_id,
                 supplier_name: pts[0].supplier_name,
                 dloc: pts[0].dloc,
+                unit: pts[0].unit,
                 std_qty: pts[0].pack_std_qty,
                 current_boxes: pts[0].boxes,
                 current_parts: pts[0].parts,
