@@ -122,6 +122,7 @@ export class MovePage extends BaseUI {
                 supplier_id: pts[0].supplier_id,
                 supplier_name: pts[0].supplier_name,
                 dloc: pts[0].dloc,
+                unit: pts[0].unit,
                 std_qty: pts[0].pack_std_qty,
                 current_boxes: pts[0].boxes,
                 current_parts: pts[0].parts,
