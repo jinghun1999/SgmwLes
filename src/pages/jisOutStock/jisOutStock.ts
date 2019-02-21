@@ -52,10 +52,8 @@ export class JisOutStockPage extends BaseUI {
     let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('system/getPlants', {plant: this.api.plant}).subscribe((res: any) => {
         loading.dismiss();
-
         if (res.successful) {
           this.workshop_list = res.data;
-
         } else {
           super.showToast(this.toastCtrl, res.message);
         }
@@ -205,21 +203,6 @@ export class JisOutStockPage extends BaseUI {
         alert('系统错误,' + error);
         loading.dismiss();
       });
-  }
-
-  bgColor(p: any) {
-    let res = '';
-    if (p.received_part_count > p.required_part_count) {
-      res = 'danger';
-    } else if (p.received_part_count === p.required_part_count) {
-      res = 'green';
-    }
-    else if (p.received_part_count === 0) {
-      res = 'light';
-    } else {
-      res = 'secondary';
-    }
-    return res;
   }
 
   cancel() {
