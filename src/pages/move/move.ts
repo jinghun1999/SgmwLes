@@ -94,7 +94,7 @@ export class MovePage extends BaseUI {
   }*/
 
   scan() {
-    if (this.label && this.label.length === 19 && this.label.substr(0, 2).toUpperCase() === 'LN') {
+    if (this.label && this.label.length === 24 && this.label.substr(0, 2).toUpperCase() === 'LN') {
       let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
       let _part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
 
