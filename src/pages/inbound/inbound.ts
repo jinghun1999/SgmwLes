@@ -275,11 +275,7 @@ export class InboundPage extends BaseUI {
       id: this.sheet.id
     }).subscribe((res: any) => {
         if (res.successful && res.data) {
-          this.sheet = {};
-          this.parts = [];
-          this.code = '';
-          this.barTextHolderText = '请扫描单号';
-          this.scanFlag = 0;
+          this.reset_page();
 
           super.showToast(this.toastCtrl, '入库成功！');
         } else {
@@ -309,7 +305,43 @@ export class InboundPage extends BaseUI {
   }
 
   cancel() {
-    if(this.navCtrl.canGoBack())
-      this.navCtrl.pop();
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '您确认要执行全单撤销操作吗？',
+      buttons: [{
+        text: '取消',
+        handler: () => {}
+      }, {
+        text: '确认撤销出库操作',
+        handler: () => {
+          this.cancel_do();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  cancel_do(){
+    let loading = super.showLoading(this.loadingCtrl, '提交中...');
+    this.api.get('wm/GetCancelRequest', {t: 1, requestId: this.sheet.id }).subscribe((res: any) => {
+        if (res.successful && res.data) {
+          this.reset_page();
+          super.showToast(this.toastCtrl, '撤销成功！');
+        } else {
+          super.showMessageBox(this.alertCtrl, res.message, '错误提示');
+        }
+        loading.dismiss();
+      },
+      err => {
+        super.showMessageBox(this.alertCtrl, err, '错误提示');
+        loading.dismiss();
+      });
+  }
+
+  reset_page(){
+    this.sheet = {};
+    this.parts = [];
+    this.code = '';
+    this.barTextHolderText = '请扫描入库请求单号';
+    this.scanFlag = 0;
   }
 }

@@ -1,5 +1,13 @@
 import { Component } from '@angular/core';
-import {IonicPage, LoadingController, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
+import {
+  AlertController,
+  IonicPage,
+  LoadingController,
+  NavController,
+  NavParams,
+  ToastController,
+  ViewController
+} from 'ionic-angular';
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
 
@@ -21,6 +29,7 @@ export class SuspiciousUnlockPage extends BaseUI {
               public viewCtrl: ViewController,
               public toastCtrl: ToastController,
               private loadingCtrl: LoadingController,
+              private alertCtrl: AlertController,
               private api: Api,
               public navParams: NavParams) {
     super();
@@ -32,6 +41,22 @@ export class SuspiciousUnlockPage extends BaseUI {
   }
 
   unlock(){
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '确认要解封该零件吗？',
+      buttons: [{
+        text: '取消',
+        handler: () => {}
+      }, {
+        text: '确认解封',
+        handler: () => {
+          this.unlock_do();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  unlock_do(){
     if(!this.data.unlock_count) {
       super.showToast(this.toastCtrl, '请输入解封数量');
       return;

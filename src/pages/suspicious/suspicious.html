@@ -21,9 +21,9 @@
 <ion-content padding>
   <div>
     <div class="ds-box" *ngFor="let o of list" (click)="detail(o)">
-        <h4>{{o.code}}</h4>
-        <h5>{{o.part_name}}({{o.part_no}}) <small float-end>数量 {{o.part_qty}}</small></h5>
-        <p>{{o.supplier_name}}</p>
+        <h4>{{o.code}} <small float-end>剩余 {{o.part_qty}}</small></h4>
+        <h5>{{o.part_name}}({{o.part_no}})</h5>
+        <p>{{o.supplier_name}}（{{o.status_text_jf}}/{{o.status_text_th}}）</p>
     </div>
   </div>
   <ion-infinite-scroll threshold="100px" (ionInfinite)="doInfinite($event)">

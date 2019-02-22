@@ -72,7 +72,7 @@ export class InventoryPage extends BaseUI {
 
   searchPart() {
     let err = null;
-    if (this.label.length != 19) {
+    if (this.label.length != 24) {
       err = '请扫描正确的零件箱标签';
     } else {
       let prefix = this.label.substr(0, 2).toUpperCase();

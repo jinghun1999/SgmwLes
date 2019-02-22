@@ -142,6 +142,7 @@ export class OutPage extends BaseUI {
               if (index >= 0) {
                 this.parts[index].received_pack_count = partInfo.received_pack_count;
                 this.parts[index].received_part_count = partInfo.received_part_count;
+                this.parts[index].is_scan = true;
               } else {
                 if (partInfo.is_new_add) {
                   index = this.parts.findIndex(item => item.part_no === partInfo.part_no && item.is_operate === false);
@@ -344,12 +345,7 @@ export class OutPage extends BaseUI {
     let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.get('wm/getExcuseOutStock', { id: this.sheet.id }).subscribe((res: any) => {
         if (res.successful && res.data) {
-          this.sheet = {};
-          this.parts = [];
-          this.code = '';
-          this.barTextHolderText = '请扫描单号';
-          this.scanFlag = 0;
-
+          this.reset_page();
           super.showToast(this.toastCtrl, '出库成功！');
         } else {
           super.showMessageBox(this.alertCtrl, res.message, '错误提示');
@@ -378,7 +374,43 @@ export class OutPage extends BaseUI {
   }
 
   cancel() {
-    if(this.navCtrl.canGoBack())
-      this.navCtrl.pop();
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '您确认要执行全单撤销操作吗？',
+      buttons: [{
+        text: '取消',
+        handler: () => {}
+      }, {
+        text: '确认撤销出库操作',
+        handler: () => {
+          this.cancel_do();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  cancel_do(){
+    let loading = super.showLoading(this.loadingCtrl, '提交中...');
+    this.api.get('wm/GetCancelRequest', { t: 0, requestId: this.sheet.id }).subscribe((res: any) => {
+        if (res.successful && res.data) {
+          this.reset_page();
+          super.showToast(this.toastCtrl, '撤销成功！');
+        } else {
+          super.showMessageBox(this.alertCtrl, res.message, '错误提示');
+        }
+        loading.dismiss();
+      },
+      err => {
+        super.showMessageBox(this.alertCtrl, err, '错误提示');
+        loading.dismiss();
+      });
+  }
+
+  reset_page(){
+    this.sheet = {};
+    this.parts = [];
+    this.code = '';
+    this.barTextHolderText = '请扫描出库请求单号';
+    this.scanFlag = 0;
   }
 }
