@@ -12,13 +12,13 @@ export class Menus {
     let items = [
       {
         "key": 1,
-        "name": "物料出库",
+        "name": "常规出库",
         "icon": "md-log-out",
         "url": "OutPage"
       },
       {
         "key": 2,
-        "name": "物料入库",
+        "name": "常规入库",
         "icon": "md-log-in",
         "url": "InboundPage"
       },

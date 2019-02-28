@@ -27,7 +27,7 @@ export class OutPage extends BaseUI {
   barTextHolderText: string = '请扫描出库请求单二维码';   //扫描文本框placeholder属性
   sheet: any = {};                              //出库请求单
   parts: any[] = [];                     //出库请求单零件列表
-  current_part_index: number = -1;
+  current_part_index: number = 0;
 
   keyPressed : any;
   constructor(public navParams: NavParams,
@@ -56,6 +56,15 @@ export class OutPage extends BaseUI {
       case 113:
         //f2
         this.cancel();
+        break;
+
+      case 37:
+        //left
+        this.switchPart(-1);
+        break;
+      case 39:
+        //right
+        this.switchPart(1);
         break;
     }
     //alert("out page onKeyDown:" + event.keyCode);
@@ -199,21 +208,28 @@ export class OutPage extends BaseUI {
                   }
                 }
               }
-
             });
-            this.refreshDataModal();
           }
         }
         else {
           super.showToast(this.toastCtrl, res.message);
         }
         loading.dismiss();
+        this.refreshDataModal();
       },
       err => {
         super.showMessageBox(this.alertCtrl, err, '错误提示');
         loading.dismiss();
         this.refreshDataModal();
       });
+  }
+
+  switchPart(o) {
+    if (o > 0) {
+      this.current_part_index < this.parts.length - 1 && this.current_part_index++;
+    } else {
+      this.current_part_index > 0 && this.current_part_index--
+    }
   }
 
   get all_right() {
@@ -333,16 +349,16 @@ export class OutPage extends BaseUI {
       IsOutStock: true
     }).subscribe((res: any) => {
         if (res.successful) {
-            res.data.forEach((partInfo, i) => {
-              this.parts.forEach((item, pindex) => {
-                if (item.id === partInfo.id) {
-                  item.received_pack_count = partInfo.received_pack_count;
-                  item.received_part_count = partInfo.received_part_count;
+          res.data.forEach((partInfo, i) => {
+            this.parts.forEach((item, pindex) => {
+              if (item.id === partInfo.id) {
+                item.received_pack_count = partInfo.received_pack_count;
+                item.received_part_count = partInfo.received_part_count;
 
-                  this.refreshDataModal();
-                }
-              });
+                this.refreshDataModal();
+              }
             });
+          });
         } else {
           super.showToast(this.toastCtrl, res.message);
         }
@@ -364,7 +380,7 @@ export class OutPage extends BaseUI {
     else if (p.received_part_count === 0) {
       res = 'light';
     } else {
-      res = 'secondary';
+      res = 'danger';
     }
     return res;
   }
@@ -372,12 +388,12 @@ export class OutPage extends BaseUI {
   cancel() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
-      message: '您确认要执行全单撤销操作吗？',
+      message: '将撤销刚才本次的操作记录，不可恢复。您确认要执行全单撤销操作吗？',
       buttons: [{
-        text: '取消',
+        text: '不撤销',
         handler: () => {}
       }, {
-        text: '确认撤销出库操作',
+        text: '确认撤销',
         handler: () => {
           this.cancel_do();
         }
@@ -385,6 +401,7 @@ export class OutPage extends BaseUI {
     });
     prompt.present();
   }
+
   cancel_do(){
     let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.get('wm/GetCancelRequest', { t: 0, requestId: this.sheet.id }).subscribe((res: any) => {
@@ -422,6 +439,7 @@ export class OutPage extends BaseUI {
     }
 
     let _m = this.modalCtrl.create('OutConfirmPage', {
+      type: '出库',
       msg: msg,
       sheet: this.sheet,
       parts: this.parts
@@ -442,5 +460,6 @@ export class OutPage extends BaseUI {
     this.code = '';
     this.barTextHolderText = '请扫描出库请求单号';
     this.scanFlag = 0;
+    this.current_part_index = 0;
   }
 }

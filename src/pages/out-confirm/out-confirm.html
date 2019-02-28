@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title>出库确认</ion-title>
+    <ion-title>确认{{type}}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -15,11 +15,11 @@
       {{msg}}
     </ion-card-content>
   </ion-card>
-  <h4 *ngIf="!not_ok_parts.length">不存在差异出库的零件</h4>
-  <h4 *ngIf="not_ok_parts.length">差异出库的零件信息</h4>
+  <h4 *ngIf="!not_ok_parts.length">不存在差异{{type}}的零件</h4>
+  <h4 *ngIf="not_ok_parts.length">差异的零件信息</h4>
   <div class="ds-box" *ngFor="let p of not_ok_parts">
     <h4 no-margin>{{p.part_no}} {{p.part_name}}</h4>
-    <p><small>库位：{{p.dloc}}，需求：{{p.required_part_count}}，出库：{{p.received_part_count}}</small></p>
+    <p><small>库位：{{p.dloc}}，需求：{{p.required_part_count}}，{{type}}：{{p.received_part_count}}</small></p>
   </div>
 
 </ion-content>
@@ -27,10 +27,10 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="danger" (click)="cancel()">取消</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="excOutStock()">出库</button>
+      <button no-margin ion-button full large color="primary" (click)="submit()">{{type}}</button>
     </ion-col>
   </ion-row>
 </ion-footer>

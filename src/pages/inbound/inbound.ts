@@ -24,11 +24,12 @@ export class InboundPage extends BaseUI {
   scanFlag: number = 0;                   //扫描标记：0初始标记，1已扫单，2已扫箱
   barTextHolderText: string = '请扫描入库请求单二维码';   //扫描文本框placeholder属性
   sheet: any = {};                              //出库请求单
-  parts: any[];                     //出库请求单零件列表
+  parts: any[] = [];                     //出库请求单零件列表
 
+  current_part_index: number = 0;
   keyPressed : any;
   constructor(public navParams: NavParams,
-              private navCtrl: NavController,
+              //private navCtrl: NavController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
               public api: Api,
@@ -38,7 +39,7 @@ export class InboundPage extends BaseUI {
     super();
   }
 
-  keydown (event) {
+  keyDown (event) {
     debugger;
     switch (event.keyCode) {
       case 13:
@@ -53,20 +54,32 @@ export class InboundPage extends BaseUI {
         //f2
         this.cancel();
         break;
+
+      case 37:
+        //left
+        this.switchPart(-1);
+        break;
+      case 39:
+        //right
+        this.switchPart(1);
+        break;
     }
-    alert("inbound page onkeydown:" + event.keyCode);
   }
   ionViewDidEnter() {
     setTimeout(() => {
       this.searchbar.setFocus();
-      //document.addEventListener("keydown", function(event){this.keydown(event)});
-      this.keyPressed = fromEvent(document, 'keydown').subscribe(event=>{
-        this.keydown(event);
-      })
+      this.addkey();
     });
   }
   ionViewWillUnload(){
-    //document.removeEventListener("keydown", function(event){this.keydown(event)});
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
     this.keyPressed.unsubscribe();
   }
 
@@ -125,15 +138,17 @@ export class InboundPage extends BaseUI {
           this.parts = res.data.SheetDetail;
           this.scanFlag = 1;
           this.barTextHolderText = '请扫描料箱';
-          this.code = '';                                 //扫描框设置为空
+          this.code = '';
         } else {
           super.showToast(this.toastCtrl, res.message);
         }
         loading.dismiss();
+        this.refreshDataModal();
       },
       err => {
         super.showMessageBox(this.alertCtrl, err, '错误提示');
         loading.dismiss();
+        this.refreshDataModal();
       });
   }
 
@@ -142,10 +157,10 @@ export class InboundPage extends BaseUI {
     let supplier_number = this.code.substr(2, 9).replace(/(^0*)/, '');
     let part_num = this.code.substr(11, 8).replace(/(^0*)/, '');
     let part = this.parts.find(item => item.part_no === part_num && item.is_operate === false);
-    let partIndex = this.parts.findIndex(item => item.part_no === part_num);
+    this.current_part_index = this.parts.findIndex(item => item.part_no === part_num);
     let isAdd = this.parts.findIndex(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
 
-    if (partIndex < 0) {
+    if (this.current_part_index < 0) {
       super.showToast(this.toastCtrl, '单据中不存在该零件！');
       return;
     }
@@ -182,25 +197,51 @@ export class InboundPage extends BaseUI {
                 }
               }
             });
-            this.code = '';//扫描框设置为空
-            this.refreshDataModal();//手工调用页面加载数据模型
           }
         }
         else {
           super.showToast(this.toastCtrl, res.message);
         }
         loading.dismiss();
+        this.refreshDataModal();
       },
       err => {
         super.showMessageBox(this.alertCtrl, err, '错误提示');
         loading.dismiss();
+        this.refreshDataModal();
       });
   }
+
+  switchPart(o) {
+    if (o > 0) {
+      this.current_part_index < this.parts.length - 1 && this.current_part_index++;
+    } else {
+      this.current_part_index > 0 && this.current_part_index--
+    }
+  }
+
+  get all_right() {
+    let p = this.parts.length;
+    if(!p) {
+      return 0;
+    }
+    let c = this.parts.filter(item => {
+      return item.is_scan;
+    }).length;
+
+    return p > 0 ? (parseFloat(c.toString()) * 100 / parseFloat(p.toString())).toFixed(0) : 100;
+  }
+
 
   //手工调用，重新加载数据模型
   refreshDataModal() {
     this.changeDetectorRef.detectChanges();
     this.changeDetectorRef.markForCheck();
+
+    this.code = '';
+    setTimeout(() => {
+      this.searchbar.setFocus();
+    }, 1000);
   }
 
   //非标跳转Modal页
@@ -261,62 +302,6 @@ export class InboundPage extends BaseUI {
     });
   }
 
-  //入库
-  inbound() {
-    if (this.scanFlag === 0) {
-      super.showToast(this.toastCtrl, '请先扫描出库请求单二维码');
-      return;
-    }
-
-    let notStand = this.parts.find(item => item.received_part_count > item.allow_part_qty);
-    let notFull = this.parts.find(item => item.received_part_count < item.allow_part_qty);
-    if (Array.isArray(notStand) && notStand.length > 0) {
-      super.showMessageBox(this.alertCtrl, '零件[' + notStand[0].part_no + ']超出剩余数量！', '提示');
-      return;
-    }
-    if (Array.isArray(notFull) && notFull.length > 0 && !this.sheet.is_wave_operate) {
-      this.alertCtrl.create({
-        title: '提示',
-        message: '单据存在零件的实出数没有满足需求数，入库后该单据将会完成，不能再次操作！',
-        buttons: [{
-          text: '取消',
-          handler: () => {
-            return;
-          }
-        }, {
-          text: '确认',
-          handler: () => {
-            this.execInbound();
-          }
-        }]
-      });
-    }
-    else {
-      this.execInbound();
-    }
-  }
-
-  //执行出库
-  execInbound() {
-    let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.api.get('WM/GetExcuseInbound', {
-      id: this.sheet.id
-    }).subscribe((res: any) => {
-        if (res.successful && res.data) {
-          this.reset_page();
-
-          super.showToast(this.toastCtrl, '入库成功！');
-        } else {
-          super.showMessageBox(this.alertCtrl, res.message, '错误提示');
-        }
-        loading.dismiss();
-      },
-      err => {
-        super.showMessageBox(this.alertCtrl, err, '错误提示');
-        loading.dismiss();
-      });
-  }
-
   bgColor(p: any) {
     let res = '';
     if (p.received_part_count > p.required_part_count) {
@@ -327,7 +312,7 @@ export class InboundPage extends BaseUI {
     else if (p.received_part_count === 0) {
       res = 'light';
     } else {
-      res = 'secondary';
+      res = 'danger';
     }
     return res;
   }
@@ -335,12 +320,12 @@ export class InboundPage extends BaseUI {
   cancel() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
-      message: '您确认要执行全单撤销操作吗？',
+      message: '将撤销刚才本次的操作记录，不可恢复。您确认要执行全单撤销操作吗？',
       buttons: [{
-        text: '取消',
+        text: '不撤销',
         handler: () => {}
       }, {
-        text: '确认撤销出库操作',
+        text: '确认撤销',
         handler: () => {
           this.cancel_do();
         }
@@ -365,11 +350,71 @@ export class InboundPage extends BaseUI {
       });
   }
 
+
+  //入库
+  inbound() {
+    if (this.scanFlag === 0) {
+      super.showToast(this.toastCtrl, '请先扫描出库请求单二维码');
+      return;
+    }
+
+    let NotStand = this.parts.find(item => item.received_part_count > item.allow_part_qty);
+    let NotFull = this.parts.find(item => item.received_part_count < item.allow_part_qty);
+    if (Array.isArray(NotStand) && NotStand.length > 0) {
+      super.showMessageBox(this.alertCtrl, '零件[' + NotStand[0].part_no + ']超出剩余数量！', '提示');
+      return;
+    }
+    let msg = '';
+    if (Array.isArray(NotFull) && NotFull.length > 0 && !this.sheet.is_wave_operate) {
+      msg = '本单不允许多次出库，且该单有实出数未满足需求的零件，出库后该单据将会完成，将不能再次操作！';
+    }
+    /*if (Array.isArray(notFull) && notFull.length > 0 && !this.sheet.is_wave_operate) {
+      this.alertCtrl.create({
+        title: '提示',
+        message: '单据存在零件的实出数没有满足需求数，入库后该单据将会完成，不能再次操作！',
+        buttons: [{
+          text: '取消',
+          handler: () => {
+            return;
+          }
+        }, {
+          text: '确认',
+          handler: () => {
+            this.execInbound();
+          }
+        }]
+      });
+    }
+    else {
+      this.execInbound();
+    }*/
+
+    let _m = this.modalCtrl.create('OutConfirmPage', {
+      type: '入库',
+      msg: msg,
+      sheet: this.sheet,
+      parts: this.parts
+    });
+    _m.onDidDismiss(data => {
+      this.addkey();
+      if (data) {
+        this.reset_page();
+      }
+    });
+    _m.present();
+    this.removekey();
+  }
+
+  //执行出库
+  /*
+  */
+
   reset_page(){
     this.sheet = {};
     this.parts = [];
     this.code = '';
     this.barTextHolderText = '请扫描入库请求单号';
     this.scanFlag = 0;
+    this.current_part_index = 0;
   }
 }
