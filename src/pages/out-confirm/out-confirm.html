@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>出库确认</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label>{{sheet.sheet_no}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-card *ngIf="msg">
+    <ion-card-content>
+      {{msg}}
+    </ion-card-content>
+  </ion-card>
+  <h4 *ngIf="!not_ok_parts.length">不存在差异出库的零件</h4>
+  <h4 *ngIf="not_ok_parts.length">差异出库的零件信息</h4>
+  <div class="ds-box" *ngFor="let p of not_ok_parts">
+    <h4 no-margin>{{p.part_no}} {{p.part_name}}</h4>
+    <p><small>库位：{{p.dloc}}，需求：{{p.required_part_count}}，出库：{{p.received_part_count}}</small></p>
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="danger" (click)="cancel()">取消</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" (click)="excOutStock()">出库</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

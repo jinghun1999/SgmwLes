@@ -4,7 +4,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 //import { TranslateService } from '@ngx-translate/core';
 import { Nav, Platform } from 'ionic-angular';
 //import {Storage} from "@ionic/storage";
-import {FirstRunPage, MainPage} from '../pages';
+import {LoginPage, HomePage} from '../pages';
 import {Api} from '../providers';
 import {BaseUI} from "../pages/baseUI";
 //import {AppUpdate} from "@ionic-native/app-update/ngx";
@@ -28,9 +28,9 @@ export class MyApp extends BaseUI {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
       if (window.localStorage.getItem('TOKEN')) {
-        this.rootPage = MainPage;
+        this.rootPage = HomePage;
       } else {
-        this.rootPage = FirstRunPage;
+        this.rootPage = LoginPage;
       }
       // this.storage.get('TOKEN').then(token=> { if(token){
       //   console.log(token);

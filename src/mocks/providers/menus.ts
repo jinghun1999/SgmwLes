@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 import { Menu } from '../../models/menu';
+import {SuspiciousAddPage} from "../../pages/suspicious-add/suspicious-add";
 
 @Injectable()
 export class Menus {
@@ -9,36 +10,49 @@ export class Menus {
   constructor() {
     let items = [
       {
-        "name": "可疑件管理",
-        "icon": "ios-bug",
-        "url": "SuspiciousPage"
-      },
-      {
-        "name": "库存盘点",
-        "icon": "ios-calculator",
-        "url": "InventoryListPage"
-      },
-      {
+        "key": 1,
         "name": "物料出库",
         "icon": "md-log-out",
         "url": "OutPage"
       },
       {
+        "key": 2,
         "name": "物料入库",
         "icon": "md-log-in",
         "url": "InboundPage"
       },
       {
+        "key": 3,
         "name": "物料移库",
         "icon": "md-redo",
         "url": "MovePage"
       },
       {
+        "key": 4,
         "name": "JIS出库",
         "icon": "md-log-out",
-        "url": "JisOutStockPage"
+        "url": "OutJisPage"
       },
       {
+        "key": 5,
+        "name": "添加可疑件",
+        "icon": "ios-bug",
+        "url": "SuspiciousAddPage"
+      },
+      {
+        "key": 6,
+        "name": "解封可疑件",
+        "icon": "ios-bug",
+        "url": "SuspiciousPage"
+      },
+      {
+        "key": 7,
+        "name": "库存盘点",
+        "icon": "ios-calculator",
+        "url": "InventoryListPage"
+      },
+      {
+        "key": -1,
         "name": "",
         "icon": "",
         "url": ""

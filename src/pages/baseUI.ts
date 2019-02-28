@@ -43,7 +43,7 @@ export abstract class BaseUI {
   protected showToast(toastCtrl: ToastController, message: string): Toast {
     let toast = toastCtrl.create({
       message: message,
-      duration: 3000, //默认展示的时长
+      duration: 2000, //默认展示的时长
       position: 'bottom'
     });
     toast.present();

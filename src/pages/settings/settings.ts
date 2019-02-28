@@ -3,9 +3,7 @@ import { Component } from '@angular/core';
 import {IonicPage, NavController, NavParams, App, ModalController} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import {Settings, User, Api} from '../../providers';
-import {BaseUI} from "../baseUI";
-import {FirstRunPage} from "../index";
-
+import {LoginPage, BaseUI} from '../'
 /**
  * The Settings page is a simple form that syncs with a Settings provider
  * to enable the user to customize settings for the app.
@@ -64,11 +62,11 @@ export class SettingsPage extends BaseUI {
     this.user.logout().subscribe((re) => {
       debugger;
       setTimeout(() => {
-        this.app.getRootNav().setRoot(FirstRunPage);
-        // this.app.getRootNav().setRoot('WelcomePage', {}, {
-        //   animate: true,
-        //   direction: 'forward'
-        // });
+        // this.app.getRootNav().setRoot(LoginPage);
+        this.app.getRootNav().setRoot('LoginPage', {}, {
+          animate: true,
+          direction: 'forward'
+        });
       });
     }, (r) => {
       alert('注销失败');

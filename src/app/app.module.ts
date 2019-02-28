@@ -1,3 +1,4 @@
+///<reference path="../components/components.module.ts"/>
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -79,7 +80,7 @@ export function provideSettings(storage: Storage) {
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },
     InterceptorService,
-    SuspiciousProvider,
+    SuspiciousProvider
   ]
 })
 export class AppModule { }

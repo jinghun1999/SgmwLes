@@ -13,10 +13,10 @@ import {Storage} from "@ionic/storage";
 
 @IonicPage()
 @Component({
-  selector: 'page-jisOutStock',
-  templateUrl: 'jisOutStock.html',
+  selector: 'page-OutJis',
+  templateUrl: 'out-jis.html',
 })
-export class JisOutStockPage extends BaseUI {
+export class OutJisPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
 
   label: string = '';                      //记录扫描编号

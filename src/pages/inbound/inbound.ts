@@ -10,6 +10,7 @@ import {
 } from 'ionic-angular';
 import {BaseUI} from '../baseUI';
 import {Api} from '../../providers';
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 @IonicPage()
 @Component({
@@ -25,6 +26,7 @@ export class InboundPage extends BaseUI {
   sheet: any = {};                              //出库请求单
   parts: any[];                     //出库请求单零件列表
 
+  keyPressed : any;
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
               public toastCtrl: ToastController,
@@ -36,10 +38,36 @@ export class InboundPage extends BaseUI {
     super();
   }
 
+  keydown (event) {
+    debugger;
+    switch (event.keyCode) {
+      case 13:
+        //enter
+        this.searchbar.setFocus();
+        break;
+      case 112:
+        //f1
+        this.inbound();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+    alert("inbound page onkeydown:" + event.keyCode);
+  }
   ionViewDidEnter() {
     setTimeout(() => {
       this.searchbar.setFocus();
+      //document.addEventListener("keydown", function(event){this.keydown(event)});
+      this.keyPressed = fromEvent(document, 'keydown').subscribe(event=>{
+        this.keydown(event);
+      })
     });
+  }
+  ionViewWillUnload(){
+    //document.removeEventListener("keydown", function(event){this.keydown(event)});
+    this.keyPressed.unsubscribe();
   }
 
   //扫描

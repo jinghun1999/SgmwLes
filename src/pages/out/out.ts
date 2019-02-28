@@ -3,14 +3,16 @@ import {
   IonicPage,
   LoadingController,
   NavParams,
-  NavController,
+  //NavController,
   ToastController,
   AlertController,
   ModalController,
-  ActionSheetController, Searchbar
+  ActionSheetController,
+  Searchbar
 } from 'ionic-angular';
 import {Api} from '../../providers';
 import {BaseUI} from '../baseUI';
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 @IonicPage()
 @Component({
@@ -24,12 +26,14 @@ export class OutPage extends BaseUI {
   scanFlag: number = 0;                   //扫描标记：0初始标记，1已扫单，2已扫箱
   barTextHolderText: string = '请扫描出库请求单二维码';   //扫描文本框placeholder属性
   sheet: any = {};                              //出库请求单
-  parts: any[];                     //出库请求单零件列表
+  parts: any[] = [];                     //出库请求单零件列表
+  current_part_index: number = -1;
 
+  keyPressed : any;
   constructor(public navParams: NavParams,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
-              private navCtrl: NavController,
+              //private navCtrl: NavController,
               public api: Api,
               public alertCtrl: AlertController,
               public modalCtrl: ModalController,
@@ -38,17 +42,48 @@ export class OutPage extends BaseUI {
     super();
   }
 
+  keyDown (event) {
+    debugger;
+    switch (event.keyCode) {
+      case 13:
+        //enter
+        this.searchbar.setFocus();
+        break;
+      case 112:
+        //f1
+        this.outStock();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+    //alert("out page onKeyDown:" + event.keyCode);
+  }
+
   ionViewDidEnter() {
     setTimeout(() => {
       this.searchbar.setFocus();
+      this.addkey();
     });
+  }
+  ionViewWillUnload() {
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
+    this.keyPressed.unsubscribe();
   }
 
   scan() {
     if (this.checkScanCode()) {
       if (this.scanFlag == 0) {
         //扫单
-        this.scanSheet()
+        this.scanSheet();
       } else {
         //扫箱
         this.scanBox();
@@ -81,8 +116,11 @@ export class OutPage extends BaseUI {
 
     if (err.length > 0) {
       super.showToast(this.toastCtrl, err);
+      //this.popToastView("手机号不能为空",1000);
       this.code = '';
-      this.searchbar.setFocus();
+      setTimeout(()=>{
+        this.searchbar.setFocus();
+      },1000);
       return false;
     }
 
@@ -98,15 +136,18 @@ export class OutPage extends BaseUI {
           this.parts = res.data.SheetDetail;
           this.scanFlag = 1;
           this.barTextHolderText = '请扫描料箱标签';
-          this.code = '';                                 //扫描框设置为空
         } else {
           super.showToast(this.toastCtrl, res.message);
         }
         loading.dismiss();
+        this.refreshDataModal();
+        //this.code = '';
+        //this.searchbar.setFocus();
       },
       err => {
         super.showMessageBox(this.alertCtrl, err, '错误提示');
         loading.dismiss();
+        this.code = '';
       });
   }
 
@@ -115,15 +156,17 @@ export class OutPage extends BaseUI {
     let supplier_number = this.code.substr(2, 9).replace(/(^0*)/, '');
     let part_num = this.code.substr(11, 8).replace(/(^0*)/, '');
     let part = this.parts.find(item => item.part_no === part_num && item.is_operate === false);
-    let partIndex = this.parts.findIndex(item => item.part_no === part_num);
+    this.current_part_index = this.parts.findIndex(item => item.part_no === part_num);
     let isAdd = this.parts.findIndex(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
 
-    if (partIndex < 0) {
+    if (this.current_part_index < 0) {
       super.showToast(this.toastCtrl, '单据中不存在该零件！');
+      this.refreshDataModal();
       return;
     } else if ((part.received_part_count >= part.allow_part_qty || part.received_part_count + part.pack_stand_qty > part.allow_part_qty)
       && (part.received_pack_count >= part.allow_pack_qty || part.received_pack_count + 1 > part.allow_pack_qty)) {
-      super.showToast(this.toastCtrl, '零件达到需求数量，不能继续扫箱！')
+      super.showToast(this.toastCtrl, '零件达到需求数量，不能继续扫箱！');
+      this.refreshDataModal();
       return;
     }
 
@@ -137,26 +180,28 @@ export class OutPage extends BaseUI {
     }).subscribe((res: any) => {
         if (res.successful) {
           if (res.data.length > 0) {
+            let index = -1;
             res.data.forEach((partInfo, i) => {
-              let index = this.parts.findIndex(item => item.id === partInfo.id)
+
+              index = this.parts.findIndex(item => item.id === partInfo.id);
+
               if (index >= 0) {
                 this.parts[index].received_pack_count = partInfo.received_pack_count;
                 this.parts[index].received_part_count = partInfo.received_part_count;
                 this.parts[index].is_scan = true;
               } else {
                 if (partInfo.is_new_add) {
-                  index = this.parts.findIndex(item => item.part_no === partInfo.part_no && item.is_operate === false);
+                  index = this.parts.findIndex(item => item.part_no === partInfo.part_no && !item.is_operate);
                   if (index != this.parts.length - 1) {
                     this.parts.splice(index + 1, 0, partInfo);
-                  }
-                  else {
+                  } else {
                     this.parts.push(partInfo);
                   }
                 }
               }
+
             });
-            this.code = '';//扫描框设置为空
-            this.refreshDataModal();//手工调用页面加载数据模型
+            this.refreshDataModal();
           }
         }
         else {
@@ -167,13 +212,31 @@ export class OutPage extends BaseUI {
       err => {
         super.showMessageBox(this.alertCtrl, err, '错误提示');
         loading.dismiss();
+        this.refreshDataModal();
       });
+  }
+
+  get all_right() {
+    let p = this.parts.length;
+    if(!p) {
+      return 0;
+    }
+    let c = this.parts.filter(item => {
+      return item.is_scan;
+    }).length;
+
+    return p > 0 ? (parseFloat(c.toString()) * 100 / parseFloat(p.toString())).toFixed(0) : 100;
   }
 
   //手工调用，重新加载数据模型
   refreshDataModal() {
     this.changeDetectorRef.detectChanges();
     this.changeDetectorRef.markForCheck();
+
+    setTimeout(() => {
+      this.code = '';
+      this.searchbar.setFocus();
+    }, 1000);
   }
 
   //切换供应商
@@ -291,73 +354,6 @@ export class OutPage extends BaseUI {
       });
   }
 
-  //出库
-  outStock() {
-    if (this.scanFlag === 0) {
-      super.showToast(this.toastCtrl, '请先扫描出库请求单二维码');
-      return;
-    }
-
-    let NotStand = this.parts.find(item => item.received_part_count > item.allow_part_qty);
-    let NotFull = this.parts.find(item => item.received_part_count < item.allow_part_qty);
-    if (Array.isArray(NotStand) && NotStand.length > 0) {
-      super.showMessageBox(this.alertCtrl, '零件[' + NotStand[0].part_no + ']超出剩余数量！', '提示');
-      return;
-    }
-    if (Array.isArray(NotFull) && NotFull.length > 0 && !this.sheet.is_wave_operate) {
-      let prompt = this.alertCtrl.create({
-        title: '提示',
-        message: '单据存在零件的实出数没有满足需求数，出库后该单据将会完成，不能再次操作！',
-        buttons: [{
-          text: '取消',
-          handler: () => {
-            return;
-          }
-        }, {
-          text: '确认',
-          handler: () => {
-            this.excOutStock();
-          }
-        }]
-      });
-      prompt.present();
-    }
-    else {
-      let prompt = this.alertCtrl.create({
-        title: '确认提示',
-        message: '您确认要执行出库操作吗？',
-        buttons: [{
-          text: '取消',
-          handler: () => {}
-        }, {
-          text: '确认出库',
-          handler: () => {
-            this.excOutStock();
-          }
-        }]
-      });
-      prompt.present();
-    }
-  }
-
-  //执行出库
-  excOutStock() {
-    let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.api.get('wm/getExcuseOutStock', { id: this.sheet.id }).subscribe((res: any) => {
-        if (res.successful && res.data) {
-          this.reset_page();
-          super.showToast(this.toastCtrl, '出库成功！');
-        } else {
-          super.showMessageBox(this.alertCtrl, res.message, '错误提示');
-        }
-        loading.dismiss();
-      },
-      err => {
-        super.showMessageBox(this.alertCtrl, err, '错误提示');
-        loading.dismiss();
-      });
-  }
-
   bgColor(p: any) {
     let res = '';
     if (p.received_part_count > p.required_part_count) {
@@ -404,6 +400,40 @@ export class OutPage extends BaseUI {
         super.showMessageBox(this.alertCtrl, err, '错误提示');
         loading.dismiss();
       });
+  }
+
+  //出库
+  outStock() {
+    if (this.scanFlag === 0) {
+      super.showToast(this.toastCtrl, '请先扫描出库请求单二维码');
+      return;
+    }
+
+    let NotStand = this.parts.find(item => item.received_part_count > item.allow_part_qty);
+    let NotFull = this.parts.find(item => item.received_part_count < item.allow_part_qty);
+    if (Array.isArray(NotStand) && NotStand.length > 0) {
+      super.showMessageBox(this.alertCtrl, '零件[' + NotStand[0].part_no + ']超出剩余数量！', '提示');
+      return;
+    }
+
+    let msg = '';
+    if (Array.isArray(NotFull) && NotFull.length > 0 && !this.sheet.is_wave_operate) {
+      msg = '本单不允许多次出库，且该单有实出数未满足需求的零件，出库后该单据将会完成，将不能再次操作！';
+    }
+
+    let _m = this.modalCtrl.create('OutConfirmPage', {
+      msg: msg,
+      sheet: this.sheet,
+      parts: this.parts
+    });
+    _m.onDidDismiss(data => {
+      this.addkey();
+      if (data) {
+        this.reset_page();
+      }
+    });
+    _m.present();
+    this.removekey();
   }
 
   reset_page(){

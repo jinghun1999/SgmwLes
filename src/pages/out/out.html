@@ -10,42 +10,39 @@
   </form>
 
   <ion-list *ngIf="scanFlag>0">
-    <ion-item no-padding>
-      <ion-grid>
-        <ion-row>
-          <ion-col><h2>{{sheet.sheet_no}}</h2></ion-col>
-        </ion-row>
-        <ion-row>
-          <ion-col><h2>{{sheet.plant}}<small>工厂</small></h2></ion-col>
-          <ion-col><h2>{{sheet.supplier_id}}<small>车间</small></h2></ion-col>
-        </ion-row>
-      </ion-grid>
+    <ion-item>
+      <ion-label>{{sheet.sheet_no}}<small>({{sheet.supplier_id}})</small></ion-label>
     </ion-item>
   </ion-list>
 
-  <div>
-    <div class="ds-box" *ngFor="let p of parts; let i=index" [attr.data-index]="i">
-        <h4 no-margin>零件：{{p.part_no}} {{p.part_name}}</h4>
-        <h5 (click)="switchSupplier(p)">
-          <ion-icon name="contact"></ion-icon> {{p.supplier_name? p.supplier_name: '（请选择供应商）'}}
-        </h5>
-        <p>
-          需求{{p.required_pack_count}}箱，共{{p.required_part_count}}件（包装数{{p.pack_stand_qty}}）
-        </p>
-        <button ion-button item-end (click)="changeQty(p)" [color]="bgColor(p)">
-          本次出库{{p.received_pack_count}}箱，共{{p.received_part_count}}件
-        </button>
-    </div>
+  <progress-bar [progress]="all_right" *ngIf="all_right>0"></progress-bar>
+
+  <div class="ds-box" *ngIf="current_part_index>=0 && parts[current_part_index]">
+      <h4 no-margin>{{parts[current_part_index].part_no}} {{parts[current_part_index].part_name}}</h4>
+      <h4 no-margin><small>库位：{{parts[current_part_index].dloc}}</small></h4>
+      <!--<h5 (click)="switchSupplier(p)"-->
+        <!--<ion-icon name="contact"></ion-icon> {{parts[current_part_index].supplier_name? parts[current_part_index].supplier_name: '（请选择供应商）'}}-->
+      <!--</h5>-->
+      <p>
+        需求{{parts[current_part_index].required_pack_count}}箱，共{{parts[current_part_index].required_part_count}}件（包装数{{parts[current_part_index].pack_stand_qty}}）
+      </p>
+      <p style="color:#000000">
+        本次出库{{parts[current_part_index].received_pack_count}}箱，共{{parts[current_part_index].received_part_count}}件
+      </p>
+      <button ion-button item-end (click)="changeQty(parts[current_part_index])" [color]="bgColor(parts[current_part_index])">
+        非标
+      </button>
   </div>
+
 </ion-content>
 
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="danger" [disabled]="!scanFlag" (click)="cancel()">全单撤销</button>
+      <button no-margin ion-button full large color="danger" [disabled]="!scanFlag" (click)="cancel()">撤销(F2)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!scanFlag" (click)="outStock()">提交出库</button>
+      <button no-margin ion-button full large color="primary" [disabled]="!scanFlag" (click)="outStock()">出库(F1)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

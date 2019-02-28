@@ -15,7 +15,6 @@ import { of } from 'rxjs/observable/of';
 import { Storage } from '@ionic/storage';
 import { NavController, ToastController, App } from 'ionic-angular';
 import {LoginPage} from "../../pages/login/login";
-import {TutorialPage} from "../../pages/tutorial/tutorial";
 
 /**
  * 全局http拦截器: 监视和转换从应用发送到服务器的 HTTP 请求
@@ -115,13 +114,13 @@ export class GlobalHttpIntercept implements HttpInterceptor {
     | HttpUserEvent<any>> {
 
     let globalReq = req;
+    let _token = window.localStorage.getItem('TOKEN');
 
     globalReq = globalReq.clone({setHeaders: {'Content-Type': 'application/json'}});
-
     if (!req.url.includes('assets/i18n') &&
-      !req.url.includes('api/account/login')
-    ){
-      globalReq = globalReq.clone({setHeaders: {Authorization: window.localStorage.getItem('TOKEN')}});
+      !req.url.includes('api/account/login') &&
+      _token){
+      globalReq = globalReq.clone({setHeaders: {Authorization: _token}});
       // if (req.url.includes('excel/export')) {
       //   globalReq = globalReq.clone({responseType: 'blob'});
       // }

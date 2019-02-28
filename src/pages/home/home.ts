@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { IonicPage, ModalController, NavController } from 'ionic-angular';
+import {Component} from '@angular/core';
+import {IonicPage, LoadingController, ModalController, NavController, ToastController} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
-import { Menus } from '../../providers';
+import {Api, Menus} from '../../providers';
 import { Menu } from '../../models/menu';
+import {BaseUI} from "../";
 //import {SetProfilePage} from "../set-profile/set-profile";
 //import {SettingsPage} from "../settings/settings";
 
@@ -11,16 +12,45 @@ import { Menu } from '../../models/menu';
   selector: 'page-home',
   templateUrl: 'home.html'
 })
-export class HomePage {
+export class HomePage extends BaseUI{
   currentItems: Menu[];
   gridList: Menu[];
 
-  constructor(public navCtrl: NavController, public items: Menus,
+  constructor(public navCtrl: NavController,
+              public items: Menus,
+              public toastCtrl: ToastController,
+              public loadingCtrl: LoadingController,
               public modalCtrl: ModalController,
-              private storage: Storage) {
+              private storage: Storage,
+              public api: Api) {
+    super();
     this.currentItems = this.items.query();
     this.gridList = this.currentItems;
   }
+
+  // keydown (event) {
+  //   switch (event.keyCode) {
+  //     case 112:
+  //       this.goSetting();
+  //       break;
+  //     case 49:
+  //     case 50:
+  //     case 51:
+  //     case 52:
+  //     case 53:
+  //     case 54:
+  //     case 55:
+  //       let i = event.keyCode - 48;
+  //       let index = this.gridList.findIndex(p => p.key === i);
+  //       if (index > -1) {
+  //         this.openItem(this.gridList[index]);
+  //       } else {
+  //         //alert('无效的按键')
+  //       }
+  //       break;
+  //   }
+  //   alert("currKey:" + event.keyCode);
+  // }
 
   /**
    * The view loaded, let's query our items for the list
@@ -34,6 +64,13 @@ export class HomePage {
       }
     });
   }
+  // ionViewDidEnter(){
+  //   document.addEventListener("keydown", this.keydown);
+  // }
+  // ionViewWillUnload(){
+  //   document.removeEventListener("keydown", this.keydown);
+  //   alert('remove home')
+  // }
 
   /**
    * Prompt the user to add a new item. This shows our ItemCreatePage in a
