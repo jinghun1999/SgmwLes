@@ -1,10 +1,10 @@
-import { Component } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {
   AlertController,
   IonicPage,
   LoadingController,
   NavController,
-  NavParams,
+  NavParams, Searchbar,
   ToastController,
   ViewController
 } from 'ionic-angular';
@@ -24,6 +24,9 @@ import {BaseUI} from "../baseUI";
   templateUrl: 'suspicious-unlock.html',
 })
 export class SuspiciousUnlockPage extends BaseUI {
+  @ViewChild(Searchbar) searchbar: Searchbar;
+
+  label: string = '';
   data: any = {};
   constructor(public navCtrl: NavController,
               public viewCtrl: ViewController,
@@ -33,11 +36,28 @@ export class SuspiciousUnlockPage extends BaseUI {
               private api: Api,
               public navParams: NavParams) {
     super();
-    this.data = this.navParams.get('dt');
+    //this.data = this.navParams.get('dt');
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad SuspiciousUnlockPage');
+    setTimeout(()=>{
+      this.searchbar.setFocus();
+    }, 1000);
+  }
+
+  search = () => {
+    let loading = super.showLoading(this.loadingCtrl,"查询中...");
+    this.api.get('suspicious/GetScanCode', {code: this.label}).subscribe((res: any) => {
+      loading.dismiss();
+      if(res.successful){
+        this.data = res.data;
+      }else{
+
+      }
+    }, err => {
+      loading.dismiss();
+      alert(JSON.stringify(err))
+    });
   }
 
   unlock(){
@@ -56,8 +76,9 @@ export class SuspiciousUnlockPage extends BaseUI {
     });
     prompt.present();
   }
-  unlock_do(){
-    if(!this.data.unlock_count) {
+
+  unlock_do() {
+    if (!this.data.unlock_count) {
       super.showToast(this.toastCtrl, '请输入解封数量');
       return;
     }
@@ -66,23 +87,37 @@ export class SuspiciousUnlockPage extends BaseUI {
       unlock_count: this.data.unlock_count,
       why: this.data.why,
     };
-    let loading = super.showLoading(this.loadingCtrl,"提交中...");
-    this.api.post('suspicious/postUnlock', json).subscribe((res: any)=>{
+    let loading = super.showLoading(this.loadingCtrl, "提交中...");
+    this.api.post('suspicious/postUnlock', json).subscribe((res: any) => {
       loading.dismissAll();
-      if(res.successful) {
-        if(!res.data){
-          this.viewCtrl.dismiss(json.unlock_count);
-        }else{
+      if (res.successful) {
+        if (!res.data) {
+
+          //this.viewCtrl.dismiss(json.unlock_count);
+          this.label = '';
+          this.data = {
+            unlock_count: null,
+            why: ''
+          };
+          setTimeout(() => {
+            this.searchbar.setFocus();
+          }, 500);
+
+        } else {
           super.showToast(this.toastCtrl, res.data);
         }
       } else {
         super.showToast(this.toastCtrl, res.message);
       }
-    }, ()=>{
+    }, () => {
       loading.dismissAll();
     });
   }
+
   cancel(){
-    this.viewCtrl.dismiss();
+    //this.viewCtrl.dismiss();
+    if(this.navCtrl.canGoBack()){
+      this.navCtrl.pop();
+    }
   }
 }

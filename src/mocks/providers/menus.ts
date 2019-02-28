@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { Menu } from '../../models/menu';
 import {SuspiciousAddPage} from "../../pages/suspicious-add/suspicious-add";
+import {SuspiciousUnlockPage} from "../../pages/suspicious-unlock/suspicious-unlock";
 
 @Injectable()
 export class Menus {
@@ -22,16 +23,16 @@ export class Menus {
         "url": "InboundPage"
       },
       {
-        "key": 3,
-        "name": "物料移库",
-        "icon": "md-redo",
-        "url": "MovePage"
-      },
-      {
         "key": 4,
         "name": "JIS出库",
         "icon": "md-log-out",
         "url": "OutJisPage"
+      },
+      {
+        "key": 3,
+        "name": "物料移库",
+        "icon": "md-redo",
+        "url": "MovePage"
       },
       {
         "key": 5,
@@ -43,7 +44,7 @@ export class Menus {
         "key": 6,
         "name": "解封可疑件",
         "icon": "ios-bug",
-        "url": "SuspiciousPage"
+        "url": "SuspiciousUnlockPage"
       },
       {
         "key": 7,

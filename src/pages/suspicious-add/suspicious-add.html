@@ -1,6 +1,6 @@
 <ion-header>
 
-  <ion-navbar>
+  <ion-navbar color="primary">
     <ion-title>封存零件</ion-title>
   </ion-navbar>
 
@@ -9,24 +9,24 @@
 
 <ion-content>
   <form (submit)="search()">
-    <ion-searchbar placeholder="扫描或输入箱标签" [(ngModel)]="label" name="label"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="扫描或输入箱标签" [(ngModel)]="label" name="label"></ion-searchbar>
   </form>
   <ion-list *ngIf="scan_result.part_no">
     <ion-item>
       <ion-grid>
         <ion-row>
-          <ion-col><h1>{{item.plant}}<small>工厂</small></h1></ion-col>
-          <ion-col><h1>{{item.workshop}}<small>车间</small></h1></ion-col>
+          <ion-col><h4>{{plant}}<small>工厂</small></h4></ion-col>
+          <ion-col><h4>{{workshop}}<small>车间</small></h4></ion-col>
         </ion-row>
         <ion-row>
-          <ion-col col-12>零件号：({{scan_result.part_no}}){{scan_result.part_name}}</ion-col>
+          <ion-col col-12>({{scan_result.part_no}}){{scan_result.part_name}}</ion-col>
         </ion-row>
         <ion-row>
-          <ion-col col-12>供应商：({{scan_result.supplier_id}}){{scan_result.supplier_name}}</ion-col>
+          <ion-col col-12>({{scan_result.supplier_id}}){{scan_result.supplier_name}}</ion-col>
         </ion-row>
         <ion-row>
-          <ion-col col-4>当前库存数：{{scan_result.current_parts}}</ion-col>
-          <ion-col col-8>标准包装数：{{scan_result.packing_qty}}</ion-col>
+          <ion-col col-4>库存：{{scan_result.current_parts}}</ion-col>
+          <ion-col col-8>包装数：{{scan_result.packing_qty}}</ion-col>
         </ion-row>
       </ion-grid>
     </ion-item>
@@ -59,7 +59,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="save()">确认封存</button>
+      <button no-margin ion-button full large color="primary" (click)="save()">封存</button>
     </ion-col>
   </ion-row>
 </ion-footer>

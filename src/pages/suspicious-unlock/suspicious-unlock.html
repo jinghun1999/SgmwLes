@@ -6,23 +6,21 @@
 -->
 <ion-header>
 
-  <ion-navbar>
+  <ion-navbar color="primary">
     <ion-title>解封零件</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
-<ion-content padding-top>
-  <!-- List of Text Items -->
+<ion-content>
+  <form (submit)="search()">
+    <ion-searchbar #searchbar placeholder="扫描封存条二维码" [(ngModel)]="label" name="label"></ion-searchbar>
+  </form>
   <ion-list ng-if="data">
-    <!--<ion-item>
+    <ion-item>
       <ion-label>封存条</ion-label>
       <ion-label text-end><b>{{data.code}}</b></ion-label>
-    </ion-item>
-    <ion-item>
-      <ion-label>工厂</ion-label>
-      <ion-label text-end>{{data.plant}}</ion-label>
     </ion-item>
     <ion-item>
       <ion-label>车间</ion-label>
@@ -39,7 +37,7 @@
     <ion-item>
       <ion-label>零件名称</ion-label>
       <ion-label text-end>{{data.part_name}}</ion-label>
-    </ion-item>-->
+    </ion-item>
     <ion-item>
       <ion-label>剩余封存数</ion-label>
       <ion-label text-end>{{data.part_qty}}</ion-label>
@@ -65,7 +63,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="unlock()">确认解封</button>
+      <button no-margin ion-button full large color="primary" [disabled]="!data.confirmed" (click)="unlock_do()">解封</button>
     </ion-col>
   </ion-row>
 </ion-footer>

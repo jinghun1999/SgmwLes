@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Api } from '../api/api';
+import { Api } from './api';
 /*
   Generated class for the SuspiciousProvider provider.
 

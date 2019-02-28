@@ -13,7 +13,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { Menus } from '../mocks/providers/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
-import { SuspiciousProvider } from '../providers/suspicious/suspicious';
+import { SuspiciousProvider } from '../providers/suspicious';
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.

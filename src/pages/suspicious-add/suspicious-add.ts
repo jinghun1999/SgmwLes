@@ -1,5 +1,13 @@
-import {Component} from '@angular/core';
-import {IonicPage, LoadingController, NavController, ViewController, ToastController} from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
+import {
+  IonicPage,
+  LoadingController,
+  NavController,
+  ViewController,
+  ToastController,
+  Searchbar,
+  ModalController
+} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
@@ -11,19 +19,24 @@ import {BaseUI} from "../baseUI";
 })
 
 export class SuspiciousAddPage extends BaseUI{
+  @ViewChild(Searchbar) searchbar: Searchbar;
   item: any = {
     pack_qty: 1,
     part_qty: 0,
     frag_qty: 0,
+    issue_class: '',
   };
   label: string = '';
   issue_choose: any[];
   scan_result: any = {};
 
+  plant: string = '';
+  workshop: string = '';
   constructor(public navCtrl: NavController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
               public viewCtrl: ViewController,
+              public modalCtrl: ModalController,
               public storage: Storage,
               public api: Api) {
     super();
@@ -31,10 +44,13 @@ export class SuspiciousAddPage extends BaseUI{
 
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val)=>{
-      this.item.plant = this.api.plant;
-      this.item.workshop = val;
+      this.plant = this.item.plant = this.api.plant;
+      this.workshop = this.item.workshop = val;
       this.getIssue();
     });
+    setTimeout(()=>{
+      this.searchbar.setFocus();
+    }, 1000);
   }
 
   getIssue = () => {
@@ -47,10 +63,19 @@ export class SuspiciousAddPage extends BaseUI{
     });
   }
 
-
   search(){
+    let err = '';
+    if(!this.label || this.label.length !=24){
+      err = '请扫描正确的箱标签';
+    }
+
+    if(err.length){
+      super.showToast(this.toastCtrl, err);
+      this.focusSearch();
+      return;
+    }
     let loading = super.showLoading(this.loadingCtrl,"查询中...");
-    this.api.get('suspicious/getScanPart', {plant: this.item.plant, workshop: this.item.workshop,label: this.label}).subscribe((res: any) =>{
+    this.api.get('suspicious/getScanPart', {plant: this.plant, workshop: this.workshop, label: this.label}).subscribe((res: any) =>{
       loading.dismiss();
       if(res.successful) {
         this.scan_result = res.data;
@@ -77,20 +102,21 @@ export class SuspiciousAddPage extends BaseUI{
     this.item.part_qty = this.part_count;
     let err = '';
     if (!this.scan_result.part_no) {
-      err += '请先扫描或输入箱标签查询对应零件';
+      err += '请先扫描或输入零件箱标签';
     } else if (!this.part_count) {
       err += '封存总数量不能小于1';
-    } else if (!this.item.issue_class){
+    } else if (!this.item.issue_class) {
       err += '请选择问题分类';
     }
     if (err.length) {
       super.showToast(this.toastCtrl, err);
+      this.focusSearch();
       return;
     }
 
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.post('suspicious/post', {
-      code: null,
+      code: '',
       plant: this.scan_result.plant,
       workshop: this.scan_result.workshop,
       dloc: this.scan_result.dloc,
@@ -113,17 +139,47 @@ export class SuspiciousAddPage extends BaseUI{
     }).subscribe((res: any) => {
       loading.dismiss();
       if (res.successful) {
-        this.viewCtrl.dismiss(res.data);
+        //this.viewCtrl.dismiss(res.data);
+        this.open_detail(res.data);
+        // 跳转到详情页面
       } else {
         super.showToast(this.toastCtrl, res.message);
       }
     }, err => {
       loading.dismiss();
-      super.showToast(this.toastCtrl, err)
+      super.showToast(this.toastCtrl, err);
     });
   }
 
-  cancel(){
-    this.viewCtrl.dismiss();
+  open_detail(item) {
+    //this.navCtrl.push('SuspiciousAddPage');
+    let addModal = this.modalCtrl.create('SuspiciousDetailPage', {data: item});
+    addModal.onDidDismiss(item => {
+        this.item = {};
+        this.scan_result = {};
+        this.focusSearch();
+    });
+    addModal.present();
+  }
+
+  cancel() {
+    if (this.navCtrl.canGoBack()) {
+      this.navCtrl.pop();
+    } else {
+      //this.viewCtrl.dismiss();
+    }
+  }
+
+  focusSearch = () => {
+    this.label = '';
+    this.item = {
+      pack_qty: 1,
+      part_qty: 0,
+      frag_qty: 0,
+      issue_class: '',
+    };
+    setTimeout(() => {
+      this.searchbar.setFocus();
+    }, 1000);
   }
 }

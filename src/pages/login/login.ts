@@ -67,6 +67,8 @@ export class LoginPage extends BaseUI{
       return;
     }
     this.storage.set('WORKSHOP', this.workshop).then((res) => {
+
+
       let loading = super.showLoading(this.loadingCtrl, "登录中...");
       this.user.login(this.account).subscribe((resp) => {
         loading.dismiss();
@@ -79,6 +81,8 @@ export class LoginPage extends BaseUI{
         loading.dismiss();
         super.showToast(this.toastCtrl, '登录失败' + err);
       });
+
+
     }).catch(() => {
     });
   }

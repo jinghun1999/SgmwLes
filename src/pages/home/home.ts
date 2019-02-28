@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {IonicPage, LoadingController, ModalController, NavController, ToastController} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
-import {Api, Menus} from '../../providers';
+import {Api, Menus, User} from '../../providers';
 import { Menu } from '../../models/menu';
 import {BaseUI} from "../";
 //import {SetProfilePage} from "../set-profile/set-profile";
@@ -16,16 +16,24 @@ export class HomePage extends BaseUI{
   currentItems: Menu[];
   gridList: Menu[];
 
+  workshop: string;
+  username: string;
+
   constructor(public navCtrl: NavController,
               public items: Menus,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
               public modalCtrl: ModalController,
               private storage: Storage,
+              private user: User,
               public api: Api) {
     super();
     this.currentItems = this.items.query();
     this.gridList = this.currentItems;
+    this.storage.get('USER_INFO').then(res => {
+      this.username = res;
+    });
+    //this.username = this.user._user.username;
   }
 
   // keydown (event) {
@@ -60,7 +68,7 @@ export class HomePage extends BaseUI{
       if (!res) {
         this.setProfile();
       } else {
-        //alert(res)
+        this.workshop = res;
       }
     });
   }
