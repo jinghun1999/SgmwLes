@@ -42,10 +42,10 @@ export class InboundPage extends BaseUI {
   keyDown (event) {
     debugger;
     switch (event.keyCode) {
-      case 13:
+      /*case 13:
         //enter
         this.searchbar.setFocus();
-        break;
+        break;*/
       case 112:
         //f1
         this.inbound();
@@ -235,8 +235,8 @@ export class InboundPage extends BaseUI {
 
   //手工调用，重新加载数据模型
   refreshDataModal() {
-    this.changeDetectorRef.detectChanges();
-    this.changeDetectorRef.markForCheck();
+    //this.changeDetectorRef.detectChanges();
+    //this.changeDetectorRef.markForCheck();
 
     this.code = '';
     setTimeout(() => {

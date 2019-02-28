@@ -73,14 +73,13 @@ export class MovePage extends BaseUI {
 
         if (res.successful) {
           this.workshop_list = res.data;
-
         } else {
           super.showToast(this.toastCtrl, res.message);
         }
       },
       err => {
         loading.dismiss();
-        alert(JSON.stringify(err))
+        alert(JSON.stringify(err));
       });
   }
 
@@ -101,8 +100,7 @@ export class MovePage extends BaseUI {
       let i = this.item.parts.findIndex(p => p.part_no === _part_num && p.supplier_id === _supplier_number);
       if (i >= 0) {
         super.showToast(this.toastCtrl, '该标签已扫描，不能重复添加');
-        this.label = '';
-        this.searchbar.setFocus();
+        this.reload();
         return;
       }
       //合法标签
@@ -130,25 +128,21 @@ export class MovePage extends BaseUI {
                 require_parts: 1,
               });
               super.showToast(this.toastCtrl, '已添加零件' + pts[0].part_name);
-              this.label = '';
             }
           } else {
             super.showToast(this.toastCtrl, res.message);
           }
           loading.dismiss();
-          this.label = '';
-          this.searchbar.setFocus();
+          this.reload();
         },
         (error) => {
           alert('系统错误,' + error);
           loading.dismiss();
-          this.label = '';
-          this.searchbar.setFocus();
+          this.reload();
         });
     } else {
       super.showToast(this.toastCtrl, '无效的箱标签，请重试');
-      this.label = '';
-      this.searchbar.setFocus();
+      this.reload();
     }
   }
 
@@ -177,6 +171,7 @@ export class MovePage extends BaseUI {
     }
     if (err.length) {
       super.showToast(this.toastCtrl, err);
+      this.reload();
       return;
     }
     let loading = super.showLoading(this.loadingCtrl, '正在提交...');
@@ -189,15 +184,24 @@ export class MovePage extends BaseUI {
           super.showToast(this.toastCtrl, res.message);
         }
         loading.dismiss();
+        this.reload();
       },
       (error) => {
         alert('系统错误,' + error);
         loading.dismiss();
+        this.reload();
       });
   }
 
   cancel() {
     if (this.navCtrl.canGoBack())
       this.navCtrl.pop();
+  }
+
+  reload() {
+    this.label = '';
+    setTimeout(() => {
+      this.searchbar.setFocus();
+    }, 500);
   }
 }

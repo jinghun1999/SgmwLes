@@ -3,6 +3,9 @@
   <ion-navbar color="primary">
     <ion-title>首页 <small>({{workshop}}){{username}}</small></ion-title>
     <ion-buttons end>
+      <button ion-button icon-only (click)="logout()">
+        <ion-icon name="ios-power"></ion-icon>
+      </button>
       <button ion-button icon-only (click)="goSetting()">
         <ion-icon name="ios-settings"></ion-icon>
       </button>

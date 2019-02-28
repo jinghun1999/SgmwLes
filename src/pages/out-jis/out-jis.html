@@ -1,17 +1,20 @@
 <ion-header>
   <ion-navbar color="primary">
     <ion-title>JIS出库</ion-title>
+    <ion-buttons end>
+      <button ion-button color="light">源仓库:{{item.workshop}}</button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <form (submit)="scan()" *ngIf="item.target">
+  <form (submit)="scanBox()" *ngIf="item.target">
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="label" name="scan"></ion-searchbar>
   </form>
   <ion-list>
     <ion-item>
       <ion-label color="primary">去向车间</ion-label>
-      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+      <ion-select [(ngModel)]="item.target" (ngModelChange)="reload()" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
         <ion-option *ngFor="let t of workshop_list" value="{{t.value}}">{{t.text}}</ion-option>
       </ion-select>
     </ion-item>
@@ -32,10 +35,10 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">关闭</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="jisOutStock()">提交出库</button>
+      <button no-margin ion-button full large color="primary" [disabled]="!item.parts.length" (click)="jisOutStock()">出库</button>
     </ion-col>
   </ion-row>
 </ion-footer>

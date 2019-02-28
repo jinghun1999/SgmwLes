@@ -1,6 +1,9 @@
 <ion-header>
   <ion-navbar color="primary">
     <ion-title>移库</ion-title>
+    <ion-buttons end>
+      <button ion-button color="light">源仓库:{{item.source}}</button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 
@@ -9,14 +12,6 @@
     <ion-searchbar #searchbar placeholder="扫描或输入箱标签码以添加零件" [(ngModel)]="label" name="label"></ion-searchbar>
   </form>
   <ion-list>
-    <ion-item>
-      <ion-label color="primary">工厂</ion-label>
-      <ion-note item-end>{{item.plant}}</ion-note>
-    </ion-item>
-    <ion-item>
-      <ion-label color="primary">源仓库</ion-label>
-      <ion-note item-end>{{item.source}}</ion-note>
-    </ion-item>
     <ion-item>
       <ion-label color="primary">目的仓库</ion-label>
       <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
@@ -43,7 +38,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">关闭</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="save()">保存移库</button>
+      <button no-margin ion-button full large color="primary" (click)="save()">移库</button>
     </ion-col>
   </ion-row>
 </ion-footer>

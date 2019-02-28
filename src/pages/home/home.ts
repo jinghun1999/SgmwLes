@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, LoadingController, ModalController, NavController, ToastController} from 'ionic-angular';
+import {App, IonicPage, LoadingController, ModalController, NavController, ToastController} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import {Api, Menus, User} from '../../providers';
 import { Menu } from '../../models/menu';
@@ -25,6 +25,7 @@ export class HomePage extends BaseUI{
               public loadingCtrl: LoadingController,
               public modalCtrl: ModalController,
               private storage: Storage,
+              private app: App,
               private user: User,
               public api: Api) {
     super();
@@ -119,5 +120,19 @@ export class HomePage extends BaseUI{
 
   goSetting(){
     this.navCtrl.push('SettingsPage', { });
+  }
+
+  logout(){
+    this.user.logout().subscribe((re) => {
+      debugger;
+      setTimeout(() => {
+        this.app.getRootNav().setRoot('LoginPage', {}, {
+          animate: true,
+          direction: 'forward'
+        });
+      });
+    }, (r) => {
+      alert('注销失败');
+    });
   }
 }
