@@ -112,26 +112,24 @@ export class OutJisPage extends BaseUI {
 
     let i = this.item.parts.findIndex(p => p.part_no === _part_num && p.supplier_id === _supplier_number);
     if (i >= 0) {
-
       let tmpPart=this.item.parts[i];
       let requireBoxes=tmpPart.require_boxes+1;
       let requireParts=tmpPart.require_parts+tmpPart.std_qty;
 
       if(requireBoxes>tmpPart.current_boxes){
         super.showToast(this.toastCtrl, '零件达到最大箱数，不能继续扫箱！');
-        this.refreshDataModal();
+        this.reload();
         return;
       }
       if(requireParts>tmpPart.current_parts){
         super.showToast(this.toastCtrl, '零件达到最大件数，不能继续扫箱！');
-        this.refreshDataModal();
+        this.reload();
         return;
       }
+
       tmpPart.require_boxes=requireBoxes;
       tmpPart.require_parts=requireParts;
-
-      this.label = '';
-      this.searchbar.setFocus();
+      this.reload();
       return;
     }
     else {
@@ -176,15 +174,6 @@ export class OutJisPage extends BaseUI {
         });
     }
   }
-
-  //手工调用，重新加载数据模型
-  refreshDataModal() {
-    setTimeout(() => {
-      this.label = '';
-      this.searchbar.setFocus();
-    }, 1000);
-  }
-
 
   //非标跳转Modal页
   changeQty(part) {
