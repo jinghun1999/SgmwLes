@@ -129,6 +129,7 @@ export class OutJisPage extends BaseUI {
 
       tmpPart.require_boxes=requireBoxes;
       tmpPart.require_parts=requireParts;
+
       this.reload();
       return;
     }
