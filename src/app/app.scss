@@ -26,3 +26,33 @@
 .ds-box> p{color:#8c8c8c; margin: .5rem 0px;}
 
 
+.error{
+  .toast-wrapper {
+    background: #a94442;
+  }
+}
+//自定toast的颜色（success）
+.success{ 
+  .toast-wrapper {
+    background: #3c763d;
+  }
+}
+//自定toast的颜色（success）
+.tip{ 
+  .toast-wrapper {
+    background: #000000;
+  }
+}
+////修改toast出现的位置和显示的高
+//.toast-md .toast-wrapper.toast-top {
+//  top: 47px;
+//  height: 33px;
+//}
+////前面两行是修改文字居中显示
+////修改文字显示的字体大小和距离顶部高度
+//.toast-md .toast-message {
+//  display:flex;
+//  justify-content:center;
+//  font-size: .8em;
+//  padding-top: 8px;
+//}

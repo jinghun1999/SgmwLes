@@ -114,13 +114,13 @@ export class GlobalHttpIntercept implements HttpInterceptor {
     | HttpUserEvent<any>> {
 
     let globalReq = req;
-    let _token = window.localStorage.getItem('TOKEN');
+    //let _token = window.localStorage.getItem('TOKEN');
 
     globalReq = globalReq.clone({setHeaders: {'Content-Type': 'application/json'}});
     if (!req.url.includes('assets/i18n') &&
       !req.url.includes('api/account/login') &&
-      _token){
-      globalReq = globalReq.clone({setHeaders: {Authorization: _token}});
+      !req.url.includes('api/system/getPlants')){
+      globalReq = globalReq.clone({setHeaders: {Authorization: window.localStorage.getItem('TOKEN')}});
       // if (req.url.includes('excel/export')) {
       //   globalReq = globalReq.clone({responseType: 'blob'});
       // }

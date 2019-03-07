@@ -40,11 +40,14 @@ export abstract class BaseUI {
   //  * @returns {Toast}
   //  * @memberof BaseUI
   //  */
-  protected showToast(toastCtrl: ToastController, message: string): Toast {
+  protected showToast(toastCtrl: ToastController, message: string, css?: string): Toast {
     let toast = toastCtrl.create({
       message: message,
-      duration: 2000, //默认展示的时长
-      position: 'bottom'
+      //duration: 2000, //默认展示的时长
+      position: 'bottom',
+      cssClass: css? css: 'tip',
+      showCloseButton: true,
+      closeButtonText: '关闭',
     });
     toast.present();
     return toast;

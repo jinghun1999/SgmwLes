@@ -22,9 +22,9 @@
 
   <div>
     <div class="ds-box" *ngFor="let p of item.parts">
-      <h4 no-margin>零件：{{p.part_no}} {{p.part_name}}</h4>
+      <h4 no-margin>零件：{{p.part_no}}({{p.part_name}})</h4>
       <h5><ion-icon name="contact"></ion-icon> {{p.supplier_name}}</h5>
-      <p>当前库存{{p.current_boxes}}箱，共{{p.current_parts}}件（包装数{{p.std_qty}}）</p>
+      <p>（包装数{{p.std_qty}}）</p>
       <button ion-button item-end (click)="changeQty(p)">
         移库{{p.require_boxes}}箱，共{{p.require_parts}}件
       </button>

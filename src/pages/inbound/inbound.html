@@ -2,7 +2,7 @@
   <ion-navbar color="primary">
     <ion-title>常规入库</ion-title>
     <ion-buttons end>
-      <button ion-button color="light">{{sheet.work_shop}}</button>
+      <button ion-button color="light" *ngIf="sheet.work_shop">目的:{{sheet.work_shop}}</button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -20,13 +20,13 @@
   <progress-bar [progress]="all_right" *ngIf="all_right>0"></progress-bar>
 
   <div class="ds-box" *ngIf="current_part_index>=0 && parts[current_part_index]">
-    <h4 no-margin>{{parts[current_part_index].part_no}} {{parts[current_part_index].part_name}}</h4>
-    <h4 no-margin><small>库位：{{parts[current_part_index].dloc}} （包装数{{parts[current_part_index].pack_stand_qty}}）</small></h4>
-    <p>
+    <h4 no-margin>库位：{{parts[current_part_index].dloc}} </h4>
+    <h4 no-margin><small>零件号：{{parts[current_part_index].part_no}}（包装数{{parts[current_part_index].pack_stand_qty}}）</small></h4>
+    <h4 no-margin ion-text [color]="bgColor(parts[current_part_index])">
       需求{{parts[current_part_index].required_pack_count}}箱，共{{parts[current_part_index].required_part_count}}件 /
       本次入库{{parts[current_part_index].received_pack_count}}箱，共{{parts[current_part_index].received_part_count}}件
-    </p>
-    <button ion-button item-end (click)="changeQty(parts[current_part_index])" [color]="bgColor(parts[current_part_index])">
+    </h4>
+    <button ion-button item-end (click)="changeQty(parts[current_part_index])" [color]="parts[current_part_index].received_part_count % parts[current_part_index].pack_stand_qty != 0 ? 'danger': 'light'">
       非标
     </button>
   </div>

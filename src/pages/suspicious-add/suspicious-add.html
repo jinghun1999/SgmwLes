@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar color="primary">
-    <ion-title>封存零件</ion-title>
+    <ion-title>添加待处理物料</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -33,16 +33,16 @@
   </ion-list>
   <ion-list>
     <ion-item>
-      <ion-label color="primary">可疑箱数</ion-label>
-      <ion-input type="number" text-right [(ngModel)]="item.pack_qty" placeholder="请输入可疑件箱数"></ion-input>
+      <ion-label color="primary">待处理箱数</ion-label>
+      <ion-input type="number" text-right [(ngModel)]="item.pack_qty" placeholder="请输入待处理箱数"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label color="primary">可疑散件数</ion-label>
-      <ion-input type="number" text-right [(ngModel)]="item.frag_qty" placeholder="请输入可疑散件数"></ion-input>
+      <ion-label color="primary">待处理散件数</ion-label>
+      <ion-input type="number" text-right [(ngModel)]="item.frag_qty" placeholder="请输入待处理件数"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label color="primary">可疑总数</ion-label>
-      <ion-input type="number" text-right [(ngModel)]="part_count" placeholder="请输入可疑件数量" disabled></ion-input>
+      <ion-label color="primary">待处理总数</ion-label>
+      <ion-input type="number" text-right [(ngModel)]="part_count" placeholder="请输入待处理数量" disabled></ion-input>
     </ion-item>
     <ion-item>
       <ion-label color="primary">问题分类</ion-label>

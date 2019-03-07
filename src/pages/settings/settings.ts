@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import {IonicPage, NavController, NavParams, App, ModalController} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import {Settings, User, Api} from '../../providers';
-import {LoginPage, BaseUI} from '../'
+import {BaseUI} from '../'
 /**
  * The Settings page is a simple form that syncs with a Settings provider
  * to enable the user to customize settings for the app.
@@ -17,9 +17,7 @@ import {LoginPage, BaseUI} from '../'
 export class SettingsPage extends BaseUI {
   // Our local settings object
   options: any;
-  data: any = {
-
-  };
+  data: any = {};
   constructor(
     private app: App,
     public navCtrl: NavController,

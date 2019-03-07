@@ -20,6 +20,7 @@ import {BaseUI} from "../baseUI";
 
 export class SuspiciousAddPage extends BaseUI{
   @ViewChild(Searchbar) searchbar: Searchbar;
+
   item: any = {
     pack_qty: 1,
     part_qty: 0,
@@ -48,6 +49,12 @@ export class SuspiciousAddPage extends BaseUI{
       this.workshop = this.item.workshop = val;
       this.getIssue();
     });
+
+    this.searchFocus();
+  }
+
+  searchFocus(){
+    this.label = '';
     setTimeout(()=>{
       this.searchbar.setFocus();
     }, 1000);
@@ -63,28 +70,50 @@ export class SuspiciousAddPage extends BaseUI{
     });
   }
 
-  search(){
+  search() {
     let err = '';
-    if(!this.label || this.label.length !=24){
-      err = '请扫描正确的箱标签';
+    if (!this.label || this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
+      err = '无效的箱标签，请重新扫描';
     }
 
-    if(err.length){
-      super.showToast(this.toastCtrl, err);
-      this.focusSearch();
+    let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
+    let _part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
+
+    if (this.scan_result.part_no && this.scan_result.part_no === _part_num && this.scan_result.supplier_id === _supplier_number) {
+      if (this.item.part_qty + this.scan_result.packing_qty > this.scan_result.current_parts) {
+        err = '封存数量不能超过库存数';
+      } else {
+        this.item.pack_qty++;
+        this.item.part_qty += this.scan_result.packing_qty;
+      }
+    } else if (this.item.part_no) {
+      err = '每次只能封存相同的零件，请重新扫箱';
+    }
+
+    if (err.length) {
+      super.showToast(this.toastCtrl, err, 'error');
+      this.searchFocus();
       return;
     }
-    let loading = super.showLoading(this.loadingCtrl,"查询中...");
-    this.api.get('suspicious/getScanPart', {plant: this.plant, workshop: this.workshop, label: this.label}).subscribe((res: any) =>{
+
+
+    let loading = super.showLoading(this.loadingCtrl, "查询中...");
+    this.api.get('suspicious/getScanPart', {
+      plant: this.plant,
+      workshop: this.workshop,
+      label: this.label
+    }).subscribe((res: any) => {
       loading.dismiss();
-      if(res.successful) {
+      if (res.successful) {
         this.scan_result = res.data;
       } else {
         super.showToast(this.toastCtrl, res.message);
       }
-    }, err=>{
+      this.searchFocus();
+    }, err => {
       loading.dismiss();
-      alert(JSON.stringify(err))
+      alert(JSON.stringify(err));
+      this.searchFocus();
     });
   }
 
@@ -109,8 +138,8 @@ export class SuspiciousAddPage extends BaseUI{
       err += '请选择问题分类';
     }
     if (err.length) {
-      super.showToast(this.toastCtrl, err);
-      this.focusSearch();
+      super.showToast(this.toastCtrl, err, 'error');
+      this.resetSearch();
       return;
     }
 
@@ -157,7 +186,7 @@ export class SuspiciousAddPage extends BaseUI{
     addModal.onDidDismiss(item => {
         this.item = {};
         this.scan_result = {};
-        this.focusSearch();
+        this.resetSearch();
     });
     addModal.present();
   }
@@ -170,7 +199,7 @@ export class SuspiciousAddPage extends BaseUI{
     }
   }
 
-  focusSearch = () => {
+  resetSearch = () => {
     this.label = '';
     this.item = {
       pack_qty: 1,

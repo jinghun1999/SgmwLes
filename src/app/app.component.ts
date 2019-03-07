@@ -7,7 +7,8 @@ import { Nav, Platform } from 'ionic-angular';
 import {LoginPage, HomePage} from '../pages';
 import {Api} from '../providers';
 import {BaseUI} from "../pages/baseUI";
-//import {AppUpdate} from "@ionic-native/app-update/ngx";
+import { AppUpdate } from '@ionic-native/app-update/ngx';
+import { AppVersion } from '@ionic-native/app-version/ngx';
 
 @Component({
   template: `
@@ -21,7 +22,8 @@ export class MyApp extends BaseUI {
   constructor(platform: Platform,
               private statusBar: StatusBar,
               private api: Api,
-              //private appUpdate: AppUpdate,
+              private appUpdate: AppUpdate,
+              private appVersion: AppVersion,
               private splashScreen: SplashScreen) {
     super();
     platform.ready().then(() => {
@@ -37,10 +39,15 @@ export class MyApp extends BaseUI {
       //   this.rootPage = MainPage;
       // }}).catch(e=> console.error(e.toString()))
     });
+    var u = navigator.userAgent;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
+    if (isAndroid == true) {
+      const updateUrl = this.api.api_host + '/update_apk.xml';
 
-    // const updateUrl = this.api.api_host + '/update.xml';
-    // this.appUpdate.checkAppUpdate(updateUrl).then(() => {
-    //   console.log('Update available')
-    // });
+      //var versionCode = this.appVersion.getVersionCode();
+
+      //alert(versionCode)
+      //this.appUpdate.checkAppUpdate(updateUrl);
+    }
   }
 }

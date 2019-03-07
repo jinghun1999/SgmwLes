@@ -93,57 +93,51 @@ export class MovePage extends BaseUI {
   }*/
 
   scan() {
-    if (this.label && this.label.length === 24 && this.label.substr(0, 2).toUpperCase() === 'LN') {
-      let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
-      let _part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
-
-      let i = this.item.parts.findIndex(p => p.part_no === _part_num && p.supplier_id === _supplier_number);
-      if (i >= 0) {
-        super.showToast(this.toastCtrl, '该标签已扫描，不能重复添加');
-        this.reload();
-        return;
-      }
-      //合法标签
-      let loading = super.showLoading(this.loadingCtrl, '加载中...');
-      this.api.get('move/getPartByLN', {
-        plant: this.item.plant,
-        workshop: this.item.source,
-        ln: this.label
-      }).subscribe((res: any) => {
-          if (res.successful) {
-            let pts = res.data;
-            if (pts.length > 0) {
-              this.item.parts.push({
-                workshop: pts[0].workshop,
-                part_no: pts[0].part_no,
-                part_name: pts[0].part_name,
-                supplier_id: pts[0].supplier_id,
-                supplier_name: pts[0].supplier_name,
-                dloc: pts[0].dloc,
-                unit: pts[0].unit,
-                std_qty: pts[0].pack_std_qty,
-                current_boxes: pts[0].boxes,
-                current_parts: pts[0].parts,
-                require_boxes: 1,
-                require_parts: 1,
-              });
-              super.showToast(this.toastCtrl, '已添加零件' + pts[0].part_name);
-            }
-          } else {
-            super.showToast(this.toastCtrl, res.message);
-          }
-          loading.dismiss();
-          this.reload();
-        },
-        (error) => {
-          alert('系统错误,' + error);
-          loading.dismiss();
-          this.reload();
-        });
-    } else {
-      super.showToast(this.toastCtrl, '无效的箱标签，请重试');
+    if (this.label && this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
+      super.showToast(this.toastCtrl, '无效的箱标签，请重试', 'error');
       this.reload();
     }
+
+    //合法标签
+    let loading = super.showLoading(this.loadingCtrl, '加载中...');
+    this.api.get('move/getPartByLN', {
+      plant: this.item.plant,
+      workshop: this.item.source,
+      ln: this.label
+    }).subscribe((res: any) => {
+        if (res.successful) {
+          let p = res.data;
+          let _pi = this.item.parts.findIndex(p => p.part_no === p.part_no && p.supplier_id === p.supplier_id);
+          if (_pi >= 0) {
+            // already exists part, add the qty
+            this.item.parts[_pi].require_boxes++;
+            this.item.parts[_pi].require_parts += p.std_qty;
+          } else {
+            // not exists part, push to the list
+            this.item.parts.push({
+              workshop: p.workshop,
+              part_no: p.part_no,
+              part_name: p.part_name,
+              supplier_id: p.supplier_id,
+              supplier_name: p.supplier_name,
+              dloc: p.dloc,
+              unit: p.unit,
+              std_qty: p.std_qty,
+              require_boxes: 1,
+              require_parts: p.std_qty
+            });
+          }
+        } else {
+          super.showToast(this.toastCtrl, res.message, 'error');
+        }
+        loading.dismiss();
+        this.reload();
+      },
+      (error) => {
+        super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
+        loading.dismiss();
+        this.reload();
+      });
   }
 
   changeQty(part) {
@@ -179,15 +173,15 @@ export class MovePage extends BaseUI {
         if (res.successful) {
           this.item.trans_code = '';
           this.item.parts = [];
-          super.showToast(this.toastCtrl, '提交成功');
+          super.showToast(this.toastCtrl, '提交成功', 'success');
         } else {
-          super.showToast(this.toastCtrl, res.message);
+          super.showToast(this.toastCtrl, res.message, 'error');
         }
         loading.dismiss();
         this.reload();
       },
       (error) => {
-        alert('系统错误,' + error);
+        super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
         loading.dismiss();
         this.reload();
       });

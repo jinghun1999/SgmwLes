@@ -19,6 +19,7 @@ import {Api} from "../../providers";
 })
 export class InventoryPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
+
   label: string = '';
   org: any;
   data: any = {
@@ -60,7 +61,7 @@ export class InventoryPage extends BaseUI {
          //debugger;
          //this.current_part = this.data.parts[this.current_part_index];
        }else{
-         super.showToast(this.toastCtrl, res.message);
+         super.showToast(this.toastCtrl, res.message, 'error');
        }
         this.searchbar.setFocus();
       }, err=>{
@@ -71,58 +72,67 @@ export class InventoryPage extends BaseUI {
   }
 
   searchPart() {
-    let err = null;
+    let err = '';
     if (this.label.length != 24) {
       err = '请扫描正确的零件箱标签';
     } else {
       let prefix = this.label.substr(0, 2).toUpperCase();
       if (prefix != 'LN') {
         err = '无效的扫描，请重试！';
-      }else {
-        let supplier_num = this.label.substr(2, 9).replace(/(^0*)/, '');
-        let part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
-
-        this.current_part_index = this.data.parts.findIndex(p=>p.part_no === part_num && p.supplier_id === supplier_num);
-
-        if(this.current_part_index===-1){
-          const prompt = this.alertCtrl.create({
-            title: '零件不存在',
-            message: "该零件不在盘点单列表中，您确定要添加该零件吗?",
-            buttons: [
-              {
-                text: '忽略',
-                handler: () => {}
-              },
-              {
-                text: '我要新增',
-                handler: () => {
-                  let addModal = this.modalCtrl.create('InventoryAddPartPage', {
-                    item: {
-                      inventory_id: this.data.id,
-                      //plant: this.data.plant,
-                      //workshop: this.data.workshop,
-                      dloc: null,
-                      supplier_id: supplier_num,
-                      supplier_name: null,
-                      part_no: part_num,
-                      part_name: null,
-                      part_qty: null,
-                      real_qty: null,
-                    }
-                  });
-                  addModal.onDidDismiss(item => {
-                    if (item) {
-                      this.data.parts.push(item);
-                    }
-                  });
-                  addModal.present();
-                }
-              }
-            ]
-          });
-          prompt.present();
-        }
       }
+    }
+    if (err.length) {
+      super.showToast(this.toastCtrl, err, 'error');
+      return;
+    }
+
+    let supplier_num = this.label.substr(2, 9).replace(/(^0*)/, '');
+    let part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
+    let std_qty = parseInt(this.label.substr(19, 5));
+
+
+    this.current_part_index = this.data.parts.findIndex(p => p.part_no === part_num && p.supplier_id === supplier_num);
+
+    if (this.current_part_index >= 0) {
+      this.data.parts[this.current_part_index].part_qty += (std_qty ? std_qty : 1)
+    } else {
+      const prompt = this.alertCtrl.create({
+        title: '零件不存在',
+        message: "该零件不在盘点单列表中，您确定要添加该零件吗?",
+        buttons: [
+          {
+            text: '忽略',
+            handler: () => {
+            }
+          },
+          {
+            text: '我要新增',
+            handler: () => {
+              let addModal = this.modalCtrl.create('InventoryAddPartPage', {
+                item: {
+                  inventory_id: this.data.id,
+                  //plant: this.data.plant,
+                  //workshop: this.data.workshop,
+                  dloc: null,
+                  supplier_id: supplier_num,
+                  supplier_name: null,
+                  part_no: part_num,
+                  part_name: null,
+                  part_qty: null,
+                  real_qty: null,
+                }
+              });
+              addModal.onDidDismiss(item => {
+                if (item) {
+                  this.data.parts.push(item);
+                }
+              });
+              addModal.present();
+            }
+          }
+        ]
+      });
+      prompt.present();
     }
   }
   get ok_count(){
@@ -139,6 +149,7 @@ export class InventoryPage extends BaseUI {
     if (this.navCtrl.canGoBack())
       this.navCtrl.pop();
   }
+
   close(){
     const prompt = this.alertCtrl.create({
       title: '关闭盘点单',
@@ -178,34 +189,41 @@ export class InventoryPage extends BaseUI {
   }
 
   changeQ(){
-    debugger;
     if(!this.data.parts[this.current_part_index].real_qty){
-      alert('没有盘点数量');
+      super.showToast(this.toastCtrl, '没有盘点数量', 'error');
       return;
     }
     let o = this.data.parts[this.current_part_index];
     this.api.post('inventory/postRealQty', o).subscribe((res: any)=>{
       if(res.successful){
-        super.showToast(this.toastCtrl, '已更新');
+        super.showToast(this.toastCtrl, '已更新', 'success');
       }else{
-        super.showToast(this.toastCtrl, res.message);
+        super.showToast(this.toastCtrl, res.message, 'error');
       }
     }, err=>{
-      super.showToast(this.toastCtrl, err.message);
+      super.showToast(this.toastCtrl, err.message, 'error');
     })
   }
+
   save(){
     this.api.get('inventory/getSubmit', {id: this.data.id}).subscribe((res: any)=>{
       if(res.successful){
-        super.showToast(this.toastCtrl, '已完成盘点');
+        super.showToast(this.toastCtrl, '已完成盘点', 'success');
         setTimeout(()=>{
           if(this.navCtrl.canGoBack()){
             this.navCtrl.popToRoot();
           }
         }, 1000);
       }else{
-        super.showToast(this.toastCtrl, res.message);
+        super.showToast(this.toastCtrl, res.message, 'error');
       }
     });
+  }
+
+  resetScan() {
+    setTimeout(() => {
+      this.label = '';
+      this.searchbar.setFocus();
+    }, 500);
   }
 }

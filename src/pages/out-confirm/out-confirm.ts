@@ -50,36 +50,41 @@ export class OutConfirmPage extends BaseUI{
 
   //执行出库
   execOutStock() {
+    let d = this.parts.filter(p => p.received_part_count > p.allow_part_qty).length;
+    if (d > 0) {
+      super.showToast(this.toastCtrl, '不能超需求出库，请检查', 'error');
+      return;
+    }
     let loading = super.showLoading(this.loadingCtrl, '正在出库，请稍后...');
     this.api.get('wm/getExcuseOutStock', {id: this.sheet.id}).subscribe((res: any) => {
         if (res.successful && res.data) {
-          super.showToast(this.toastCtrl, '出库成功！');
+          super.showToast(this.toastCtrl, '出库成功！', 'success');
           this.viewCtrl.dismiss({res: true});
         } else {
-          super.showToast(this.toastCtrl, res.message);
+          super.showToast(this.toastCtrl, res.message, 'error');
         }
         loading.dismiss();
       },
       err => {
-        super.showToast(this.toastCtrl, err);
+        super.showToast(this.toastCtrl, '系统错误，请重试', 'error');
         loading.dismiss();
       });
   }
 
   execInbound() {
     let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.api.get('WM/GetExcuseInbound', {
+    this.api.get('wm/getExcuseInbound', {
       id: this.sheet.id
     }).subscribe((res: any) => {
         if (res.successful && res.data) {
-          super.showToast(this.toastCtrl, '入库成功！');
+          super.showToast(this.toastCtrl, '入库成功！', 'success');
         } else {
-          super.showToast(this.toastCtrl, res.message);
+          super.showToast(this.toastCtrl, res.message, 'error');
         }
         loading.dismiss();
       },
       err => {
-        super.showToast(this.toastCtrl, err);
+        super.showToast(this.toastCtrl, '系统错误，请重试', 'error');
         loading.dismiss();
       });
   }

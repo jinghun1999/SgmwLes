@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { Menu } from '../../models/menu';
-import {SuspiciousAddPage} from "../../pages/suspicious-add/suspicious-add";
-import {SuspiciousUnlockPage} from "../../pages/suspicious-unlock/suspicious-unlock";
+import { Menu } from '../models/menu';
+import {SuspiciousAddPage} from "../pages/suspicious-add/suspicious-add";
+import {SuspiciousUnlockPage} from "../pages/suspicious-unlock/suspicious-unlock";
 
 @Injectable()
 export class Menus {
@@ -36,13 +36,13 @@ export class Menus {
       },
       {
         "key": 5,
-        "name": "添加可疑件",
+        "name": "添加待处理物料",
         "icon": "ios-bug",
         "url": "SuspiciousAddPage"
       },
       {
         "key": 6,
-        "name": "解封可疑件",
+        "name": "解封待处理物料",
         "icon": "ios-bug",
         "url": "SuspiciousUnlockPage"
       },

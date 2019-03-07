@@ -26,17 +26,6 @@ export class LoginPage extends BaseUI{
     public loadingCtrl: LoadingController,
               public api: Api) {
     super();
-
-    document.onkeydown = () => {
-      var e = <any>window.event;
-      var currKey = e.keyCode || e.which || e.charCode;//支持IE、FF
-      switch (currKey) {
-        case 13:
-          //Enter
-          this.doLogin();
-          break;
-      }
-    }
   }
 
   ionViewDidLoad() {
