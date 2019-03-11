@@ -19,15 +19,15 @@
           <ion-col><h1>{{data.workshop}}<small>车间</small></h1></ion-col>
         </ion-row>
         <ion-row>
-          <ion-col>盘点类型：{{data.type}}</ion-col>
-          <ion-col>盘点模式：{{data.mode}}</ion-col>
+          <ion-col>{{data.type}}</ion-col>
+          <ion-col>{{data.mode}}</ion-col>
         </ion-row>
         <ion-row *ngIf="data.remark">
           <ion-col>备注：{{data.remark}}</ion-col>
         </ion-row>
       </ion-grid>
     </ion-item>
-  </ion-list><div></div>
+  </ion-list>
 
   <ion-grid no-padding no-margin *ngIf="false">
     <ion-row no-padding no-margin>
@@ -62,7 +62,7 @@
       <ion-label col-4>供应商</ion-label>
       <ion-label col-8 text-end>{{data.parts[current_part_index].supplier_id}}</ion-label>
     </ion-item>
-    <ion-item *ngIf="data.parts[current_part_index].part_qty">
+    <ion-item *ngIf="data.parts[current_part_index].part_qty && data.mode==='明盘'">
       <ion-label color="primary">快照件数</ion-label>
       <ion-label text-end>{{data.parts[current_part_index].part_qty}}</ion-label>
     </ion-item>
@@ -76,7 +76,7 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="danger" (click)="close()">关闭</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">返回</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large [disabled]="noSubmit" color="primary" (click)="save()">盘点完成</button>

@@ -318,7 +318,7 @@ export class OutPage extends BaseUI {
           loading.dismiss();
         },
         err => {
-          super.showMessageBox(this.alertCtrl, err, '错误提示');
+          super.showToast(this.toastCtrl, '系统错误，请重试', 'error');
           loading.dismiss();
         });
     //}
@@ -351,7 +351,7 @@ export class OutPage extends BaseUI {
       _m.present();
     }
     else {
-      super.showToast(this.toastCtrl, '请先扫描箱标签！');
+      super.showToast(this.toastCtrl, '请先扫描箱标签！', 'error');
     }
   }
 

@@ -17,7 +17,7 @@
   <form (submit)="search()">
     <ion-searchbar #searchbar placeholder="扫描封存条二维码" [(ngModel)]="label" name="label"></ion-searchbar>
   </form>
-  <ion-list ng-if="data">
+  <ion-list *ngIf="data.code">
     <ion-item>
       <ion-label>封存条</ion-label>
       <ion-label text-end><b>{{data.code}}</b></ion-label>
