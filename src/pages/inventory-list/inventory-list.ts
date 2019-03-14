@@ -47,7 +47,7 @@ export class InventoryListPage extends BaseUI {
         this.list.splice(this.list.length, 0, ...result.data.rows);
       },
       (error: any) => {
-        alert('获取数据失败');
+        alert('系统错误，请稍后再试！');
       }
     );
   }

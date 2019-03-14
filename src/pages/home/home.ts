@@ -65,11 +65,14 @@ export class HomePage extends BaseUI{
    * The view loaded, let's query our items for the list
    */
   ionViewDidLoad() {
+    this.getWorkshop();
+  }
+  getWorkshop =()=>{
     this.storage.get('WORKSHOP').then((res) => {
       if (!res) {
         this.setProfile();
       } else {
-        this.workshop = res;
+        //this.workshop = res;
       }
     });
   }
@@ -88,6 +91,7 @@ export class HomePage extends BaseUI{
   setProfile() {
     let addModal = this.modalCtrl.create('SetProfilePage',{}, );
     addModal.onDidDismiss(item => {
+      this.getWorkshop();
       if (item) {
         //this.items.add(item);
       }

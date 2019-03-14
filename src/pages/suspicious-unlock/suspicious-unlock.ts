@@ -10,6 +10,7 @@ import {
 } from 'ionic-angular';
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 /**
  * Generated class for the SuspiciousUnlockPage page.
@@ -28,7 +29,7 @@ export class SuspiciousUnlockPage extends BaseUI {
 
   label: string = '';
   data: any = {};
-
+  keyPressed: any;
   constructor(public navCtrl: NavController,
               public viewCtrl: ViewController,
               public toastCtrl: ToastController,
@@ -40,6 +41,34 @@ export class SuspiciousUnlockPage extends BaseUI {
     //this.data = this.navParams.get('dt');
   }
 
+  keyDown (event) {
+    switch (event.keyCode) {
+      case 112:
+        //f1
+        this.save();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+  }
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.addkey();
+    });
+  }
+  ionViewWillUnload() {
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
+    this.keyPressed.unsubscribe();
+  }
   ionViewDidLoad() {
     setTimeout(() => {
       this.searchbar.setFocus();
@@ -64,25 +93,25 @@ export class SuspiciousUnlockPage extends BaseUI {
     });
   }
 
-  unlock() {
-    let prompt = this.alertCtrl.create({
-      title: '操作提醒',
-      message: '确认要解封该零件吗？',
-      buttons: [{
-        text: '取消',
-        handler: () => {
-        }
-      }, {
-        text: '确认解封',
-        handler: () => {
-          this.unlock_do();
-        }
-      }]
-    });
-    prompt.present();
-  }
+  // unlock() {
+  //   let prompt = this.alertCtrl.create({
+  //     title: '操作提醒',
+  //     message: '确认要解封该零件吗？',
+  //     buttons: [{
+  //       text: '取消',
+  //       handler: () => {
+  //       }
+  //     }, {
+  //       text: '确认解封',
+  //       handler: () => {
+  //         this.save();
+  //       }
+  //     }]
+  //   });
+  //   prompt.present();
+  // }
 
-  unlock_do() {
+  save() {
     if (!this.data.unlock_count) {
       super.showToast(this.toastCtrl, '请输入解封数量', 'error');
       return;

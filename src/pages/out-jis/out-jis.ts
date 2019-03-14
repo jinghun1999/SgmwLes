@@ -10,6 +10,7 @@ import {
 import {BaseUI} from '../baseUI';
 import {Api} from '../../providers';
 import {Storage} from "@ionic/storage";
+import {fromEvent} from "rxjs/observable/fromEvent";
 //import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
 
 @IonicPage()
@@ -29,7 +30,7 @@ export class OutJisPage extends BaseUI {
     target: '',                            //去向车间
     parts: [],                            //出库零件列表
   };
-
+  keyPressed: any;
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
               public toastCtrl: ToastController,
@@ -38,6 +39,35 @@ export class OutJisPage extends BaseUI {
               public modalCtrl: ModalController,
               public storage: Storage) {
     super();
+  }
+
+  keyDown (event) {
+    switch (event.keyCode) {
+      case 112:
+        //f1
+        this.jisOutStock();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+  }
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.addkey();
+    });
+  }
+  ionViewWillUnload() {
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
+    this.keyPressed.unsubscribe();
   }
 
   ionViewDidLoad() {
@@ -53,6 +83,8 @@ export class OutJisPage extends BaseUI {
     this.api.get('system/getPlants', {plant: this.api.plant, type: 0}).subscribe((res: any) => {
         if (res.successful) {
           this.workshop_list = res.data;
+          this.item.target = this.workshop_list[0].value;
+          this.reload();
         } else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }

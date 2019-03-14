@@ -18,13 +18,13 @@
       <ion-label>箱数</ion-label>
       <ion-input type="number" text-right placeholder="请输入箱数" [(ngModel)]="boxes" (ngModelChange)="changeBox()" min="0"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item hidden>
       <ion-label>散件数</ion-label>
       <ion-input type="number" text-right placeholder="请输散件数" [(ngModel)]="frags" (ngModelChange)="changeFrag()" min="0"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label>件数</ion-label>
-      <ion-input type="number" text-right [(ngModel)]="parts" disabled></ion-input>
+      <ion-input type="number" text-right [(ngModel)]="parts"></ion-input>
     </ion-item>
   </ion-list>
 </ion-content>

@@ -15,7 +15,7 @@
     <ion-item>
       <ion-label color="primary">目的仓库</ion-label>
       <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}">{{t.text}}</ion-option>
+        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}" [disabled]="t.value===item.source">{{t.text}}</ion-option>
       </ion-select>
     </ion-item>
   </ion-list>
@@ -24,10 +24,8 @@
     <div class="ds-box" *ngFor="let p of item.parts">
       <h4 no-margin>零件：{{p.part_no}}({{p.part_name}})</h4>
       <h5><ion-icon name="contact"></ion-icon> {{p.supplier_name}}</h5>
-      <p>（包装数{{p.std_qty}}）</p>
-      <button ion-button item-end (click)="changeQty(p)">
-        移库{{p.require_boxes}}箱，共{{p.require_parts}}件
-      </button>
+      <h4><small>扫箱<b>{{p.require_boxes}}</b>次共<b>{{p.require_parts}}</b>件（包装数{{p.std_qty}}）</small></h4>
+      <button ion-button item-end (click)="changeQty(p)" [color]="p.require_parts % p.std_qty != 0 ? 'danger': 'light'">非标</button>
     </div>
   </div>
 </ion-content>
@@ -35,10 +33,10 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">关闭</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">返回(F2)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="save()">移库</button>
+      <button no-margin ion-button full large color="primary" (click)="save()">提交(F1)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

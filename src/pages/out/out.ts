@@ -97,9 +97,8 @@ export class OutPage extends BaseUI {
         this.scanBox();
       }
     } else {
-      this.code = '';   //置空扫描框
+      this.resetScan();
     }
-    this.searchbar.setFocus();
   }
 
   //校验扫描
@@ -187,7 +186,7 @@ export class OutPage extends BaseUI {
       return;
     }
 
-    let loading = super.showLoading(this.loadingCtrl, '提交中...');
+    //let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.get('wm/getOutInboundScanBarCoe', {
       barcode: this.code,
       sheetId: this.sheet.id,
@@ -197,9 +196,6 @@ export class OutPage extends BaseUI {
     }).subscribe((res: any) => {
         if (res.successful) {
           if (res.data.length > 0) {
-            if(res.data[0].pack_stand_qty != std_qty) {
-              super.showToast(this.toastCtrl, '提醒：箱标签包装数与基础数据包装不一致');
-            }
             res.data.forEach((partInfo, i) => {
               let index = this.parts.findIndex(item => item.id === partInfo.id);
 
@@ -225,17 +221,21 @@ export class OutPage extends BaseUI {
                 }
               }
             });
+            if(res.data[0].pack_stand_qty != std_qty) {
+              super.showToast(this.toastCtrl, '提醒：箱标签包装数与基础数据包装不一致');
+            }
+            this.current_part_index = current_index;
           }
         }
         else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }
-        loading.dismiss();
+        //loading.dismiss();
         this.resetScan();
       },
       err => {
         super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
-        loading.dismiss();
+        //loading.dismiss();
         this.resetScan();
       });
   }
@@ -258,6 +258,16 @@ export class OutPage extends BaseUI {
     }).length;
 
     return p > 0 ? (parseFloat(c.toString()) * 100 / parseFloat(p.toString())).toFixed(0) : 100;
+
+    // let m1 = this.parts.reduce((result, item) => item.required_part_count + result, 0);
+    // let m2 = this.parts.reduce((result, item) => item.received_part_count + result, 0);
+    // return p > 0 ? (parseFloat(m2.toString()) * 100 / parseFloat(m1.toString())).toFixed(0) : 100;
+  }
+  get okmsg() {
+    let c = this.parts.filter(item => {
+      return !item.received_part_count || item.received_part_count < item.required_part_count;
+    }).length;
+    return c === 0 ? '本单已全部扫箱完成' : null;
   }
 
   //手工调用，重新加载数据模型
@@ -268,7 +278,7 @@ export class OutPage extends BaseUI {
     setTimeout(() => {
       this.code = '';
       this.searchbar.setFocus();
-    }, 1000);
+    }, 500);
   }
 
   //切换供应商
@@ -421,6 +431,7 @@ export class OutPage extends BaseUI {
         if (res.successful && res.data) {
           this.reset_page();
           super.showToast(this.toastCtrl, '撤销成功！', 'success');
+          this.resetScan();
         } else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }

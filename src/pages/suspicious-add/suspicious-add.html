@@ -42,7 +42,7 @@
     </ion-item>
     <ion-item>
       <ion-label color="primary">待处理总数</ion-label>
-      <ion-input type="number" text-right [(ngModel)]="part_count" placeholder="请输入待处理数量" disabled></ion-input>
+      <ion-input type="number" text-right [(ngModel)]="part_count" placeholder="请输入待处理数量"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label color="primary">问题分类</ion-label>
@@ -56,10 +56,10 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消(F2)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="save()">封存</button>
+      <button no-margin ion-button full large color="primary" (click)="save()">封存(F1)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

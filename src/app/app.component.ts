@@ -7,8 +7,8 @@ import { Nav, Platform } from 'ionic-angular';
 import {LoginPage, HomePage} from '../pages';
 import {Api} from '../providers';
 import {BaseUI} from "../pages/baseUI";
-import { AppUpdate } from '@ionic-native/app-update/ngx';
-import { AppVersion } from '@ionic-native/app-version/ngx';
+//import { AppUpdate } from '@ionic-native/app-update/ngx';
+//import { AppVersion } from '@ionic-native/app-version/ngx';
 
 @Component({
   template: `
@@ -22,8 +22,8 @@ export class MyApp extends BaseUI {
   constructor(platform: Platform,
               private statusBar: StatusBar,
               private api: Api,
-              private appUpdate: AppUpdate,
-              private appVersion: AppVersion,
+              //private appUpdate: AppUpdate,
+              //private appVersion: AppVersion,
               private splashScreen: SplashScreen) {
     super();
     platform.ready().then(() => {
@@ -38,16 +38,20 @@ export class MyApp extends BaseUI {
       //   console.log(token);
       //   this.rootPage = MainPage;
       // }}).catch(e=> console.error(e.toString()))
+
+
+
+      if (platform.is('mobile') && platform.is('android')) {
+        // this.appVersion.getVersionCode().then(res => {
+        //   alert(JSON.stringify(res));
+        // }).catch(error => {
+        //   alert('错了');
+        // });
+        //
+        // const updateUrl = this.api.api_host + '/update_apk.xml';
+        // this.appUpdate.checkAppUpdate(updateUrl);
+      }
     });
-    var u = navigator.userAgent;
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
-    if (isAndroid == true) {
-      const updateUrl = this.api.api_host + '/update_apk.xml';
 
-      //var versionCode = this.appVersion.getVersionCode();
-
-      //alert(versionCode)
-      //this.appUpdate.checkAppUpdate(updateUrl);
-    }
   }
 }

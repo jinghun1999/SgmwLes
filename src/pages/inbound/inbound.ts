@@ -175,7 +175,7 @@ export class InboundPage extends BaseUI {
       return;
     }
 
-    let loading = super.showLoading(this.loadingCtrl, '提交中...');
+    //let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.get('wm/getOutInboundScanBarCoe', {
       barcode: this.code,
       sheetId: this.sheet.id,
@@ -218,11 +218,11 @@ export class InboundPage extends BaseUI {
         else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }
-        loading.dismiss();
+        //loading.dismiss();
         this.resetScan();
       },
       err => {
-        loading.dismiss();
+        //loading.dismiss();
         super.showToast(this.toastCtrl, '系统级别错误', 'error');
         this.resetScan();
       });
@@ -257,7 +257,7 @@ export class InboundPage extends BaseUI {
     this.code = '';
     setTimeout(() => {
       this.searchbar.setFocus();
-    }, 1000);
+    }, 500);
   }
 
   //非标跳转Modal页

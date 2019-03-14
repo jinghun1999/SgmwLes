@@ -11,6 +11,7 @@ import {
 import {Storage} from "@ionic/storage";
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 @IonicPage()
 @Component({
@@ -33,6 +34,8 @@ export class SuspiciousAddPage extends BaseUI{
 
   plant: string = '';
   workshop: string = '';
+
+  keyPressed: any;
   constructor(public navCtrl: NavController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
@@ -43,6 +46,34 @@ export class SuspiciousAddPage extends BaseUI{
     super();
   }
 
+  keyDown (event) {
+    switch (event.keyCode) {
+      case 112:
+        //f1
+        this.save();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+  }
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.addkey();
+    });
+  }
+  ionViewWillUnload() {
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
+    this.keyPressed.unsubscribe();
+  }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val)=>{
       this.plant = this.item.plant = this.api.plant;
@@ -57,7 +88,7 @@ export class SuspiciousAddPage extends BaseUI{
     this.label = '';
     setTimeout(()=>{
       this.searchbar.setFocus();
-    }, 1000);
+    }, 500);
   }
 
   getIssue = () => {

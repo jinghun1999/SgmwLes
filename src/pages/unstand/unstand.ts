@@ -19,7 +19,7 @@ export class UnstandPage extends BaseUI {
   parts: string;      //件数
   max_parts: number = 0;  //最大可操作零件数
   std_qty: number = 0;    //标准包装数
-  frags: string;     //散件数
+  frags: string = '0';     //散件数
   err: string;       //错误提示
 
   constructor(public navCtrl: NavController,
@@ -30,7 +30,7 @@ export class UnstandPage extends BaseUI {
     this.parts = navParams.get('parts').toString();
     this.std_qty = navParams.get('std_qty');
     this.max_parts = navParams.get('max_parts');
-    this.frags = (navParams.get('parts') % navParams.get('std_qty')).toString();
+    //this.frags = (navParams.get('parts') % navParams.get('std_qty')).toString();
   }
 
   changeBox() {

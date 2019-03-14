@@ -11,6 +11,7 @@ import {
 import {Storage} from "@ionic/storage";
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 @IonicPage()
 @Component({
@@ -29,7 +30,7 @@ export class MovePage extends BaseUI {
     parts: [],
   };
   workshop_list: any[] = [];
-
+  keyPressed: any;
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private toastCtrl: ToastController,
@@ -40,17 +41,40 @@ export class MovePage extends BaseUI {
     super();
   }
 
+  keyDown (event) {
+    switch (event.keyCode) {
+      case 112:
+        //f1
+        this.save();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+  }
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.addkey();
+    });
+  }
+  ionViewWillUnload() {
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
+    this.keyPressed.unsubscribe();
+  }
+
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.source = val;
       this.getWorkshops();
-    });
-  }
-
-  ionViewDidEnter() {
-    setTimeout(() => {
-      //this.searchbar.setFocus();
     });
   }
 
@@ -79,24 +103,20 @@ export class MovePage extends BaseUI {
       },
       err => {
         loading.dismiss();
-        alert(JSON.stringify(err));
+        alert('系统错误');
       });
   }
-
-  /*
-  onChangeTrans($event) {
-    let i = this.trans_list.findIndex(p => p.transaction_code === this.item.trans_code);
-    this.item.target = this.trans_list[i].target;
-    this.item.trans_name = this.trans_list[i].transaction_name;
-
-    //this.searchbar.setFocus();
-  }*/
 
   scan() {
     if (this.label && this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
       super.showToast(this.toastCtrl, '无效的箱标签，请重试', 'error');
       this.reload();
+      return;
     }
+
+    //let supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
+    //let part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
+    //let std_qty = parseInt(this.label.substr(19, 5));
 
     //合法标签
     let loading = super.showLoading(this.loadingCtrl, '加载中...');
@@ -107,7 +127,7 @@ export class MovePage extends BaseUI {
     }).subscribe((res: any) => {
         if (res.successful) {
           let p = res.data;
-          let _pi = this.item.parts.findIndex(p => p.part_no === p.part_no && p.supplier_id === p.supplier_id);
+          let _pi = this.item.parts.findIndex(item => item.part_no === p.part_no && item.supplier_id === p.supplier_id);
           if (_pi >= 0) {
             // already exists part, add the qty
             this.item.parts[_pi].require_boxes++;

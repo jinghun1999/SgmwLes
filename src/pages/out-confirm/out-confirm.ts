@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import {IonicPage, LoadingController, NavController, NavParams, ToastController, ViewController} from 'ionic-angular';
 import {Api} from "../../providers";
 import {BaseUI} from "../baseUI";
+import {fromEvent} from "rxjs/observable/fromEvent";
 
 /**
  * Generated class for the OutConfirmPage page.
@@ -21,6 +22,7 @@ export class OutConfirmPage extends BaseUI{
   msg : string;
   sheet: any;
   type: string = '出库';
+  keyPressed : any;
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               public loadingCtrl: LoadingController,
@@ -32,6 +34,40 @@ export class OutConfirmPage extends BaseUI{
     this.sheet = navParams.get('sheet');
     this.parts = navParams.get('parts');
     this.type = navParams.get('type');
+  }
+
+  keyDown (event) {
+    switch (event.keyCode) {
+      /*case 13:
+        //enter
+        this.searchbar.setFocus();
+        break;*/
+      case 112:
+        //f1
+        this.submit();
+        break;
+      case 113:
+        //f2
+        this.cancel();
+        break;
+    }
+    //alert("out page onKeyDown:" + event.keyCode);
+  }
+  ionViewDidEnter() {
+    setTimeout(() => {
+      this.addkey();
+    });
+  }
+  ionViewWillUnload() {
+    this.removekey();
+  }
+  addkey = () =>{
+    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
+      this.keyDown(event);
+    });
+  }
+  removekey = () =>{
+    this.keyPressed.unsubscribe();
   }
 
   ionViewDidLoad() {
