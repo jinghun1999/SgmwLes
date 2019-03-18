@@ -11,7 +11,6 @@ import {BaseUI} from '../baseUI';
 import {Api} from '../../providers';
 import {Storage} from "@ionic/storage";
 import {fromEvent} from "rxjs/observable/fromEvent";
-//import {INT_TYPE} from "@angular/compiler/src/output/output_ast";
 
 @IonicPage()
 @Component({
@@ -27,10 +26,11 @@ export class OutJisPage extends BaseUI {
   item: any = {
     plant: '',                            //工厂
     workshop: '',                         //车间
-    target: '',                            //去向车间
+    target: '',                           //去向车间
     parts: [],                            //出库零件列表
   };
   keyPressed: any;
+  errors: any[] = [];
   constructor(public navParams: NavParams,
               private navCtrl: NavController,
               public toastCtrl: ToastController,
@@ -66,10 +66,12 @@ export class OutJisPage extends BaseUI {
       this.keyDown(event);
     });
   }
-  removekey = () =>{
+  removekey = () => {
     this.keyPressed.unsubscribe();
   }
-
+  insertError =(msg: string, t: number = 0)=> {
+    this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+  }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
@@ -79,27 +81,30 @@ export class OutJisPage extends BaseUI {
   }
 
   private getWorkshops() {
-    let loading = super.showLoading(this.loadingCtrl, '加载中...');
+    //let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('system/getPlants', {plant: this.api.plant, type: 0}).subscribe((res: any) => {
         if (res.successful) {
           this.workshop_list = res.data;
           this.item.target = this.workshop_list[0].value;
-          this.reload();
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          //super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        loading.dismiss();
+        this.setFocus();
+        //loading.dismiss();
       },
       err => {
-        loading.dismiss();
+        this.insertError('系统级别错误');
+        this.setFocus();
+        //loading.dismiss();
       });
   }
 
   //扫箱
   scanBox() {
     if (!this.label || this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
-      super.showToast(this.toastCtrl, '无效的箱标签，请重新扫描', 'error');
-      this.reload();
+      this.insertError('无效的箱标签，请重新扫描');
+      this.setFocus();
       return;
     }
 
@@ -124,12 +129,12 @@ export class OutJisPage extends BaseUI {
 
       this.item.parts[i].require_boxes++;
       this.item.parts[i].require_parts += this.item.parts[i].std_qty;
-      this.reload();
+      this.setFocus();
       return;
     }
 
     // 不存在的零件，查询出零件信息，再push到list中
-    let loading = super.showLoading(this.loadingCtrl, '加载中...');
+    //let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('wm/getPartByLN', {
       plant: this.item.plant,
       workshop: this.item.workshop,
@@ -153,18 +158,20 @@ export class OutJisPage extends BaseUI {
               require_boxes: 1,
               require_parts: pts[0].pack_std_qty > pts[0].parts ? pts[0].parts : pts[0].pack_std_qty,
             });
-            this.label = '';
+            this.setFocus();
           }
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          //super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        loading.dismiss();
-        this.reload();
+        //loading.dismiss();
+        this.setFocus();
       },
       (error) => {
-        super.showToast(this.toastCtrl, '系统错误', 'error');
-        loading.dismiss();
-        this.reload();
+        //loading.dismiss();
+        //super.showToast(this.toastCtrl, '系统错误', 'error');
+        this.insertError('系统级别错误');
+        this.setFocus();
       });
   }
 
@@ -181,7 +188,7 @@ export class OutJisPage extends BaseUI {
         part.require_boxes = data.boxes;
         part.require_parts = data.parts;
       }
-      this.reload();
+      this.setFocus();
     });
     _m.present();
   }
@@ -190,29 +197,30 @@ export class OutJisPage extends BaseUI {
   jisOutStock() {
     let err = '';
     if (!this.item.parts.length) {
-      err += '请添加出库的零件';
+      err = '请添加出库的零件';
+      this.insertError(err);
     }
     if (err.length) {
-      super.showToast(this.toastCtrl, err, 'error');
-      this.reload();
+      this.setFocus();
       return;
     }
-    let loading = super.showLoading(this.loadingCtrl, '正在提交...');
+    //let loading = super.showLoading(this.loadingCtrl, '正在提交...');
+    this.insertError('正在提交，请稍后...', 1);
     this.api.post('wm/postJisOutStock', this.item).subscribe((res: any) => {
         if (res.successful) {
           this.item.trans_code = '';
           this.item.parts = [];
-          super.showToast(this.toastCtrl, '提交成功','success');
+          this.errors = [];
+          this.insertError('提交成功', 1);
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        loading.dismiss();
-        this.reload();
+        //loading.dismiss();
+        this.setFocus();
       },
       (error) => {
-        super.showToast(this.toastCtrl, '系统级别错误', 'error');
-        loading.dismiss();
-        this.reload();
+        this.insertError('系统级别错误');
+        this.setFocus();
       });
   }
 
@@ -221,10 +229,10 @@ export class OutJisPage extends BaseUI {
       this.navCtrl.pop();
   }
 
-  reload() {
+  setFocus() {
     this.label = '';
     setTimeout(() => {
       this.searchbar.setFocus();
-    }, 500);
+    }, 100);
   }
 }

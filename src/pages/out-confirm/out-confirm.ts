@@ -114,6 +114,7 @@ export class OutConfirmPage extends BaseUI{
     }).subscribe((res: any) => {
         if (res.successful && res.data) {
           super.showToast(this.toastCtrl, '入库成功！', 'success');
+          this.viewCtrl.dismiss({res: true});
         } else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }

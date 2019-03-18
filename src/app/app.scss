@@ -56,3 +56,22 @@
 //  font-size: .8em;
 //  padding-top: 8px;
 //}
+
+.alert-message{
+  margin-left: 0;
+  padding-left: 10px;
+}
+.alert-message>li{
+  list-style-type: none;
+  margin-left: 0;
+}
+.alert-message>li.danger{
+  color:#f53d3d;
+}
+.alert-message>li.info{
+  color:#007aff;
+}
+.alert-message>li.success{
+  color:#2ec95c;
+}
+.item-block{min-height: 0em;}

@@ -28,6 +28,9 @@
       <button ion-button item-end (click)="changeQty(p)" [color]="p.require_parts % p.std_qty != 0 ? 'danger': 'light'">非标</button>
     </div>
   </div>
+  <ul class="alert-message">
+    <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+  </ul>
 </ion-content>
 
 <ion-footer>

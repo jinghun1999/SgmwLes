@@ -51,6 +51,9 @@
       </ion-select>
     </ion-item>
   </ion-list>
+  <ul class="alert-message">
+    <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+  </ul>
 </ion-content>
 
 <ion-footer>

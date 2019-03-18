@@ -11,7 +11,7 @@
   <form (submit)="scanBox()" *ngIf="item.target">
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="label" name="scan"></ion-searchbar>
   </form>
-  <ion-list>
+  <ion-list hidden>
     <ion-item>
       <ion-label color="primary">去向车间</ion-label>
       <ion-select [(ngModel)]="item.target" (ngModelChange)="reload()" interface="popover" okText="选择" cancelText="取消" placeholder="请选择" disabled>
@@ -30,6 +30,9 @@
       </button>
     </div>
   </div>
+  <ul class="alert-message">
+    <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+  </ul>
 </ion-content>
 
 <ion-footer>

@@ -3,17 +3,15 @@ import {
   IonicPage,
   LoadingController,
   NavParams,
-  //NavController,
   ToastController,
   AlertController,
   ModalController,
-  ActionSheetController,
   Searchbar
 } from 'ionic-angular';
 import {Api} from '../../providers';
 import {BaseUI} from '../baseUI';
 import {fromEvent} from "rxjs/observable/fromEvent";
-
+//import { NativeAudio } from '@ionic-native/native-audio/ngx';
 @IonicPage()
 @Component({
   selector: 'page-out',
@@ -30,16 +28,17 @@ export class OutPage extends BaseUI {
   current_part_index: number = 0;
 
   keyPressed : any;
+  errors: any[] = [];
   constructor(public navParams: NavParams,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
-              //private navCtrl: NavController,
               public api: Api,
               public alertCtrl: AlertController,
               public modalCtrl: ModalController,
-              //public changeDetectorRef: ChangeDetectorRef,
-              public actionSheetController: ActionSheetController) {
+  //            public nativeAudio: NativeAudio
+  ) {
     super();
+    //this.nativeAudio.preloadSimple('uniqueId1', 'assets/audio/11250.mp3').then(()=>{}, (e)=>{});
   }
 
   keyDown (event) {
@@ -86,6 +85,9 @@ export class OutPage extends BaseUI {
   removekey = () =>{
     this.keyPressed.unsubscribe();
   }
+  insertError =(msg: string, t: number = 0)=> {
+    this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+  }
 
   scan() {
     if (this.checkScanCode()) {
@@ -100,33 +102,37 @@ export class OutPage extends BaseUI {
       this.resetScan();
     }
   }
-
   //校验扫描
   checkScanCode() {
     let err = '';
     if (this.code == '' && this.scanFlag == 0) {
       err = '请扫描单据号！';
+      this.insertError(err);
     } else if (this.code == '' && this.scanFlag == 1) {
       err = '请扫描箱标签！';
+      this.insertError(err);
     } else {
 
       let prefix = this.code.substr(0, 2).toUpperCase();
 
       if (prefix != 'RS' && prefix != 'LN') {
         err = '无效的扫描，请重试！';
+        this.insertError(err);
       } else if (prefix == 'LN' && this.scanFlag == 0) {
         err = '请先扫单据二维码！';
+        this.insertError(err);
       } else if (prefix == 'LN' && this.scanFlag == 1 && !this.sheet.is_scanbox) {
         err = '该单据不需要扫料箱！';
+        this.insertError(err);
       } else if (prefix === 'LN' && this.code.length != 24) {
         err = '箱标签格式不正确';
+        this.insertError(err);
       }
     }
 
 
     if (err.length > 0) {
-      super.showToast(this.toastCtrl, err, 'error');
-      //this.popToastView("手机号不能为空",1000);
+      //super.showToast(this.toastCtrl, err, 'error');
       this.resetScan();
       return false;
     }
@@ -136,7 +142,7 @@ export class OutPage extends BaseUI {
 
   //扫单
   scanSheet() {
-    let loading = super.showLoading(this.loadingCtrl, '数据准备中...');
+    //let loading = super.showLoading(this.loadingCtrl, '数据准备中...');
     this.api.get('wm/getAboutIssueRequest', {requestNo: this.code}).subscribe((res: any) => {
         if (res.successful) {
           this.sheet = res.data.Sheet;
@@ -144,17 +150,15 @@ export class OutPage extends BaseUI {
           this.scanFlag = 1;
           this.barTextHolderText = '请扫描料箱标签';
         } else {
-          super.showToast(this.toastCtrl, res.message);
+          this.insertError(res.message);
         }
-        loading.dismiss();
+        //loading.dismiss();
         this.resetScan();
-        //this.code = '';
-        //this.searchbar.setFocus();
       },
       err => {
-        super.showMessageBox(this.alertCtrl, err, '错误提示');
-        loading.dismiss();
-        this.code = '';
+        //loading.dismiss();
+        this.insertError('系统级别错误');
+        this.resetScan();
       });
   }
 
@@ -174,14 +178,15 @@ export class OutPage extends BaseUI {
       && m.is_operate === true) > 0 ? false : true;
 
     if (current_index < 0) {
-      err = '单据中不存在该零件！';
+      err = '单据中不存在该零件'+part_num;
+      this.insertError(err);
     } else if ((part.received_part_count >= part.allow_part_qty || part.received_part_count + part.pack_stand_qty > part.allow_part_qty)
       && (part.received_pack_count >= part.allow_pack_qty || part.received_pack_count + 1 > part.allow_pack_qty)) {
       //err = '零件' + part_num + '达到需求数量，不能继续扫箱！';
     }
 
     if(err.length){
-      super.showToast(this.toastCtrl, err, 'error');
+      //super.showToast(this.toastCtrl, err, 'error');
       this.resetScan();
       return;
     }
@@ -196,6 +201,7 @@ export class OutPage extends BaseUI {
     }).subscribe((res: any) => {
         if (res.successful) {
           if (res.data.length > 0) {
+            this.playAudio();
             res.data.forEach((partInfo, i) => {
               let index = this.parts.findIndex(item => item.id === partInfo.id);
 
@@ -208,6 +214,8 @@ export class OutPage extends BaseUI {
                 //if scan all boxes of this part, go to next part
                 if(this.parts[index].received_part_count == this.parts[index].required_part_count){
                   this.switchPart(1);
+                }else{
+                  this.current_part_index = current_index;
                 }
 
               } else {
@@ -222,19 +230,21 @@ export class OutPage extends BaseUI {
               }
             });
             if(res.data[0].pack_stand_qty != std_qty) {
-              super.showToast(this.toastCtrl, '提醒：箱标签包装数与基础数据包装不一致');
+              //super.showToast(this.toastCtrl, '提醒：箱标签包装数与基础数据包装不一致');
+              this.insertError(`${part_num}的包装数与系统不一致`, 1);
             }
-            this.current_part_index = current_index;
           }
         }
         else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          //super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
         //loading.dismiss();
         this.resetScan();
       },
       err => {
-        super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
+        this.insertError('系统错误，请稍后再试', 1);
+        //super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
         //loading.dismiss();
         this.resetScan();
       });
@@ -263,24 +273,16 @@ export class OutPage extends BaseUI {
     // let m2 = this.parts.reduce((result, item) => item.received_part_count + result, 0);
     // return p > 0 ? (parseFloat(m2.toString()) * 100 / parseFloat(m1.toString())).toFixed(0) : 100;
   }
-  get okmsg() {
-    let c = this.parts.filter(item => {
-      return !item.received_part_count || item.received_part_count < item.required_part_count;
-    }).length;
-    return c === 0 ? '本单已全部扫箱完成' : null;
-  }
 
   //手工调用，重新加载数据模型
   resetScan() {
-    //this.changeDetectorRef.detectChanges();
-    //this.changeDetectorRef.markForCheck();
-
     setTimeout(() => {
       this.code = '';
       this.searchbar.setFocus();
-    }, 500);
+    }, 100);
   }
 
+  /*
   //切换供应商
   switchSupplier(curr_part: any) {
     //let curr_part_index = this.parts.findIndex(item => item.id === id);
@@ -332,7 +334,7 @@ export class OutPage extends BaseUI {
           loading.dismiss();
         });
     //}
-  }
+  }*/
 
   //非标跳转Modal页
   changeQty(curr_part: any) {
@@ -357,17 +359,20 @@ export class OutPage extends BaseUI {
         if (data) {
           this.resetQty(curr_part.id, data.boxes, data.parts);
         }
+        this.resetScan();
       });
       _m.present();
     }
     else {
-      super.showToast(this.toastCtrl, '请先扫描箱标签！', 'error');
+      //super.showToast(this.toastCtrl, '请先扫描箱标签！', 'error');
+      this.insertError('请先扫描箱标签！');
+      this.resetScan();
     }
   }
 
   //修改成功后的回调
   resetQty(id: number, box_number:number, part_number:number) {
-    let loading = super.showLoading(this.loadingCtrl, '正在处理...');
+    //let loading = super.showLoading(this.loadingCtrl, '正在处理...');
     this.api.get('wm/getUnStandModifyNumber', {
       id: id,
       boxNum: box_number,
@@ -380,19 +385,19 @@ export class OutPage extends BaseUI {
               if (item.id === partInfo.id) {
                 item.received_pack_count = partInfo.received_pack_count;
                 item.received_part_count = partInfo.received_part_count;
-
-                this.resetScan();
               }
             });
           });
         } else {
-          super.showToast(this.toastCtrl, res.message);
+          this.insertError(res.message);
         }
-        loading.dismiss();
+        this.resetScan();
+        //loading.dismiss();
       },
       err => {
-        super.showMessageBox(this.alertCtrl, err, '错误提示');
-        loading.dismiss();
+        this.insertError('系统级别错误');
+        this.resetScan();
+        //loading.dismiss();
       });
   }
 
@@ -425,33 +430,36 @@ export class OutPage extends BaseUI {
     prompt.present();
   }
 
-  cancel_do(){
-    let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.api.get('wm/GetCancelRequest', { t: 0, requestId: this.sheet.id }).subscribe((res: any) => {
+  cancel_do() {
+    //let loading = super.showLoading(this.loadingCtrl, '提交中...');
+    this.insertError('正在撤销...', 2);
+    this.api.get('wm/GetCancelRequest', {t: 0, requestId: this.sheet.id}).subscribe((res: any) => {
         if (res.successful && res.data) {
           this.reset_page();
-          super.showToast(this.toastCtrl, '撤销成功！', 'success');
-          this.resetScan();
+          //super.showToast(this.toastCtrl, '撤销成功！', 'success');
+          this.insertError('撤销成功！', 2);
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        loading.dismiss();
+        //loading.dismiss();
+        this.resetScan();
       },
       err => {
-        super.showToast(this.toastCtrl, '系统级别错误', 'error');
-        loading.dismiss();
+        this.insertError('系统级别错误');
+        this.resetScan();
+        //loading.dismiss();
       });
   }
 
   //出库
   outStock() {
     if (this.scanFlag === 0) {
-      super.showToast(this.toastCtrl, '请先扫描出库请求单二维码');
+      this.insertError('请先扫描出库请求单二维码');
       return;
     }
     let over = this.parts.filter(item => item.received_part_count > item.allow_part_qty);
     if (Array.isArray(over) && over.length > 0) {
-      super.showToast(this.toastCtrl, '零件[' + over[0].part_no + ']超出剩余数量！', 'error');
+      this.insertError(`零件${over[0].part_no}超出需求数量！`);
       return;
     }
 
@@ -473,11 +481,22 @@ export class OutPage extends BaseUI {
       if (data) {
         this.reset_page();
       }
+      this.resetScan();
     });
 
     _m.present();
 
     this.removekey();
+  }
+
+  playAudio =()=> {
+    // this.nativeAudio.play('uniqueId1').then(() => {
+    // }, (e) => {
+    // });
+    // setTimeout(() => {
+    //   this.nativeAudio.stop('uniqueId1');
+    //   this.nativeAudio.unload('uniqueId1');
+    // }, 200);
   }
 
   reset_page(){
@@ -487,5 +506,6 @@ export class OutPage extends BaseUI {
     this.barTextHolderText = '请扫描出库请求单号';
     this.scanFlag = 0;
     this.current_part_index = 0;
+    this.errors = [];
   }
 }

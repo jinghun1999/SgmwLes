@@ -31,6 +31,7 @@ export class MovePage extends BaseUI {
   };
   workshop_list: any[] = [];
   keyPressed: any;
+  errors: any[] = [];
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private toastCtrl: ToastController,
@@ -69,6 +70,9 @@ export class MovePage extends BaseUI {
   removekey = () =>{
     this.keyPressed.unsubscribe();
   }
+  insertError =(msg: string, t: number = 0)=> {
+    this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+  }
 
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
@@ -79,38 +83,26 @@ export class MovePage extends BaseUI {
   }
 
   private getWorkshops() {
-    let loading = super.showLoading(this.loadingCtrl, '加载中...');
-    /*this.api.get('move/getTransList', {plant: this.item.plant, source: this.item.source}).subscribe((res: any) => {
-        if (res.successful) {
-          this.trans_list = res.data;
-        } else {
-          super.showToast(this.toastCtrl, res.message);
-        }
-        loading.dismiss();
-      },
-      (error) => {
-        alert('系统错误,' + error);
-        loading.dismiss();
-      });*/
+    //let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('system/getPlants', {plant: this.api.plant}).subscribe((res: any) => {
-        loading.dismiss();
-
+        //loading.dismiss();
         if (res.successful) {
           this.workshop_list = res.data;
         } else {
-          super.showToast(this.toastCtrl, res.message);
+          this.insertError(res.message);
         }
+        this.setFocus();
       },
       err => {
-        loading.dismiss();
-        alert('系统错误');
+        //loading.dismiss();
+        this.insertError('系统级别错误，请返回重试');
       });
   }
 
   scan() {
     if (this.label && this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
-      super.showToast(this.toastCtrl, '无效的箱标签，请重试', 'error');
-      this.reload();
+      this.insertError('无效的箱标签，请重试');
+      this.setFocus();
       return;
     }
 
@@ -119,7 +111,7 @@ export class MovePage extends BaseUI {
     //let std_qty = parseInt(this.label.substr(19, 5));
 
     //合法标签
-    let loading = super.showLoading(this.loadingCtrl, '加载中...');
+    //let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('move/getPartByLN', {
       plant: this.item.plant,
       workshop: this.item.source,
@@ -148,15 +140,16 @@ export class MovePage extends BaseUI {
             });
           }
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        loading.dismiss();
-        this.reload();
+        //loading.dismiss();
+        this.setFocus();
       },
       (error) => {
-        super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
-        loading.dismiss();
-        this.reload();
+        //super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
+        this.insertError('系统级别错误，请重试');
+        this.setFocus();
+        //loading.dismiss();
       });
   }
 
@@ -179,31 +172,34 @@ export class MovePage extends BaseUI {
   save() {
     let err = '';
     if (!this.item.source || !this.item.target) {
-      err += '请选择仓库';
+      err = '请选择仓库';
+      this.insertError(err);
     } else if (!this.item.parts.length) {
-      err += '请添加移动的零件';
+      err = '请添加移动的零件';
+      this.insertError(err);
     }
     if (err.length) {
-      super.showToast(this.toastCtrl, err);
-      this.reload();
+      this.setFocus();
       return;
     }
-    let loading = super.showLoading(this.loadingCtrl, '正在提交...');
+    //let loading = super.showLoading(this.loadingCtrl, '正在提交...');
+    this.insertError('正在提交，请稍后...', 1);
     this.api.post('move/postMove', this.item).subscribe((res: any) => {
         if (res.successful) {
           this.item.trans_code = '';
           this.item.parts = [];
-          super.showToast(this.toastCtrl, '提交成功', 'success');
+          //super.showToast(this.toastCtrl, '提交成功', 'success');
+          this.insertError('提交成功', 2);
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        loading.dismiss();
-        this.reload();
+        //loading.dismiss();
+        this.setFocus();
       },
       (error) => {
-        super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
-        loading.dismiss();
-        this.reload();
+        //loading.dismiss();
+        this.insertError('系统级别错误，请重试');
+        this.setFocus();
       });
   }
 
@@ -212,10 +208,10 @@ export class MovePage extends BaseUI {
       this.navCtrl.pop();
   }
 
-  reload() {
+  setFocus() {
     this.label = '';
     setTimeout(() => {
       this.searchbar.setFocus();
-    }, 500);
+    }, 100);
   }
 }

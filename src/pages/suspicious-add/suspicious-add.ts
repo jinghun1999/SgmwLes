@@ -19,7 +19,7 @@ import {fromEvent} from "rxjs/observable/fromEvent";
   templateUrl: 'suspicious-add.html',
 })
 
-export class SuspiciousAddPage extends BaseUI{
+export class SuspiciousAddPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
 
   item: any = {
@@ -36,6 +36,8 @@ export class SuspiciousAddPage extends BaseUI{
   workshop: string = '';
 
   keyPressed: any;
+  errors: any[] = [];
+
   constructor(public navCtrl: NavController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
@@ -46,7 +48,7 @@ export class SuspiciousAddPage extends BaseUI{
     super();
   }
 
-  keyDown (event) {
+  keyDown(event) {
     switch (event.keyCode) {
       case 112:
         //f1
@@ -58,37 +60,37 @@ export class SuspiciousAddPage extends BaseUI{
         break;
     }
   }
+
   ionViewDidEnter() {
     setTimeout(() => {
       this.addkey();
     });
   }
+
   ionViewWillUnload() {
     this.removekey();
   }
-  addkey = () =>{
+
+  addkey = () => {
     this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
       this.keyDown(event);
     });
   }
-  removekey = () =>{
+  removekey = () => {
     this.keyPressed.unsubscribe();
   }
+  insertError = (msg: string, t: number = 0) => {
+    this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+  }
+
   ionViewDidLoad() {
-    this.storage.get('WORKSHOP').then((val)=>{
+    this.storage.get('WORKSHOP').then((val) => {
       this.plant = this.item.plant = this.api.plant;
       this.workshop = this.item.workshop = val;
       this.getIssue();
     });
 
     this.searchFocus();
-  }
-
-  searchFocus(){
-    this.label = '';
-    setTimeout(()=>{
-      this.searchbar.setFocus();
-    }, 500);
   }
 
   getIssue = () => {
@@ -105,6 +107,7 @@ export class SuspiciousAddPage extends BaseUI{
     let err = '';
     if (!this.label || this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
       err = '无效的箱标签，请重新扫描';
+      this.insertError(err);
     }
 
     let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
@@ -113,37 +116,39 @@ export class SuspiciousAddPage extends BaseUI{
     if (this.scan_result.part_no && this.scan_result.part_no === _part_num && this.scan_result.supplier_id === _supplier_number) {
       if (this.item.part_qty + this.scan_result.packing_qty > this.scan_result.current_parts) {
         err = '封存数量不能超过库存数';
+        this.insertError(err);
       } else {
         this.item.pack_qty++;
         this.item.part_qty += this.scan_result.packing_qty;
       }
     } else if (this.item.part_no) {
       err = '每次只能封存相同的零件，请重新扫箱';
+      this.insertError(err);
     }
 
     if (err.length) {
-      super.showToast(this.toastCtrl, err, 'error');
+      //super.showToast(this.toastCtrl, err, 'error');
       this.searchFocus();
       return;
     }
 
-
-    let loading = super.showLoading(this.loadingCtrl, "查询中...");
+    //let loading = super.showLoading(this.loadingCtrl, "查询中...");
     this.api.get('suspicious/getScanPart', {
       plant: this.plant,
       workshop: this.workshop,
       label: this.label
     }).subscribe((res: any) => {
-      loading.dismiss();
+      //loading.dismiss();
       if (res.successful) {
         this.scan_result = res.data;
       } else {
-        super.showToast(this.toastCtrl, res.message);
+        //super.showToast(this.toastCtrl, res.message);
+        this.insertError(res.message);
       }
       this.searchFocus();
     }, err => {
-      loading.dismiss();
-      alert(JSON.stringify(err));
+      this.insertError('系统级别错误');
+      //loading.dismiss();
       this.searchFocus();
     });
   }
@@ -162,19 +167,19 @@ export class SuspiciousAddPage extends BaseUI{
     this.item.part_qty = this.part_count;
     let err = '';
     if (!this.scan_result.part_no) {
-      err += '请先扫描或输入零件箱标签';
+      err = '请先扫描或输入零件箱标签';
     } else if (!this.part_count) {
-      err += '封存总数量不能小于1';
+      err = '封存总数量不能小于1';
     } else if (!this.item.issue_class) {
-      err += '请选择问题分类';
+      err = '请选择问题分类';
     }
     if (err.length) {
-      super.showToast(this.toastCtrl, err, 'error');
-      this.resetSearch();
+      this.insertError(err);
+      this.searchFocus();
       return;
     }
 
-    let loading = super.showLoading(this.loadingCtrl, "提交中...");
+    //let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.post('suspicious/post', {
       code: '',
       plant: this.scan_result.plant,
@@ -197,17 +202,21 @@ export class SuspiciousAddPage extends BaseUI{
 
       issue_class: this.item.issue_class,
     }).subscribe((res: any) => {
-      loading.dismiss();
+      //loading.dismiss();
       if (res.successful) {
         //this.viewCtrl.dismiss(res.data);
         this.open_detail(res.data);
         // 跳转到详情页面
       } else {
-        super.showToast(this.toastCtrl, res.message);
+        //super.showToast(this.toastCtrl, res.message);
+        this.insertError(res.message);
+        this.searchFocus();
       }
     }, err => {
-      loading.dismiss();
-      super.showToast(this.toastCtrl, err);
+      //loading.dismiss();
+      //super.showToast(this.toastCtrl, err);
+      this.insertError('系统级别错误');
+      this.searchFocus();
     });
   }
 
@@ -215,9 +224,9 @@ export class SuspiciousAddPage extends BaseUI{
     //this.navCtrl.push('SuspiciousAddPage');
     let addModal = this.modalCtrl.create('SuspiciousDetailPage', {data: item});
     addModal.onDidDismiss(item => {
-        this.item = {};
-        this.scan_result = {};
-        this.resetSearch();
+      this.item = {};
+      this.scan_result = {};
+      this.resetSearch();
     });
     addModal.present();
   }
@@ -230,6 +239,12 @@ export class SuspiciousAddPage extends BaseUI{
     }
   }
 
+  searchFocus() {
+    this.label = '';
+    setTimeout(() => {
+      this.searchbar.setFocus();
+    }, 100);
+  }
   resetSearch = () => {
     this.label = '';
     this.item = {
@@ -240,6 +255,6 @@ export class SuspiciousAddPage extends BaseUI{
     };
     setTimeout(() => {
       this.searchbar.setFocus();
-    }, 1000);
+    }, 100);
   }
 }

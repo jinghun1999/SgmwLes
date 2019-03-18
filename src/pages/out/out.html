@@ -14,35 +14,31 @@
 
   <ion-list *ngIf="scanFlag>0">
     <ion-item>
-      <ion-label>{{sheet.sheet_no}}</ion-label>
-    </ion-item>
-    <ion-item *ngIf="okmsg">
-      <ion-label>{{okmsg}}</ion-label>
+      <ion-label><b>{{sheet.sheet_no}}</b></ion-label>
+      <ion-note item-end *ngIf="all_right>0">{{all_right}}%</ion-note>
     </ion-item>
   </ion-list>
 
-  <progress-bar [progress]="all_right" *ngIf="all_right>0"></progress-bar>
-
   <div class="ds-box" *ngIf="current_part_index>=0 && parts[current_part_index]">
-      <h4 no-margin>库位：{{parts[current_part_index].dloc}} </h4>
-      <h4 no-margin><small>零件号：{{parts[current_part_index].part_no}}（包装数{{parts[current_part_index].pack_stand_qty}}）</small></h4>
-      <!--<h5 (click)="switchSupplier(p)"-->
-        <!--<ion-icon name="contact"></ion-icon> {{parts[current_part_index].supplier_name? parts[current_part_index].supplier_name: '（请选择供应商）'}}-->
-      <!--</h5>-->
+    <button ion-button float-end item-end (click)="changeQty(parts[current_part_index])" [color]="parts[current_part_index].received_part_count % parts[current_part_index].pack_stand_qty != 0 ? 'danger': 'light'">
+      非标
+    </button>
+      <h4 no-margin>库位:{{parts[current_part_index].dloc}} </h4>
+    <h4 no-margin>零件:{{parts[current_part_index].part_no}}<small>({{parts[current_part_index].pack_stand_qty}})</small></h4>
       <h4 no-margin ion-text [color]="bgColor(parts[current_part_index])">
         需求<b>{{parts[current_part_index].required_pack_count}}</b>箱<b>{{parts[current_part_index].required_part_count}}</b>件 /
         扫箱<b>{{parts[current_part_index].received_pack_count}}</b>次<b>{{parts[current_part_index].received_part_count}}</b>件
       </h4>
-      <button ion-button item-end (click)="changeQty(parts[current_part_index])" [color]="parts[current_part_index].received_part_count % parts[current_part_index].pack_stand_qty != 0 ? 'danger': 'light'">
-        非标
-      </button>
   </div>
 
   <ion-item *ngIf="parts.length">
     <button ion-button item-start (click)="switchPart(-1)" [disabled]="current_part_index===0">上一个</button>
-    <ion-label align-items-center>当前第<b>{{current_part_index+1}}</b>个,共<b>{{parts.length}}</b>个</ion-label>
+    <ion-label text-center><b>{{current_part_index+1}}</b>/<b>{{parts.length}}</b></ion-label>
     <button ion-button item-end (click)="switchPart(1)" [disabled]="current_part_index>=parts.length-1">下一个</button>
   </ion-item>
+  <ul class="alert-message">
+    <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+  </ul>
 </ion-content>
 
 <ion-footer>
