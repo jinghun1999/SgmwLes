@@ -3,10 +3,14 @@ page-home {
   .ion-icon-big:first-child{color:#2ec95c}
   .ion-icon-big:nth-child(1){color:#007aff}
 
-  ion-grid ion-row:nth-child(1) ion-col:nth-child(1) .ion-icon-big{color:red}
-  ion-grid ion-row:nth-child(1) ion-col:nth-child(2) .ion-icon-big{color:#2ec95c}
-  ion-grid ion-row:nth-child(2) ion-col:nth-child(1) .ion-icon-big{color:gray}
-  ion-grid ion-row:nth-child(2) ion-col:nth-child(2) .ion-icon-big{color:#f53d3d}
+  ion-grid ion-row:nth-child(1) ion-col:nth-child(1) .ion-icon-big{color: #3c763d}
+  ion-grid ion-row:nth-child(1) ion-col:nth-child(2) .ion-icon-big{color: #e69d63
+  }
+  ion-grid ion-row:nth-child(2) ion-col:nth-child(1) .ion-icon-big{color: #a94442}
+  ion-grid ion-row:nth-child(2) ion-col:nth-child(2) .ion-icon-big{color: red}
+  ion-grid ion-row:nth-child(3) ion-col:nth-child(1) .ion-icon-big{color: #009d7b}
+  ion-grid ion-row:nth-child(3) ion-col:nth-child(2) .ion-icon-big{color: #cc7e00
+  }
 
   ion-grid button{background-color: transparent;}
 }

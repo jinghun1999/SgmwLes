@@ -22,7 +22,7 @@ export class OutJisPage extends BaseUI {
 
   label: string = '';                      //记录扫描编号
   barTextHolderText: string = '请扫描包装标签';   //扫描文本框placeholder属性
-  workshop_list: any[] = [];
+  //workshop_list: any[] = [];
   item: any = {
     plant: '',                            //工厂
     workshop: '',                         //车间
@@ -82,10 +82,10 @@ export class OutJisPage extends BaseUI {
 
   private getWorkshops() {
     //let loading = super.showLoading(this.loadingCtrl, '加载中...');
-    this.api.get('system/getPlants', {plant: this.api.plant, type: 0}).subscribe((res: any) => {
+    this.api.get('wm/getJisOutToWorkshop', {plant: this.api.plant}).subscribe((res: any) => {
         if (res.successful) {
-          this.workshop_list = res.data;
-          this.item.target = this.workshop_list[0].value;
+          //this.workshop_list = res.data;
+          this.item.target = res.data;
         } else {
           //super.showToast(this.toastCtrl, res.message, 'error');
           this.insertError(res.message);

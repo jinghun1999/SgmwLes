@@ -13,9 +13,9 @@ import {BaseUI} from "../";
   templateUrl: 'home.html'
 })
 export class HomePage extends BaseUI{
-  currentItems: Menu[];
-  gridList: Menu[];
-
+  //currentItems: Menu[];
+  //gridList: Menu[];
+  gridList: any[] = [];
   workshop: string;
   username: string;
 
@@ -29,8 +29,8 @@ export class HomePage extends BaseUI{
               private user: User,
               public api: Api) {
     super();
-    this.currentItems = this.items.query();
-    this.gridList = this.currentItems;
+    //this.currentItems = this.items.query();
+    //this.gridList = this.currentItems;
     this.storage.get('USER_INFO').then(res => {
       this.username = res;
     });
@@ -75,6 +75,18 @@ export class HomePage extends BaseUI{
         //this.workshop = res;
       }
     });
+    let loading = super.showLoading(this.loadingCtrl, '加载中...');
+    this.api.get('system/getMenus').subscribe((res: any)=>{
+      if(res.successful){
+        this.gridList = res.data;
+      }else{
+        super.showToast(this.toastCtrl, res.message, 'error');
+      }
+      loading.dismiss();
+    },(err)=>{
+      super.showToast(this.toastCtrl, '系统错误', 'error');
+      loading.dismiss();
+    })
   }
   // ionViewDidEnter(){
   //   document.addEventListener("keydown", this.keydown);

@@ -19,8 +19,8 @@
     <ion-row *ngFor="let rowList of getRowListByGridList(2)">
       <ion-col *ngFor="let item of rowList">
         <button (click)="openItem(item)">
-          <p><ion-icon name="{{item.icon}}" class="ion-icon-big"></ion-icon></p>
-          <p *ngIf="item.url">{{item.name}}({{item.key}})</p>
+          <p><ion-icon name="{{item.image_url}}" class="ion-icon-big"></ion-icon></p>
+          <p *ngIf="item.link_url">{{item.menu_name}}</p>
         </button>
       </ion-col>
     </ion-row>
