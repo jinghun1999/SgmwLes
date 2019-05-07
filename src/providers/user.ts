@@ -54,6 +54,7 @@ export class User {
       //   this._user = null;
       // });
       window.localStorage.removeItem('TOKEN');
+      this.storage.clear();
     }, err => {
       console.error('ERROR', err);
     });

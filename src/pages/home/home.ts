@@ -18,6 +18,7 @@ export class HomePage extends BaseUI{
   gridList: any[] = [];
   workshop: string;
   username: string;
+  version: string;
 
   constructor(public navCtrl: NavController,
               public items: Menus,
@@ -35,6 +36,7 @@ export class HomePage extends BaseUI{
       this.username = res;
     });
     //this.username = this.user._user.username;
+    this.version = this.api.version;
   }
 
   // keydown (event) {
@@ -101,7 +103,7 @@ export class HomePage extends BaseUI{
    * modal and then adds the new item to our data source if the user created one.
    */
   setProfile() {
-    let addModal = this.modalCtrl.create('SetProfilePage',{}, );
+    let addModal = this.modalCtrl.create('SetProfilePage',{}, {enableBackdropDismiss: false, showBackdrop: false} );
     addModal.onDidDismiss(item => {
       this.getWorkshop();
       if (item) {
@@ -121,9 +123,9 @@ export class HomePage extends BaseUI{
   /**
    * Navigate to the detail page for this item.
    */
-  openItem(item: Menu) {
-    if(item.url)
-      this.navCtrl.push(item.url, { });
+  openItem(item: any) {
+    if(item.link_url)
+      this.navCtrl.push(item.link_url, { });
   }
 
   getRowListByGridList(size) {

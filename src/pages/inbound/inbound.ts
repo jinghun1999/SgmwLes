@@ -223,8 +223,8 @@ export class InboundPage extends BaseUI {
                 }
               }
             });
-            if (res.data[0].pack_stand_qty != std_qty) {
-              this.insertError(`${part_num}的包装数与系统不一致`, 1);
+            if(res.message) {
+              this.insertError(res.message, 1);
             }
           }
         }

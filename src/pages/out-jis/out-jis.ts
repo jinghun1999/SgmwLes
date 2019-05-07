@@ -55,6 +55,7 @@ export class OutJisPage extends BaseUI {
   }
   ionViewDidEnter() {
     setTimeout(() => {
+      this.searchbar.setFocus();
       this.addkey();
     });
   }
@@ -86,6 +87,7 @@ export class OutJisPage extends BaseUI {
         if (res.successful) {
           //this.workshop_list = res.data;
           this.item.target = res.data;
+          this.insertError('已获得目标'+res.data, 1)
         } else {
           //super.showToast(this.toastCtrl, res.message, 'error');
           this.insertError(res.message);
@@ -158,6 +160,11 @@ export class OutJisPage extends BaseUI {
               require_boxes: 1,
               require_parts: pts[0].pack_std_qty > pts[0].parts ? pts[0].parts : pts[0].pack_std_qty,
             });
+
+            if(res.message){
+              //包装数不一致的提示信息
+              this.insertError(res.message, 1);
+            }
             this.setFocus();
           }
         } else {
@@ -233,6 +240,6 @@ export class OutJisPage extends BaseUI {
     this.label = '';
     setTimeout(() => {
       this.searchbar.setFocus();
-    }, 100);
+    }, 200);
   }
 }

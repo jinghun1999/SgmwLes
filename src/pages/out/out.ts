@@ -229,9 +229,8 @@ export class OutPage extends BaseUI {
                 }
               }
             });
-            if(res.data[0].pack_stand_qty != std_qty) {
-              //super.showToast(this.toastCtrl, '提醒：箱标签包装数与基础数据包装不一致');
-              this.insertError(`${part_num}的包装数与系统不一致`, 1);
+            if(res.message) {
+              this.insertError(res.message, 1);
             }
           }
         }
@@ -281,60 +280,6 @@ export class OutPage extends BaseUI {
       this.searchbar.setFocus();
     }, 100);
   }
-
-  /*
-  //切换供应商
-  switchSupplier(curr_part: any) {
-    //let curr_part_index = this.parts.findIndex(item => item.id === id);
-    //let curr_part = this.parts[curr_part_index];
-    if ((this.sheet.is_scanbox && curr_part.is_scan) || !this.sheet.is_scanbox) {
-
-      let actAlert = this.actionSheetController.create();
-      actAlert.setTitle('选择供应商');
-      for (let supplier of curr_part.supplier_list) {
-        actAlert.addButton({
-          text: supplier.supplier_name,
-          handler: () => {
-            this.excuseSwitchSupplier(curr_part, supplier);
-          }
-        })
-      }
-      actAlert.present();
-
-    }
-    else {
-      super.showToast(this.toastCtrl, '请先扫描箱标签！')
-    }
-  }
-
-  //执行更新供应商
-  excuseSwitchSupplier(curr_part: any, supplier: any) {
-    //let suppliers = curr_part.supplier_list.find(item => item.supplier_code === supplier_code);
-    //if (typeof(suppliers) != 'undefined' && suppliers != null) {
-      let loading = super.showLoading(this.loadingCtrl, '提交中...');
-      this.api.get('wm/getModifySupplier', {
-        id: curr_part.id,
-        supplierName: supplier.supplier_name,
-        supplierCode: supplier.supplier_code,
-        IsOutStock: true
-      }).subscribe((res: any) => {
-          if (res.successful) {
-            curr_part.supplier_id = supplier.supplier_code;
-            curr_part.supplier_name = supplier.supplier_name;
-
-            this.resetScan();
-
-          } else {
-            super.showToast(this.toastCtrl, res.message);
-          }
-          loading.dismiss();
-        },
-        err => {
-          super.showToast(this.toastCtrl, '系统错误，请重试', 'error');
-          loading.dismiss();
-        });
-    //}
-  }*/
 
   //非标跳转Modal页
   changeQty(curr_part: any) {

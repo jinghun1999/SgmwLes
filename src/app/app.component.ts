@@ -50,12 +50,12 @@ export class MyApp extends BaseUI {
          // });
 
          const updateUrl = this.api.api_host + '/update_apk.xml';
-         super.showToast(this.toastCtrl, updateUrl, 'success');
-         this.appUpdate.checkAppUpdate(updateUrl).then((res)=>{
-           alert(updateUrl);
+         //super.showToast(this.toastCtrl, updateUrl, 'success');
+         /*this.appUpdate.checkAppUpdate(updateUrl).then((res)=>{
+
          }).catch((e)=>{
            alert('配置错误');
-         });
+         });*/
       }else{
         //super.showToast(this.toastCtrl, 'NOT ANDROID', 'success');
       }

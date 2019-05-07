@@ -12,7 +12,8 @@ import {Storage} from "@ionic/storage";
 })
 export class LoginPage extends BaseUI{
   @ViewChild('userName') usernameInput;
-  workshops: any[] = [];
+  //workshops: any[] = [];
+  version: string;
   workshop: string;
   account: { name: string, password: string } = {
     name: '',
@@ -20,20 +21,18 @@ export class LoginPage extends BaseUI{
   };
 
   constructor(public navCtrl: NavController,
-              private storage: Storage,
+              //private storage: Storage,
     public user: User,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
               public api: Api) {
     super();
+    this.version = this.api.version;
   }
 
   ionViewDidLoad() {
-    setTimeout(() => {
-      this.usernameInput.setFocus();//为输入框设置焦点
-    },150);
-
-    let loading = super.showLoading(this.loadingCtrl, "正在加载数据...");
+    this.setFocus();
+    /*let loading = super.showLoading(this.loadingCtrl, "正在加载数据...");
     setTimeout(() => {
       this.api.get('system/getPlants', {plant: this.api.plant}).subscribe((res: any) => {
           loading.dismiss();
@@ -43,20 +42,24 @@ export class LoginPage extends BaseUI{
             super.showToast(this.toastCtrl, res.message);
           }
         },
-        err => {
+        (err) => {
           loading.dismiss();
           alert(err.message);
         });
-    });
+    });*/
   }
 
   doLogin() {
-    if (!this.workshop) {
-      super.showToast(this.toastCtrl, '请选择车间');
-      return;
-    }
-    this.storage.set('WORKSHOP', this.workshop).then((res) => {
-
+    // if (!this.workshop) {
+    //   super.showToast(this.toastCtrl, '请选择车间');
+    //   return;
+    // }
+    // this.storage.set('WORKSHOP', this.workshop).then((res) => {
+      if(!this.account.name|| !this.account.password){
+        super.showToast(this.toastCtrl, '请输入用户名密码');
+        this.setFocus();
+        return;
+      }
 
       let loading = super.showLoading(this.loadingCtrl, "登录中...");
       this.user.login(this.account).subscribe((resp) => {
@@ -72,7 +75,13 @@ export class LoginPage extends BaseUI{
       });
 
 
-    }).catch(() => {
-    });
+    // }).catch(() => {
+    // });
+  }
+
+  setFocus=()=> {
+    setTimeout(() => {
+      this.usernameInput.setFocus();//为输入框设置焦点
+    }, 150);
   }
 }

@@ -2,6 +2,11 @@
 
   <ion-navbar>
     <ion-title>用户登录</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only>
+        版本{{version}}
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -29,12 +34,12 @@
         <ion-label fixed>登录密码</ion-label>
         <ion-input type="password" [(ngModel)]="account.password" name="password"></ion-input>
       </ion-item>
-      <ion-item>
+      <!--<ion-item>
         <ion-label color="primary">默认车间</ion-label>
         <ion-select [(ngModel)]="workshop" name="workshop" interface="popover" okText="选择" cancelText="取消">
           <ion-option *ngFor="let p of workshops" value="{{p.value}}">{{p.value}}({{p.text}})</ion-option>
         </ion-select>
-      </ion-item>
+      </ion-item>-->
       <div padding>
         <button ion-button color="primary" block>登 录</button>
       </div>
