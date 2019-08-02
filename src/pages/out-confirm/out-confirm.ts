@@ -93,13 +93,13 @@ export class OutConfirmPage extends BaseUI{
     }
     let loading = super.showLoading(this.loadingCtrl, '正在出库，请稍后...');
     this.api.get('wm/getExcuseOutStock', {id: this.sheet.id}).subscribe((res: any) => {
-        if (res.successful && res.data) {
+        loading.dismiss();
+        if (res.successful) {
           super.showToast(this.toastCtrl, '出库成功！', 'success');
           this.viewCtrl.dismiss({res: true});
         } else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }
-        loading.dismiss();
       },
       err => {
         super.showToast(this.toastCtrl, '系统错误，请重试', 'error');

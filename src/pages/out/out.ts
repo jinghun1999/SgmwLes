@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, NgZone, ViewChild} from '@angular/core';
 import {
   IonicPage,
   LoadingController,
@@ -33,6 +33,7 @@ export class OutPage extends BaseUI {
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
               public api: Api,
+              private zone: NgZone,
               public alertCtrl: AlertController,
               public modalCtrl: ModalController,
   //            public nativeAudio: NativeAudio
@@ -86,7 +87,9 @@ export class OutPage extends BaseUI {
     this.keyPressed.unsubscribe();
   }
   insertError =(msg: string, t: number = 0)=> {
-    this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+    this.zone.run(() => {
+      this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+    });
   }
 
   scan() {
@@ -142,6 +145,7 @@ export class OutPage extends BaseUI {
 
   //扫单
   scanSheet() {
+    this.errors = [];
     //let loading = super.showLoading(this.loadingCtrl, '数据准备中...');
     this.api.get('wm/getAboutIssueRequest', {requestNo: this.code}).subscribe((res: any) => {
         if (res.successful) {
@@ -168,17 +172,19 @@ export class OutPage extends BaseUI {
 
     let supplier_number = this.code.substr(2, 9).replace(/(^0*)/, '');
     let part_num = this.code.substr(11, 8).replace(/(^0*)/, '');
-    let std_qty = parseInt(this.code.substr(19, 5));
+    //let std_qty = parseInt(this.code.substr(19, 5));
     let part = this.parts.find(m => m.part_no === part_num && m.is_operate === false);
 
     let current_index = this.parts.findIndex(m => m.part_no === part_num && m.supplier_id === supplier_number);
-
-    let isAdd = this.parts.findIndex(m => m.part_no === part_num
+    if(current_index < 0) {
+      current_index = this.parts.findIndex(m => m.part_no === part_num);
+    }
+    /*let isAdd = false; this.parts.findIndex(m => m.part_no === part_num
       && m.supplier_id === supplier_number
-      && m.is_operate === true) > 0 ? false : true;
+      && m.is_operate === true) > 0 ? false : true;*/
 
     if (current_index < 0) {
-      err = '单据中不存在该零件'+part_num;
+      err = '单据中不存在该零件' + part_num;
       this.insertError(err);
     } else if ((part.received_part_count >= part.allow_part_qty || part.received_part_count + part.pack_stand_qty > part.allow_part_qty)
       && (part.received_pack_count >= part.allow_pack_qty || part.received_pack_count + 1 > part.allow_pack_qty)) {
@@ -196,12 +202,11 @@ export class OutPage extends BaseUI {
       barcode: this.code,
       sheetId: this.sheet.id,
       sheetDetailId: part.sheet_detail_id,
-      isAdd: isAdd,
+      //isAdd: isAdd,
       isOutStock: true
     }).subscribe((res: any) => {
         if (res.successful) {
           if (res.data.length > 0) {
-            this.playAudio();
             res.data.forEach((partInfo, i) => {
               let index = this.parts.findIndex(item => item.id === partInfo.id);
 
@@ -210,23 +215,30 @@ export class OutPage extends BaseUI {
                 this.parts[index].received_pack_count = partInfo.received_pack_count;
                 this.parts[index].received_part_count = partInfo.received_part_count;
                 this.parts[index].is_scan = true;
+                this.parts[index].supplier_list = partInfo.supplier_list;
 
                 //if scan all boxes of this part, go to next part
+                this.current_part_index = index;
                 if(this.parts[index].received_part_count == this.parts[index].required_part_count){
-                  this.switchPart(1);
+                  //跳到下一个没有扫过的零件
+                  let next_not_scan_index = this.parts.findIndex(p=>p.received_part_count===0);
+                  if(next_not_scan_index >= 0) {
+                    this.current_part_index = next_not_scan_index;
+                  }
+                  //this.switchPart(1);
                 }else{
                   this.current_part_index = current_index;
                 }
 
               } else {
-                if (partInfo.is_new_add) {
-                  index = this.parts.findIndex(item => item.part_no === partInfo.part_no && !item.is_operate);
-                  if (index != this.parts.length - 1) {
-                    this.parts.splice(index + 1, 0, partInfo);
-                  } else {
-                    this.parts.push(partInfo);
-                  }
-                }
+                // if (partInfo.is_new_add) {
+                //   index = this.parts.findIndex(item => item.part_no === partInfo.part_no && !item.is_operate);
+                //   if (index != this.parts.length - 1) {
+                //     this.parts.splice(index + 1, 0, partInfo);
+                //   } else {
+                //     this.parts.push(partInfo);
+                //   }
+                // }
               }
             });
             if(res.message) {
@@ -251,7 +263,10 @@ export class OutPage extends BaseUI {
 
   switchPart(o) {
     if (o > 0) {
-      this.current_part_index < this.parts.length - 1 && this.current_part_index++;
+      if(this.current_part_index < this.parts.length - 1)
+        this.current_part_index++;
+      else
+        this.current_part_index = 0;
     } else {
       this.current_part_index > 0 && this.current_part_index--
     }
@@ -294,15 +309,14 @@ export class OutPage extends BaseUI {
         _max = curr_part.allow_part_qty;
       }
 
-      let _m = this.modalCtrl.create('UnstandPage', {
-        boxes: curr_part.received_pack_count,
-        parts: curr_part.received_part_count,
+      let _m = this.modalCtrl.create('OutUnstandPage', {
+        list: curr_part.supplier_list,
         std_qty: curr_part.pack_stand_qty,
         max_parts: _max
       });
       _m.onDidDismiss(data => {
         if (data) {
-          this.resetQty(curr_part.id, data.boxes, data.parts);
+          this.resetQty(curr_part.sheet_detail_id, data);
         }
         this.resetScan();
       });
@@ -316,22 +330,21 @@ export class OutPage extends BaseUI {
   }
 
   //修改成功后的回调
-  resetQty(id: number, box_number:number, part_number:number) {
+  resetQty(sdid: number, pk: any[]) {
     //let loading = super.showLoading(this.loadingCtrl, '正在处理...');
-    this.api.get('wm/getUnStandModifyNumber', {
-      id: id,
-      boxNum: box_number,
-      partNum: part_number,
+    this.api.post('wm/postUnStand', {
+      sheet_detail_id: sdid,
+      pk: pk,
       IsOutStock: true
     }).subscribe((res: any) => {
         if (res.successful) {
-          res.data.forEach((partInfo, i) => {
+
             this.parts.forEach((item, pindex) => {
-              if (item.id === partInfo.id) {
-                item.received_pack_count = partInfo.received_pack_count;
-                item.received_part_count = partInfo.received_part_count;
+              if (item.id === res.data.id) {
+                item.received_pack_count = res.data.received_pack_count;
+                item.received_part_count = res.data.received_part_count;
               }
-            });
+
           });
         } else {
           this.insertError(res.message);

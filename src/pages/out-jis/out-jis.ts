@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {Component, ViewChild, NgZone} from '@angular/core';
 import {
   IonicPage,
   LoadingController,
@@ -35,6 +35,7 @@ export class OutJisPage extends BaseUI {
               private navCtrl: NavController,
               public toastCtrl: ToastController,
               public loadingCtrl: LoadingController,
+              private zone: NgZone,
               public api: Api,
               public modalCtrl: ModalController,
               public storage: Storage) {
@@ -55,8 +56,8 @@ export class OutJisPage extends BaseUI {
   }
   ionViewDidEnter() {
     setTimeout(() => {
-      this.searchbar.setFocus();
       this.addkey();
+      this.searchbar.setFocus();
     });
   }
   ionViewWillUnload() {
@@ -71,7 +72,9 @@ export class OutJisPage extends BaseUI {
     this.keyPressed.unsubscribe();
   }
   insertError =(msg: string, t: number = 0)=> {
-    this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+    this.zone.run(() => {
+      this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
+    });
   }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
@@ -128,9 +131,9 @@ export class OutJisPage extends BaseUI {
 
       // tmpPart.require_boxes = requireBoxes;
       // tmpPart.require_parts = requireParts;
-
-      this.item.parts[i].require_boxes++;
-      this.item.parts[i].require_parts += this.item.parts[i].std_qty;
+      this.moveItem(this.item.parts, i, 0);
+      this.item.parts[0].require_boxes++;
+      this.item.parts[0].require_parts += this.item.parts[0].std_qty;
       this.setFocus();
       return;
     }
@@ -145,7 +148,7 @@ export class OutJisPage extends BaseUI {
         if (res.successful) {
           let pts = res.data;
           if (pts.length > 0) {
-            this.item.parts.push({
+            this.item.parts.splice(0, 0, {
               plant: pts[0].plant,
               workshop: pts[0].workshop,
               part_no: pts[0].part_no,
@@ -182,6 +185,21 @@ export class OutJisPage extends BaseUI {
       });
   }
 
+  //index是当前元素下标，tindex是拖动到的位置下标。
+  moveItem = (arr, index, tindex) => {
+    //如果当前元素在拖动目标位置的下方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置的地方新增一个和当前元素值一样的元素，
+    //我们再把数组之前的那个拖动的元素删除掉，所以要len+1
+    if (index > tindex) {
+      arr.splice(tindex, 0, arr[index]);
+      arr.splice(index + 1, 1)
+    }
+    else {
+      //如果当前元素在拖动目标位置的上方，先将当前元素从数组拿出，数组长度-1，我们直接给数组拖动目标位置+1的地方新增一个和当前元素值一样的元素，
+      //这时，数组len不变，我们再把数组之前的那个拖动的元素删除掉，下标还是index
+      arr.splice(tindex + 1, 0, arr[index]);
+      arr.splice(index, 1)
+    }
+  }
   //非标跳转Modal页
   changeQty(part) {
     let _m = this.modalCtrl.create('UnstandPage', {
@@ -218,12 +236,16 @@ export class OutJisPage extends BaseUI {
           this.item.trans_code = '';
           this.item.parts = [];
           this.errors = [];
-          this.insertError('提交成功', 1);
+          if(res.message){
+            this.insertError(res.message);
+          }else {
+            this.insertError('提交成功', 1);
+          }
         } else {
           this.insertError(res.message);
         }
         //loading.dismiss();
-        this.setFocus();
+        this.setFocus()
       },
       (error) => {
         this.insertError('系统级别错误');

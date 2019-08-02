@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>
+        <ion-label text-center>
+          <ion-icon color="primary" name="ios-arrow-back" float-left navPop></ion-icon>
+          <span>修改实际数量</span>
+        </ion-label>
+      </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding-top>
+  <ion-list>
+    <ion-item *ngIf="err">
+      <ion-label color="danger">{{err}}{{max_parts}}</ion-label>
+    </ion-item>
+    <div *ngFor="let l of list">
+      <p>{{l.supplier_name}}</p>
+      <ion-item>
+        <ion-label>箱数</ion-label>
+        <ion-input type="number" text-right placeholder="请输入箱数" [(ngModel)]="l.pack" (ngModelChange)="changeBox(l)" min="0"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>件数</ion-label>
+        <ion-input type="number" text-right [(ngModel)]="l.qty" (ngModelChange)="changeQty(l)"></ion-input>
+      </ion-item>
+    </div>
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">关闭</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" (click)="confirm()">确认</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

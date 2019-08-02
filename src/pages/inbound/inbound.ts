@@ -170,7 +170,7 @@ export class InboundPage extends BaseUI {
 
     let current_index = this.parts.findIndex(item => item.part_no === part_num);
 
-    let isAdd = this.parts.findIndex(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;
+    /*let isAdd = this.parts.findIndex(item => item.part_no === part_num && item.supplier_id === supplier_number && item.is_operate === true) > 0 ? false : true;*/
 
     if (current_index < 0) {
       err = '单据中不存在该零件！';
@@ -191,7 +191,7 @@ export class InboundPage extends BaseUI {
       barcode: this.code,
       sheetId: this.sheet.id,
       sheetDetailId: part.sheet_detail_id,
-      isAdd: isAdd,
+      //isAdd: isAdd,
       isOutStock: false
     }).subscribe((res: any) => {
         if (res.successful) {
