@@ -14,7 +14,7 @@ import { of } from 'rxjs/observable/of';
 
 import { Storage } from '@ionic/storage';
 import { NavController, ToastController, App } from 'ionic-angular';
-import {LoginPage} from "../../pages/login/login";
+// import {LoginPage} from "../../pages/login/login";
 
 /**
  * 全局http拦截器: 监视和转换从应用发送到服务器的 HTTP 请求

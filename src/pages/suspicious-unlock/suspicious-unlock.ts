@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {
-  AlertController,
+  // AlertController,
   IonicPage,
   LoadingController,
   NavController,
@@ -34,7 +34,7 @@ export class SuspiciousUnlockPage extends BaseUI {
               public viewCtrl: ViewController,
               public toastCtrl: ToastController,
               private loadingCtrl: LoadingController,
-              private alertCtrl: AlertController,
+              // private alertCtrl: AlertController,
               private api: Api,
               public navParams: NavParams) {
     super();

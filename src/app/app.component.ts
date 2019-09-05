@@ -5,10 +5,10 @@ import { StatusBar } from '@ionic-native/status-bar';
 import {Nav, Platform, ToastController} from 'ionic-angular';
 //import {Storage} from "@ionic/storage";
 import {LoginPage, HomePage} from '../pages';
-import {Api} from '../providers';
+//import {Api} from '../providers';
 import {BaseUI} from "../pages/baseUI";
-import { AppUpdate } from '@ionic-native/app-update/ngx';
-import { AppVersion } from '@ionic-native/app-version/ngx';
+//import { AppUpdate } from '@ionic-native/app-update/ngx';
+//import { AppVersion } from '@ionic-native/app-version/ngx';
 
 @Component({
   template: `
@@ -21,10 +21,10 @@ export class MyApp extends BaseUI {
 
   constructor(platform: Platform,
               private statusBar: StatusBar,
-              private api: Api,
-              private appUpdate: AppUpdate,
-              private appVersion: AppVersion,
-              private toastCtrl: ToastController,
+              //private api: Api,
+              // private appUpdate: AppUpdate,
+              // private appVersion: AppVersion,
+              // private toastCtrl: ToastController,
               private splashScreen: SplashScreen) {
     super();
     platform.ready().then(() => {
@@ -49,7 +49,7 @@ export class MyApp extends BaseUI {
          //   alert('错了');
          // });
 
-         const updateUrl = this.api.api_host + '/update_apk.xml';
+         //const updateUrl = this.api.api_host + '/update_apk.xml';
          //super.showToast(this.toastCtrl, updateUrl, 'success');
          /*this.appUpdate.checkAppUpdate(updateUrl).then((res)=>{
 

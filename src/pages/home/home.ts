@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {App, IonicPage, LoadingController, ModalController, NavController, ToastController} from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import {Api, Menus, User} from '../../providers';
-import { Menu } from '../../models/menu';
+//import { Menu } from '../../models/menu';
 import {BaseUI} from "../";
 //import {SetProfilePage} from "../set-profile/set-profile";
 //import {SettingsPage} from "../settings/settings";

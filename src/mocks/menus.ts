@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
 import { Menu } from '../models/menu';
-import {SuspiciousAddPage} from "../pages/suspicious-add/suspicious-add";
-import {SuspiciousUnlockPage} from "../pages/suspicious-unlock/suspicious-unlock";
+// import {SuspiciousAddPage} from "../pages/suspicious-add/suspicious-add";
+// import {SuspiciousUnlockPage} from "../pages/suspicious-unlock/suspicious-unlock";
 
 @Injectable()
 export class Menus {

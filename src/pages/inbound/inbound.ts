@@ -163,9 +163,9 @@ export class InboundPage extends BaseUI {
   //扫箱
   scanBox() {
     let err = '';
-    let supplier_number = this.code.substr(2, 9).replace(/(^0*)/, '');
+    //let supplier_number = this.code.substr(2, 9).replace(/(^0*)/, '');
     let part_num = this.code.substr(11, 8).replace(/(^0*)/, '');
-    let std_qty = parseInt(this.code.substr(19, 5));
+    //let std_qty = parseInt(this.code.substr(19, 5));
     let part = this.parts.find(item => item.part_no === part_num && item.is_operate === false);
 
     let current_index = this.parts.findIndex(item => item.part_no === part_num);

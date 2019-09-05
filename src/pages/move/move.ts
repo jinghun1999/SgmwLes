@@ -1,12 +1,12 @@
 import {Component, ViewChild} from '@angular/core';
 import {
   IonicPage,
-  LoadingController,
+  //LoadingController,
   ModalController,
   NavController,
   NavParams,
   Searchbar,
-  ToastController
+  //ToastController
 } from 'ionic-angular';
 import {Storage} from "@ionic/storage";
 import {Api} from "../../providers";
@@ -34,8 +34,8 @@ export class MovePage extends BaseUI {
   errors: any[] = [];
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private toastCtrl: ToastController,
-              private loadingCtrl: LoadingController,
+              // private toastCtrl: ToastController,
+              // private loadingCtrl: LoadingController,
               private modalCtrl: ModalController,
               private storage: Storage,
               private api: Api) {

@@ -3,7 +3,7 @@ import { IonicPage, NavController, ToastController, LoadingController } from 'io
 
 import {Api, User} from '../../providers';
 import { HomePage, BaseUI } from '../';
-import {Storage} from "@ionic/storage";
+// import {Storage} from "@ionic/storage";
 
 @IonicPage()
 @Component({

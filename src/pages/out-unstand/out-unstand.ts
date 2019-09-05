@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import {BaseUI} from '../baseUI';
-import {p} from "@angular/core/src/render3";
+//import {p} from "@angular/core/src/render3";
 
 /**
  * Generated class for the UnstandPage page.

@@ -19,7 +19,7 @@ import {fromEvent} from "rxjs/observable/fromEvent";
 })
 export class OutJisPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
-
+  fetching: boolean = false;
   label: string = '';                      //记录扫描编号
   barTextHolderText: string = '请扫描包装标签';   //扫描文本框placeholder属性
   //workshop_list: any[] = [];
@@ -220,6 +220,10 @@ export class OutJisPage extends BaseUI {
 
   //出库
   jisOutStock() {
+    if(this.fetching){
+      this.insertError('正在提交，请耐心等待，不要重复提交...', 1);
+      return;
+    }
     let err = '';
     if (!this.item.parts.length) {
       err = '请添加出库的零件';
@@ -231,7 +235,9 @@ export class OutJisPage extends BaseUI {
     }
     //let loading = super.showLoading(this.loadingCtrl, '正在提交...');
     this.insertError('正在提交，请稍后...', 1);
+    this.fetching = true;
     this.api.post('wm/postJisOutStock', this.item).subscribe((res: any) => {
+      this.fetching = false;
         if (res.successful) {
           this.item.trans_code = '';
           this.item.parts = [];
@@ -248,10 +254,11 @@ export class OutJisPage extends BaseUI {
         this.setFocus()
       },
       (error) => {
+        this.fetching = false;
         this.insertError('系统级别错误');
         this.setFocus();
       });
-  }
+    }
 
   cancel() {
     if (this.navCtrl.canGoBack())
