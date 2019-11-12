@@ -22,7 +22,7 @@ export class OutJisPage extends BaseUI {
   fetching: boolean = false;
   label: string = '';                      //记录扫描编号
   barTextHolderText: string = '请扫描包装标签';   //扫描文本框placeholder属性
-  //workshop_list: any[] = [];
+  workshop_list: any[] = [];
   item: any = {
     plant: '',                            //工厂
     workshop: '',                         //车间
@@ -86,23 +86,22 @@ export class OutJisPage extends BaseUI {
 
   private getWorkshops() {
     //let loading = super.showLoading(this.loadingCtrl, '加载中...');
-    this.api.get('wm/getJisOutToWorkshop', {plant: this.api.plant}).subscribe((res: any) => {
-        if (res.successful) {
-          //this.workshop_list = res.data;
-          this.item.target = res.data;
-          this.insertError('已获得目标'+res.data, 1)
-        } else {
-          //super.showToast(this.toastCtrl, res.message, 'error');
-          this.insertError(res.message);
-        }
-        this.setFocus();
-        //loading.dismiss();
-      },
-      err => {
-        this.insertError('系统级别错误');
-        this.setFocus();
-        //loading.dismiss();
-      });
+    this.api.get('system/getPlants', {plant: this.api.plant, type: 0}).subscribe((res: any) => {
+      if (res.successful) {
+        this.workshop_list = res.data;
+        this.item.target = this.workshop_list[0].value;
+      } else {
+        //super.showToast(this.toastCtrl, res.message, 'error');
+        this.insertError(res.message);
+      }
+      this.setFocus();
+      //loading.dismiss();
+    },
+    err => {
+      this.insertError('系统级别错误');
+      this.setFocus();
+      //loading.dismiss();
+    });
   }
 
   //扫箱
@@ -225,6 +224,10 @@ export class OutJisPage extends BaseUI {
       return;
     }
     let err = '';
+    if(!this.item.target){
+      err = '请先选择目标车间';
+      this.insertError(err);
+    }
     if (!this.item.parts.length) {
       err = '请添加出库的零件';
       this.insertError(err);

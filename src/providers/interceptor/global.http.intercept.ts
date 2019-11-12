@@ -12,7 +12,7 @@ import {Observable} from 'rxjs';
 import {catchError, tap} from 'rxjs/operators';
 import { of } from 'rxjs/observable/of';
 
-import { Storage } from '@ionic/storage';
+//import { Storage } from '@ionic/storage';
 import { NavController, ToastController, App } from 'ionic-angular';
 // import {LoginPage} from "../../pages/login/login";
 
@@ -25,7 +25,7 @@ import { NavController, ToastController, App } from 'ionic-angular';
 export class GlobalHttpIntercept implements HttpInterceptor {
   token: string = ''
   constructor(public appCtrl : App,
-              private storage: Storage,
+              //private storage: Storage,
               private toastCtrl: ToastController) {
     // this.storage.get('TOKEN').then(value=>{
     //   this.token = value;

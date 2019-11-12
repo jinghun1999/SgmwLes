@@ -11,7 +11,14 @@
   <form (submit)="scanBox()" *ngIf="item.target">
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="label" name="scan"></ion-searchbar>
   </form>
-
+  <ion-list>
+    <ion-item>
+      <ion-label color="primary">去向车间</ion-label>
+      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}">{{t.text}}</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
   <div>
     <div class="ds-box" *ngFor="let p of item.parts; let i = index">
       <h4><ion-icon name="checkmark-circle-outline" style="color:green" *ngIf="i==0"></ion-icon> 零件：{{p.part_no}} {{p.part_name}}</h4>
