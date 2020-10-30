@@ -85,60 +85,59 @@ export class OutJisPage extends BaseUI {
   }
 
   private getWorkshops() {
-    //let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('system/getPlants', {plant: this.api.plant, type: 0}).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
         this.item.target = this.workshop_list[0].value;
       } else {
-        //super.showToast(this.toastCtrl, res.message, 'error');
         this.insertError(res.message);
       }
       this.setFocus();
-      //loading.dismiss();
     },
     err => {
       this.insertError('系统级别错误');
       this.setFocus();
-      //loading.dismiss();
     });
   }
 
   //扫箱
   scanBox() {
-    if (!this.label || this.label.length != 24 || this.label.substr(0, 2).toUpperCase() != 'LN') {
+    if (!this.label 
+          || (this.label.substr(0, 2).toUpperCase() !== 'LN' && this.label.substr(0, 2).toUpperCase() !== 'BP') 
+          || this.label.length < 24) {
       this.insertError('无效的箱标签，请重新扫描');
       this.setFocus();
       return;
     }
+    let prefix = this.label.substr(0, 2).toUpperCase();
+    if (prefix === 'LN') {
+      if(this.item.parts.findIndex(p => p.label) >= 0) {
+        this.insertError('提交前扫描过保险杠小标签，不能再扫描零件包装标签');
+        this.setFocus();
+        return;
+      }
+    } else if (prefix === 'BP') {
+      if(this.item.parts.findIndex(p => !p.label) >= 0) {
+        this.insertError('提交前扫描过零件包装标签，不能再扫描保险杠小标签');
+        this.setFocus();
+        return;
+      }
+    }
 
     let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
     let _part_num = this.label.substr(11, 8).replace(/(^0*)/, '');
-
-    let i = this.item.parts.findIndex(p => p.part_no === _part_num && p.supplier_id === _supplier_number);
-    if (i >= 0) {
-      //已扫过的零件，直接追加
-      // let tmpPart = this.item.parts[i];
-      // let requireBoxes = tmpPart.require_boxes + 1;
-      // let requireParts = tmpPart.require_parts + tmpPart.std_qty;
-
-      // if (requireBoxes > tmpPart.current_boxes || requireParts > tmpPart.current_parts) {
-      //   super.showToast(this.toastCtrl, '零件已超出库存，不能继续扫箱！', 'error');
-      //   this.reload();
-      //   return;
-      // }
-
-      // tmpPart.require_boxes = requireBoxes;
-      // tmpPart.require_parts = requireParts;
-      this.moveItem(this.item.parts, i, 0);
-      this.item.parts[0].require_boxes++;
-      this.item.parts[0].require_parts += this.item.parts[0].std_qty;
-      this.setFocus();
-      return;
+    if (this.label.substr(0, 2) === 'LN'){
+      let i = this.item.parts.findIndex(p => p.part_no === _part_num && p.supplier_id === _supplier_number);
+      if (i >= 0) {
+        this.moveItem(this.item.parts, i, 0);
+        this.item.parts[0].require_boxes++;
+        this.item.parts[0].require_parts += this.item.parts[0].std_qty;
+        this.setFocus();
+        return;
+      }
     }
 
     // 不存在的零件，查询出零件信息，再push到list中
-    //let loading = super.showLoading(this.loadingCtrl, '加载中...');
     this.api.get('wm/getPartByLN', {
       plant: this.item.plant,
       workshop: this.item.workshop,
@@ -160,7 +159,8 @@ export class OutJisPage extends BaseUI {
               current_boxes: pts[0].boxes,
               current_parts: pts[0].parts,
               require_boxes: 1,
-              require_parts: pts[0].pack_std_qty > pts[0].parts ? pts[0].parts : pts[0].pack_std_qty,
+              require_parts: prefix === 'BP' ? 1 : (pts[0].pack_std_qty > pts[0].parts ? pts[0].parts : pts[0].pack_std_qty),
+              label: pts[0].label,
             });
 
             if(res.message){

@@ -24,7 +24,8 @@
       <h4><ion-icon name="checkmark-circle-outline" style="color:green" *ngIf="i==0"></ion-icon> 零件：{{p.part_no}} {{p.part_name}}</h4>
       <h5><ion-icon name="contact"></ion-icon> {{p.supplier_name}}</h5>
       <p>当前库存{{p.current_boxes}}箱，共{{p.current_parts}}件（包装数{{p.std_qty}}）</p>
-      <button ion-button item-end (click)="changeQty(p)" [color]="p.require_parts%p.std_qty>0?'danger':'primary'">
+      <p *ngIf="p.label">标签：{{p.label}}</p>
+      <button ion-button item-end (click)="changeQty(p)" [disabled]="p.label" [color]="p.require_parts%p.std_qty>0?'danger':'primary'">
         出库{{p.require_boxes}}箱，共{{p.require_parts}}件
       </button>
     </div>

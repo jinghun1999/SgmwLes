@@ -7,11 +7,11 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class Api {
   public plant: string = '1000';
-  public version: string = 'P-191103';
+  public version: string = 'P-201030';
   //public api_host: string = 'http://localhost:49280';
   //public api_host: string = 'http://localhost/lesapi';
-  //public api_host: string = 'http://10.1.126.171/lesapi';
-  public api_host: string = 'http://10.34.243.14/lesapi';
+  public api_host: string = 'http://10.1.126.171/lesapi';
+  //public api_host: string = 'http://10.34.243.14/lesapi';
 
   url: string = this.api_host + '/api';
 
