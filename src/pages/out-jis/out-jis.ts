@@ -109,19 +109,23 @@ export class OutJisPage extends BaseUI {
       this.setFocus();
       return;
     }
+    let err = '';
     let prefix = this.label.substr(0, 2).toUpperCase();
     if (prefix === 'LN') {
       if(this.item.parts.findIndex(p => p.label) >= 0) {
-        this.insertError('提交前扫描过保险杠小标签，不能再扫描零件包装标签');
-        this.setFocus();
-        return;
+        err = '提交前扫描过保险杠小标签，不能再扫描零件包装标签';
       }
-    } else if (prefix === 'BP') {
+    } else if (prefix === 'BP') {      
       if(this.item.parts.findIndex(p => !p.label) >= 0) {
-        this.insertError('提交前扫描过零件包装标签，不能再扫描保险杠小标签');
-        this.setFocus();
-        return;
+        err = '提交前扫描过零件包装标签，不能再扫描保险杠小标签';
+      } else if(this.item.parts.findIndex(p => p.label === this.label) >= 0) {
+        err = `标签${this.label}已扫描过，请扫描其他标签`;
       }
+    }
+    if(err.length) {
+      this.insertError(err);
+      this.setFocus();
+      return;
     }
 
     let _supplier_number = this.label.substr(2, 9).replace(/(^0*)/, '');
