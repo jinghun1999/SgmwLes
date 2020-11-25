@@ -6,39 +6,35 @@ import {
   ToastController,
   NavController,
   AlertController,
-  ActionSheetController,
   ModalController,
   Searchbar
 } from 'ionic-angular';
-import { Api } from '../../providers';
-import { BaseUI } from '../baseUI';
+import { Api } from '../../../providers';
+import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
-
 @IonicPage()
 @Component({
-  selector: 'page-sheet-panel',
-  templateUrl: 'sheet-panel.html',
+  selector: 'page-bundle',
+  templateUrl: 'bundle.html',
 })
-export class SheetPanelPage  extends BaseUI {
+export class BundlePage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
-  bundle_no: string;  //扫描的捆包号
-  workshop: string;
-  item: any = {  //提交对象
-    plant: '',
-    source: '',
-    target: '',
-    bundles: [],
-  };
-  workshop_list: any[] = []; //页面加载时获取车间列表，选中的就是item的target
+
+  code: string = '';                      //记录扫描编号
+  scanFlag: number = 0;                   //扫描标记：0初始标记，1已扫单，2已扫箱
+  barTextHolderText: string = '请扫描捆包号';   //扫描文本框placeholder属性
+  workshop: string; //初始化获取的车间
   keyPressed: any;
   errors: any[] = [];
+  item: any = {
+    bundles: [],
+  };
   constructor(public navParams: NavParams,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public api: Api,
-    public zone: NgZone,
-    public actionSheet:ActionSheetController,
+    private zone: NgZone,
     public alertCtrl: AlertController,
     public navCtrl:NavController,
     public modalCtrl: ModalController,
@@ -55,12 +51,13 @@ export class SheetPanelPage  extends BaseUI {
         break;
       case 113:
         //f2
-        this.save();
+        this.outStock();
         break;
     }
   }
   ionViewDidEnter() {
     this.addkey();
+    this.searchbar.setFocus();//为输入框设置焦点
   }
   ionViewWillUnload() {
     this.removekey();
@@ -80,51 +77,32 @@ export class SheetPanelPage  extends BaseUI {
   }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
-      this.item.plant = this.api.plant;
-      this.item.source = val;
       this.workshop = val;
-      this.getWorkshops();
     });
-  }
-  private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
-      if (res.successful) {
-        this.workshop_list = res.data;
-      } else {
-        this.insertError(res.message);
-      }
-    },
-      err => {
-        this.insertError('系统级别错误，请返回重试');
-      });
   }
   //开始扫描
   scan() {
     if (this.checkScanCode()) {
-      
+      if (this.scanFlag == 0) {
         //扫捆包号
         this.scanSheet();
-      
+      }
     }
     else { 
       this.resetScan();
     }
   }
-  //显示错误信息列表
-  openErrList(e) { 
-    //console.log(e.target);
-    //e.target.height: 80vh;
-  }
+
   //校验扫描
   checkScanCode() {
     let err = '';
-    if (this.bundle_no == '') {
+    if (this.code == '') {
       err = '请扫描捆包号！';
       this.insertError(err);
     }
 
-    if(this.item.bundles.findIndex(p => p.bundleNo === this.bundle_no) >= 0) {
-      err = `标签${this.bundle_no}已扫描过，请扫描其他标签`;
+    if(this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
+      err = `标签${this.code}已扫描过，请扫描其他标签`;
       this.insertError(err);
     }
 
@@ -137,7 +115,7 @@ export class SheetPanelPage  extends BaseUI {
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
+    this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {  
         if (res.data.plant === this.api.plant && res.data.workshop === this.workshop) { 
           let model = res.data;          
@@ -164,7 +142,6 @@ export class SheetPanelPage  extends BaseUI {
       err => {
         this.insertError('系统级别错误');
       });
-    this.resetScan();
   }
 
   //非标跳转Modal页
@@ -200,25 +177,24 @@ export class SheetPanelPage  extends BaseUI {
   }
 
   //撤销
-  // cancel_do() {
-  //   this.insertError('正在撤销...', 2);
-  //   this.item.bundles = [];
-  //   this.insertError("撤销成功");
-  //   this.resetScan();
-  // }
+  cancel_do() {
+    this.insertError('正在撤销...', 2);
+    this.item.bundles = [];
+    this.insertError("撤销成功");
+    this.resetScan();
+  }
 
   //删除
   delete(i) {
     this.item.bundles.splice(i, 1);
-    this.resetScan();
   }
   //手工调用，重新加载数据模型
   resetScan() {
-    this.bundle_no = '';
+    this.code = '';
     this.searchbar.setFocus();
   }
   //提交
-  save() {
+  outStock() {
     if (this.item.bundles.length == 0) {
       this.insertError('请先扫描捆包号');
       return;
@@ -226,27 +202,24 @@ export class SheetPanelPage  extends BaseUI {
     this.api.post('PP/PostPanelMaterial', {
       plant: this.api.plant,
       workshop: this.workshop,
-      bundle_no: this.bundle_no,
+      bundle_no: this.code,
       partPanel: this.item.bundles
     }).subscribe((res: any) => {
       if (res.successful) {
-        this.toastCtrl.create({
-          message: '提交成功',
-          duration: 1500,
-          position:'buttom'
-        }).present();
-        this.item.bundles = [];        
-        this.errors = [];
+        this.insertError('提交成功');
       }
       else {
         this.insertError(res.message);
-      }      
+      }
     },
       err => {
         this.insertError('系统级别错误');
         this.resetScan();
       });
-    //清除某些数据
+    //不管成功或失败，都清空数据
+    this.code = '';
+    this.item.bundles = [];
+    this.errors = [];
     this.resetScan();
   }
 }

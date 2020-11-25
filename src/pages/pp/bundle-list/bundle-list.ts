@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { BaseUI } from '../baseUI';
+import { BaseUI } from '../../baseUI';
 import { Storage } from "@ionic/storage";
-import { Api } from '../../providers';
+import { Api } from '../../../providers';
 
 @IonicPage()
 @Component({

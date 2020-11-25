@@ -5,11 +5,10 @@ import {
   ModalController,
   NavController,
   NavParams, Searchbar,
-  ToastController,
-  IonicPage
+  ToastController
 } from 'ionic-angular';
-import { BaseUI } from '../baseUI';
-import { Api } from '../../providers';
+import { BaseUI } from '../../baseUI';
+import { Api } from '../../../providers';
 import { Storage } from "@ionic/storage";
 import { fromEvent } from "rxjs/observable/fromEvent";
 

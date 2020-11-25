@@ -9,8 +9,8 @@ import {
   ModalController,
   Searchbar
 } from 'ionic-angular';
-import { Api } from '../../providers';
-import { BaseUI } from '../baseUI';
+import { Api } from '../../../providers';
+import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
 
