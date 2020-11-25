@@ -112,8 +112,7 @@ export class SheetPanelPage  extends BaseUI {
   }
   //显示错误信息列表
   openErrList(e) { 
-    //console.log(e.target);
-    //e.target.height: 80vh;
+    console.log(e.target);
   }
   //校验扫描
   checkScanCode() {
