@@ -41,7 +41,7 @@ export class InventoryListPage extends BaseUI {
         if (result.successful && result.data.rows.length == 0) {
           this.showNoContent = true;
         }
-        debugger;
+        //debugger;
         this.pageNum++;
         this.total = result.data.total;
         this.list.splice(this.list.length, 0, ...result.data.rows);

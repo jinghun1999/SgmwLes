@@ -2,11 +2,12 @@ import { Component, ViewChild } from '@angular/core';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 //import { TranslateService } from '@ngx-translate/core';
-import {Nav, Platform, ToastController} from 'ionic-angular';
+import { Nav, Platform } from 'ionic-angular';
+//import { ToastController } from 'ionic-angular';//20201123修改
 //import {Storage} from "@ionic/storage";
 import {LoginPage, HomePage} from '../pages';
 //import {Api} from '../providers';
-import {BaseUI} from "../pages/baseUI";
+import { BaseUI } from "../pages/baseUI";
 //import { AppUpdate } from '@ionic-native/app-update/ngx';
 //import { AppVersion } from '@ionic-native/app-version/ngx';
 
@@ -24,7 +25,7 @@ export class MyApp extends BaseUI {
               //private api: Api,
               // private appUpdate: AppUpdate,
               // private appVersion: AppVersion,
-              // private toastCtrl: ToastController,
+               //private toastCtrl: ToastController,
               private splashScreen: SplashScreen) {
     super();
     platform.ready().then(() => {

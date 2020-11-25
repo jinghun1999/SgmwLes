@@ -53,7 +53,7 @@ export class InventoryPage extends BaseUI {
     if (this.org && this.org.code) {
       this.api.get('inventory/getScanCode', {code: this.org.code}).subscribe((res: any) => {
         loading.dismissAll();
-        debugger;
+        //debugger;
         if (res.successful) {
           this.data = res.data;
           //this.current_part_index = 0;

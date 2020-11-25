@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>
+        <ion-label text-center>
+          <ion-icon color="primary" name="ios-arrow-back" float-left navPop></ion-icon>
+          <span>是否替换当前产线正在消耗的板材？</span>
+        </ion-label>
+      </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding-top>
+  <ion-list>
+    <ion-item *ngIf="err">
+      <ion-label color="danger">{{err}}</ion-label>
+    </ion-item>
+    <div class="ds-box" *ngFor="let bundle of bundle_list;let i=index">
+      <tr>
+        <h5>
+          <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{bundle.bundleNo}}          
+        </h5>
+        <span style="float: right;font-size:smaller;color: red;margin:1rem">重量：{{bundle.weight}}</span>
+      </tr>
+      <tr>
+        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
+        <!-- <p *ngIf="false">{{bundle.pieces}}</p> -->      
+        <span style="float: left;font-size:small;color: red;margin:1rem">当前第箱，共扫描箱</span>
+      </tr>
+            
+    </div>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">关闭</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" (click)="confirm()">确认</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

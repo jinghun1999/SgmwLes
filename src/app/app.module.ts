@@ -1,4 +1,4 @@
-///<reference path="../components/components.module.ts"/>
+﻿///<reference path="../components/components.module.ts"/>
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -16,6 +16,7 @@ import { Menus } from '../mocks/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
 import { SuspiciousProvider } from '../providers/suspicious';
+
 
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.

@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>冲压件装框</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content>
+  <form (submit)="scanBox()">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="item.box_label" name="box_label"></ion-searchbar>
+  </form>
+  <ion-list>
+    <ion-item>
+      <ion-label color="primary">冲压一线</ion-label>
+      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+        <ion-option *ngFor="let t of feedingPort" value="{{t.value}}">xx</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <ion-list>
+    <ion-item>
+      <ion-label color="primary">零件号</ion-label>
+      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+        <ion-option *ngFor="let t of pressPart" value="{{t.value}}">xx</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+</ion-content>
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">返回(F2)</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary"  (click)="save()">提交(F1)</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

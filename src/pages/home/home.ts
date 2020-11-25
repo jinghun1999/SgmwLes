@@ -3,7 +3,9 @@ import {App, IonicPage, LoadingController, ModalController, NavController, Toast
 import {Storage} from "@ionic/storage";
 import {Api, Menus, User} from '../../providers';
 //import { Menu } from '../../models/menu';
-import {BaseUI} from "../";
+import { BaseUI } from "../";
+
+
 //import {SetProfilePage} from "../set-profile/set-profile";
 //import {SettingsPage} from "../settings/settings";
 
@@ -97,7 +99,6 @@ export class HomePage extends BaseUI{
   //   document.removeEventListener("keydown", this.keydown);
   //   alert('remove home')
   // }
-
   /**
    * Prompt the user to add a new item. This shows our ItemCreatePage in a
    * modal and then adds the new item to our data source if the user created one.
