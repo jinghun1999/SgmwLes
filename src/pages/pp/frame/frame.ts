@@ -23,15 +23,15 @@ export class FramePage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
 
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  
-  workshop_list: any[] = [];
+
+  feedPort_list: any[] = [];
   item: any = {
     current_parts: 0,
     plant: '',
     workshop: '',
     box_label: '',
     car_mode: '',
-    pressPart: [],
+    pressPart: [],  //零件列表
     feedingPort: [],  //上料口列表
   };
   keyPressed: any;
@@ -40,7 +40,7 @@ export class FramePage extends BaseUI {
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public api: Api,
-    public navCtrl:NavController,
+    public navCtrl: NavController,
     private zone: NgZone,
     public alertCtrl: AlertController,
     public modalCtrl: ModalController,
@@ -61,9 +61,9 @@ export class FramePage extends BaseUI {
         break;
     }
   }
-  ionViewDidEnter() {    
+  ionViewDidEnter() {
     this.addkey();
-    //this.searchbar.setFocus();
+    this.searchbar.setFocus();
   }
   ionViewWillUnload() {
     this.removekey();
@@ -77,8 +77,8 @@ export class FramePage extends BaseUI {
     this.keyPressed.unsubscribe();
   }
   insertError = (msg: string, t: number = 0) => {
-    this.zone.run(() => { 
-    this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+    this.zone.run(() => {
+      this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
   }
 
@@ -86,25 +86,48 @@ export class FramePage extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.workshop = val;
-    });
+      this.getWorkshops();
+    });    
   }
+
+  private getWorkshops() {
+    this.api.get('PP/GetPortNo', { plant: this.item.plant, workshop : this.item.workshop}).subscribe((res: any) => {
+      if (res.successful) {
+        this.feedPort_list = res.data;
+        this.item.port_no = this.feedPort_list[0].portNo
+      } else {
+        this.insertError(res.message);
+      }
+      this.setFocus();
+    },
+      err => {
+        this.insertError('系统级别错误');
+        this.setFocus();
+      });
+  }
+
 
   //扫描执行过程
   scanBox() {
     let err = '';
-    if (this.item.box_label.trim() == '') {
+    if (this.item.box_label== '') {
       err = '无效的料箱号，请重试';
       this.insertError(err);
       this.setFocus();
       return;
     }
 
-    if (this.item.bundles.findIndex(p => p.bundleNo === this.item.box_label) >= 0) {
-      err = `料箱号${this.item.box_label}已扫描过，请扫描其他料箱号`;
-      this.insertError(err);
-      this.setFocus();
-      return;
-    }
+    // if (this.item.bundles.findIndex(p => p.bundleNo === this.item.box_label) >= 0) {
+    //   err = `料箱号${this.item.box_label}已扫描过，请扫描其他料箱号`;
+    //   this.insertError(err);
+    //   this.setFocus();
+    //   return;
+    // }
+
+    this.api.get('PP/GetFrame', { plant: this.item.plant,  workshop:this.item.workshop, box_label: this.item.box_label }).subscribe((res) => { 
+      console.log(res); 
+    });
+
   };
 
   //提交

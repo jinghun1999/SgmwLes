@@ -11,20 +11,27 @@
     <ion-item>
       <ion-label color="primary">冲压一线</ion-label>
       <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of feedingPort" value="{{t.value}}">xx</ion-option>
+        <ion-option *ngFor="let t of feedPort_list" value="{{t.portNo}}">{{t.portName}}
+        </ion-option>
       </ion-select>
+      <ion-label color="primary">冲压一线</ion-label>
     </ion-item>
   </ion-list>
   <ion-list>
     <ion-item>
       <ion-label color="primary">零件号</ion-label>
       <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of pressPart" value="{{t.value}}">xx</ion-option>
+        <ion-option *ngFor="let t of pressPart" value="">xx</ion-option>
       </ion-select>
     </ion-item>
   </ion-list>
 </ion-content>
 <ion-footer>
+  <ion-row id='errs' (click)="openErrList($event)">
+    <ul class="list">
+      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+    </ul>
+  </ion-row>
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">返回(F2)</button>

@@ -11,10 +11,11 @@ import { Api } from '../../../providers';
 })
 export class BundleListPage extends BaseUI {
   workshop: string;
+  plant: string;
   port_no: string;
   bundle_list: any[] = [];
   bundles: any[] = [];
-  result: any = {};
+  result: any = {}; //提交后返回的结果
   err: string;       //错误提示
 
   constructor(public navCtrl: NavController,
@@ -25,6 +26,8 @@ export class BundleListPage extends BaseUI {
     super();
     this.bundle_list = navParams.get('bundle_list');
     this.port_no = navParams.get('port_no');
+    this.workshop = navParams.get("workshop").toString();
+    this.plant = navParams.get('plant').toString();
   }
 
   confirm() {
@@ -34,18 +37,15 @@ export class BundleListPage extends BaseUI {
         this.bundles[i].productionStatus=3;//提交时状态改为3，表示被替换
        }
     }  
-    this.api.post('PP/PostFeedingPort', { plant: this.api.plant, workshop: this.workshop, port_no: this.port_no, partPanel: this.bundles }).subscribe((res) => { 
+    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, port_no: this.port_no, partPanel: this.bundles }).subscribe((res) => { 
       this.result = res;
     });
-
-    let data = this.result;
-    this.viewCtrl.dismiss(data);
+    //let data = '';
+    this.viewCtrl.dismiss();
   }
 
   ionViewDidEnter() {
-    this.storage.get('WORKSHOP').then((val) => {
-      this.workshop = val;
-    });
+    
   }
   ionViewDidLoad() {
     console.log('ionViewDidLoad BundleListPage');

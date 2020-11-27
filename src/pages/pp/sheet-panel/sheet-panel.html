@@ -6,13 +6,15 @@
 
 <ion-content>
   <form (submit)="scan()" *ngIf="item.target">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="bundle_no" name="bundle_no"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="bundle_no" name="bundle_no">
+    </ion-searchbar>
   </form>
   <ion-list>
     <ion-item>
       <ion-label color="primary">目标仓库</ion-label>
       <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}" [disabled]="t.value===item.source">{{t.text}}</ion-option>
+        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}" [disabled]="t.value===item.source">{{t.text}}
+        </ion-option>
       </ion-select>
     </ion-item>
   </ion-list>
@@ -22,24 +24,26 @@
         <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{bundle.bundleNo}}
         <span style="float: right;font-size:smaller;color: red;margin:1rem">重量：{{bundle.weight}}</span>
       </h4>
-      <tr>
-        <td>
+      <h5>
+        <ion-icon name="contact"></ion-icon> {{bundle.supplier}}
+      </h5>
+      <h5>
+        <ion-icon name="alarm-outline"></ion-icon>收货时间：{{bundle.received_time}}
+      </h5>
+      <!-- <td>
           <button ion-button item-end (click)="changeQty(bundle)" [color]='light'>修改收货数</button>
-        </td>
-        <td>
-          <tr>
-            <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
-            <p *ngIf="false">{{bundle.bundles.pieces}}</p>
-          </tr>
-          <tr>
-            <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描箱</span>
-          </tr>
-      </td>
+        </td> -->
+
+      <tr>
+        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
+      </tr>
+      <tr>
+        <span style="float: right;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
       </tr>
       <h5>
-        <button style="float:right;" ion-button color="danger" (click)="delete(i)">X</button>
+        <button style="float: right;" ion-button color="danger" (click)="delete(i)">X</button>
       </h5>
-    </div>
+    </div>    
   </div>
   <!-- <ul class="alert-message">
     <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
@@ -47,20 +51,19 @@
 </ion-content>
 
 <ion-footer>
-  <ion-row (click)="openErrList($event)" [ngStyle]="{'height':'100px'}">    
+  <ion-row id='errs' (click)="openErrList($event)">
     <ul class="list">
-      <li class="item"> 
-        错误提示
-      </li> 
-      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
+        {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
     </ul>
   </ion-row>
-  <ion-row>    
+  <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">返回(F1)</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!item.bundles.length" (click)="save()">提交(F2)</button>
+      <button no-margin ion-button full large color="primary" [disabled]="!item.bundles.length"
+        (click)="save()">提交(F2)</button>
     </ion-col>
   </ion-row>
 </ion-footer>
