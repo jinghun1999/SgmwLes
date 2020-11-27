@@ -40,7 +40,6 @@ export class SetProfilePage extends BaseUI {
 
     let loading = super.showLoading(this.loadingCtrl,"正在加载数据...");
     setTimeout(()=> {
-      debugger;
       this.api.get('system/getPlants', {plant: this.plant, type: -1}).subscribe((res: any) => {
           loading.dismiss();
 

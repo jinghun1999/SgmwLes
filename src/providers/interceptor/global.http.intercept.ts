@@ -43,6 +43,7 @@ export class GlobalHttpIntercept implements HttpInterceptor {
     toast.present();
   }
   private goTo() {
+    window.localStorage.removeItem('TOKEN')
     // 退出到登录页面
     this.getNavCtrl();
     setTimeout(() => this.navCtrl.setRoot('LoginPage'));
