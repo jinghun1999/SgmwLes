@@ -75,3 +75,9 @@
   color:#2ec95c;
 }
 .item-block{min-height: 0em;}
+.searchbar .searchbar-input-container .searchbar-search-icon {
+  @extend ion-icon;
+  @extend .ion-md-qr-scanner;
+  background-image: none;
+  font-size: 2.2rem;
+}

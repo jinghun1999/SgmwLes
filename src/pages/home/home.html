@@ -16,7 +16,7 @@
 
 <ion-content>
   <ion-grid text-center>
-    <ion-row *ngFor="let rowList of getRowListByGridList(2)">
+    <ion-row *ngFor="let rowList of getRowListByGridList(3)">
       <ion-col *ngFor="let item of rowList">
         <button (click)="openItem(item)">
           <p><ion-icon name="{{item.image_url}}" class="ion-icon-big"></ion-icon></p>

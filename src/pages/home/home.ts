@@ -1,20 +1,22 @@
-import {Component} from '@angular/core';
-import {App, IonicPage, LoadingController, ModalController, NavController, ToastController} from 'ionic-angular';
-import {Storage} from "@ionic/storage";
-import {Api, Menus, User} from '../../providers';
-//import { Menu } from '../../models/menu';
+import { Component } from "@angular/core";
+import {
+  App,
+  IonicPage,
+  LoadingController,
+  ModalController,
+  NavController,
+  ToastController,
+} from "ionic-angular";
+import { Storage } from "@ionic/storage";
+import { Api, Menus, User } from "../../providers";
 import { BaseUI } from "../";
-
-
-//import {SetProfilePage} from "../set-profile/set-profile";
-//import {SettingsPage} from "../settings/settings";
 
 @IonicPage()
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.html'
+  selector: "page-home",
+  templateUrl: "home.html",
 })
-export class HomePage extends BaseUI{
+export class HomePage extends BaseUI {
   //currentItems: Menu[];
   //gridList: Menu[];
   gridList: any[] = [];
@@ -22,48 +24,26 @@ export class HomePage extends BaseUI{
   username: string;
   version: string;
 
-  constructor(public navCtrl: NavController,
-              public items: Menus,
-              public toastCtrl: ToastController,
-              public loadingCtrl: LoadingController,
-              public modalCtrl: ModalController,
-              private storage: Storage,
-              private app: App,
-              private user: User,
-              public api: Api) {
+  constructor(
+    public navCtrl: NavController,
+    public items: Menus,
+    public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
+    public modalCtrl: ModalController,
+    private storage: Storage,
+    private app: App,
+    private user: User,
+    public api: Api
+  ) {
     super();
     //this.currentItems = this.items.query();
     //this.gridList = this.currentItems;
-    this.storage.get('USER_INFO').then(res => {
+    this.storage.get("USER_INFO").then((res) => {
       this.username = res;
     });
     //this.username = this.user._user.username;
     this.version = this.api.version;
   }
-
-  // keydown (event) {
-  //   switch (event.keyCode) {
-  //     case 112:
-  //       this.goSetting();
-  //       break;
-  //     case 49:
-  //     case 50:
-  //     case 51:
-  //     case 52:
-  //     case 53:
-  //     case 54:
-  //     case 55:
-  //       let i = event.keyCode - 48;
-  //       let index = this.gridList.findIndex(p => p.key === i);
-  //       if (index > -1) {
-  //         this.openItem(this.gridList[index]);
-  //       } else {
-  //         //alert('无效的按键')
-  //       }
-  //       break;
-  //   }
-  //   alert("currKey:" + event.keyCode);
-  // }
 
   /**
    * The view loaded, let's query our items for the list
@@ -71,27 +51,30 @@ export class HomePage extends BaseUI{
   ionViewDidLoad() {
     this.getWorkshop();
   }
-  getWorkshop =()=>{
-    this.storage.get('WORKSHOP').then((res) => {
+  getWorkshop = () => {
+    this.storage.get("WORKSHOP").then((res) => {
       if (!res) {
         this.setProfile();
       } else {
         //this.workshop = res;
       }
     });
-    let loading = super.showLoading(this.loadingCtrl, '加载中...');
-    this.api.get('system/getMenus').subscribe((res: any)=>{
-      if(res.successful){
-        this.gridList = res.data;
-      }else{
-        super.showToast(this.toastCtrl, res.message, 'error');
+    let loading = super.showLoading(this.loadingCtrl, "加载中...");
+    this.api.get("system/getMenus").subscribe(
+      (res: any) => {
+        if (res.successful) {
+          this.gridList = res.data;
+        } else {
+          super.showToast(this.toastCtrl, res.message, "error");
+        }
+        loading.dismiss();
+      },
+      (err) => {
+        super.showToast(this.toastCtrl, "系统错误", "error");
+        loading.dismiss();
       }
-      loading.dismiss();
-    },(err)=>{
-      super.showToast(this.toastCtrl, '系统错误', 'error');
-      loading.dismiss();
-    })
-  }
+    );
+  };
   // ionViewDidEnter(){
   //   document.addEventListener("keydown", this.keydown);
   // }
@@ -104,54 +87,51 @@ export class HomePage extends BaseUI{
    * modal and then adds the new item to our data source if the user created one.
    */
   setProfile() {
-    let addModal = this.modalCtrl.create('SetProfilePage',{}, {enableBackdropDismiss: false, showBackdrop: false} );
-    addModal.onDidDismiss(item => {
+    let addModal = this.modalCtrl.create(
+      "SetProfilePage",
+      {},
+      { enableBackdropDismiss: false, showBackdrop: false }
+    );
+    addModal.onDidDismiss((item) => {
       this.getWorkshop();
       if (item) {
         //this.items.add(item);
       }
-    })
+    });
     addModal.present();
   }
 
-  /**
-   * Delete an item from the list of items.
-
-  deleteItem(item) {
-    this.items.delete(item);
-  }
-   */
-  /**
-   * Navigate to the detail page for this item.
-   */
   openItem(item: any) {
-    if(item.link_url)
-      this.navCtrl.push(item.link_url, { });
+    if (item.link_url) this.navCtrl.push(item.link_url, {});
   }
 
   getRowListByGridList(size) {
-    var rowList = []
+    var rowList = [];
     for (var i = 0; i < this.gridList.length; i += size) {
       rowList.push(this.gridList.slice(i, i + size));
     }
-    return rowList
+    return rowList;
   }
 
-  goSetting(){
-    this.navCtrl.push('SettingsPage', { });
+  goSetting() {
+    this.navCtrl.push("SettingsPage", {});
   }
 
-  logout(){
+  logout() {
     this.user.logout().subscribe((re) => {
-      debugger;
-      setTimeout(() => {
-        this.app.getRootNav().setRoot('LoginPage', {}, {
-          animate: true,
-          direction: 'forward'
+        setTimeout(() => {
+          this.app.getRootNav().setRoot(
+            "LoginPage", {},
+            {
+              animate: true,
+              direction: "forward",
+            }
+          );
         });
-      });
-    }, (r) => {
-      alert('注销失败');
-    });
+      },
+      (r) => {
+        alert("注销失败");
+      }
+    );
   }
 }
