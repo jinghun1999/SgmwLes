@@ -20,7 +20,7 @@ import {fromEvent} from "rxjs/observable/fromEvent";
 })
 
 export class SuspiciousAddPage extends BaseUI {
-  @ViewChild(Searchbar) searchbar: Searchbar;
+  @ViewChild('searchbar') searchbar: Searchbar;
 
   item: any = {
     pack_qty: 1,
@@ -243,19 +243,16 @@ export class SuspiciousAddPage extends BaseUI {
     this.label = '';
     setTimeout(() => {
       this.searchbar.setFocus();
-    }, 100);
+    }, 500);
   }
   resetSearch = () => {
-    this.label = '';
     this.item = {
       pack_qty: 1,
       part_qty: 0,
       frag_qty: 0,
       issue_class: '',
     };
-    setTimeout(() => {
-      this.searchbar.setFocus();
-    }, 100);
+    this.searchFocus();
   }
   focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
   blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
