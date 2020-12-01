@@ -21,7 +21,6 @@ import { fromEvent } from "rxjs/observable/fromEvent";
 })
 export class PanelFeedPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
-  barTextHolderText: string = '扫描上料口/产线，光标在此处'; //扫描文本框placeholder属性
   feedPort_list: any[] = []; //上料口选项
   bundles: any[] = []; //提交时的临时表，bundles.push(item.partPanel),为了修改productionStatus的值
   code: string = ''; //扫描的上料口或捆包号

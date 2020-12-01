@@ -6,7 +6,7 @@
 
 <ion-content>
   <form (submit)="scan()">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
+    <ion-searchbar #searchbar placeholder="扫描上料口/产线，光标在此处" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
   <ion-list>
