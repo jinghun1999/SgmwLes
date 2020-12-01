@@ -82,6 +82,7 @@ export class PanelFeedPage extends BaseUI {
       this.item.workshop = val;
       this.getWorkshops();
     });
+    this.setFocus();
   }
   private getWorkshops() {
     this.api.get('pp/getPortNo', {
@@ -110,7 +111,6 @@ export class PanelFeedPage extends BaseUI {
       (err) => {
         this.insertError('系统级别错误');
       };
-    this.setFocus();
   }
 
   //扫描
@@ -260,7 +260,9 @@ export class PanelFeedPage extends BaseUI {
   }
   setFocus() {
     this.code = '';
-    this.searchbar.setFocus();
+    setTimeout(() => {
+      this.searchbar.setFocus();
+    }, 200);
   }
 
   clearPartPanel() {
