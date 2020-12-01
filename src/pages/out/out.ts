@@ -18,11 +18,11 @@ import {fromEvent} from "rxjs/observable/fromEvent";
   templateUrl: 'out.html',
 })
 export class OutPage extends BaseUI {
-  @ViewChild(Searchbar) searchbar: Searchbar;
+  @ViewChild('searchbar') searchbar: Searchbar;
 
   code: string = '';                      //记录扫描编号
   scanFlag: number = 0;                   //扫描标记：0初始标记，1已扫单，2已扫箱
-  barTextHolderText: string = '请扫描出库请求单二维码';   //扫描文本框placeholder属性
+  barTextHolderText: string = '扫描出库请求单';   //扫描文本框placeholder属性
   sheet: any = {};                              //出库请求单
   parts: any[] = [];                     //出库请求单零件列表
   current_part_index: number = 0;
@@ -73,7 +73,7 @@ export class OutPage extends BaseUI {
     setTimeout(() => {
       this.searchbar.setFocus();
       this.addkey();
-    });
+    }, 200);
   }
   ionViewWillUnload() {
     this.removekey();
@@ -152,7 +152,7 @@ export class OutPage extends BaseUI {
           this.sheet = res.data.Sheet;
           this.parts = res.data.SheetDetail;
           this.scanFlag = 1;
-          this.barTextHolderText = '请扫描料箱标签';
+          this.barTextHolderText = '扫描料箱标签';
         } else {
           this.insertError(res.message);
         }
@@ -461,9 +461,12 @@ export class OutPage extends BaseUI {
     this.sheet = {};
     this.parts = [];
     this.code = '';
-    this.barTextHolderText = '请扫描出库请求单号';
+    this.barTextHolderText = '扫描出库请求单号';
     this.scanFlag = 0;
     this.current_part_index = 0;
     this.errors = [];
   }
+
+  focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
+  blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
 }

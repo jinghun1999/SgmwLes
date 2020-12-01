@@ -6,7 +6,7 @@
 
 <ion-content>
   <form (submit)="searchPart()">
-    <ion-searchbar #searchbar placeholder="扫描或录入零件箱标签" [(ngModel)]="label" name="code" maxlength="19"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="扫描或录入零件箱标签" [(ngModel)]="label" name="code" maxlength="19" (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
   <ion-list *ngIf="data.plant">
     <ion-item>

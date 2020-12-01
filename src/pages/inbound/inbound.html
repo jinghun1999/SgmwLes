@@ -9,7 +9,7 @@
 
 <ion-content>
   <form (submit)="scan()">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan" maxlength="24"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan" maxlength="24" (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
   <ion-list *ngIf="scanFlag>0">
     <ion-item>

@@ -9,7 +9,7 @@
 
 <ion-content>
   <form (submit)="scan()" *ngIf="item.target">
-    <ion-searchbar #searchbar placeholder="扫描或输入箱标签码以添加零件" [(ngModel)]="label" name="label"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="扫描箱标签码" [(ngModel)]="label" name="label" (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
   <ion-list>
     <ion-item>

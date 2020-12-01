@@ -19,7 +19,7 @@ import {fromEvent} from "rxjs/observable/fromEvent";
   templateUrl: 'move.html',
 })
 export class MovePage extends BaseUI {
-  @ViewChild(Searchbar) searchbar: Searchbar;
+  @ViewChild('searchbar') searchbar: Searchbar;
 
   label: string;
   item: any = {
@@ -209,9 +209,11 @@ export class MovePage extends BaseUI {
   }
 
   setFocus() {
-    this.label = '';
+    this.label = '';    
     setTimeout(() => {
-      this.searchbar.setFocus();
-    }, 100);
+      this.searchbar && this.searchbar.setFocus();
+    }, 200);
   }
+  focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
+  blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
 }

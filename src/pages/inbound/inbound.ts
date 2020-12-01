@@ -436,4 +436,6 @@ export class InboundPage extends BaseUI {
     this.current_part_index = 0;
     this.errors = [];
   }
+  focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
+  blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
 }

@@ -15,7 +15,7 @@
 
 <ion-content>
   <form (submit)="search()">
-    <ion-searchbar #searchbar placeholder="扫描封存条二维码" [(ngModel)]="label" name="label"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="扫描封存条二维码" [(ngModel)]="label" name="label" (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
   <ion-list *ngIf="data.code">
     <ion-item>

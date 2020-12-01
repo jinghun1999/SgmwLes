@@ -21,7 +21,6 @@ export class OutJisPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   fetching: boolean = false;
   label: string = '';                      //记录扫描编号
-  barTextHolderText: string = '请扫描包装标签';   //扫描文本框placeholder属性
   workshop_list: any[] = [];
   item: any = {
     plant: '',                            //工厂
@@ -278,4 +277,6 @@ export class OutJisPage extends BaseUI {
       this.searchbar.setFocus();
     }, 200);
   }
+  focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
+  blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
 }

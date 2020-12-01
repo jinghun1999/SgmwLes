@@ -9,7 +9,7 @@
 
 <ion-content>
   <form (submit)="scanBox()" *ngIf="item.target">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="label" name="scan"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="扫描包装标签" [(ngModel)]="label" name="scan" (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
   <ion-list>
     <ion-item>
