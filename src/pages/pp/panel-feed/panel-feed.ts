@@ -145,7 +145,7 @@ export class PanelFeedPage extends BaseUI {
                 this.updateDropDownList(bundle.portNo); 
                 this.openDig(bundle.part);
               } else {
-                this.updateDropDownList(this.item.portNo); 
+                this.updateDropDownList(this.code); 
               }
             } else {
               // 捆包号
@@ -169,7 +169,7 @@ export class PanelFeedPage extends BaseUI {
     this.setFocus();
   }
 
-  openDig = (parts: []) => {
+  openDig = (parts: any) => {
     const _m = this.modalCtrl.create('BundleListPage', {
       //1.1 弹框显示捆包号
       plant: this.api.plant,
