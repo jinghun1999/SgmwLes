@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { Component,ViewChild  } from '@angular/core';
+import { IonicPage, NavController, NavParams, ViewController,Searchbar } from 'ionic-angular';
 import { BaseUI } from '../../baseUI';
 import { Storage } from "@ionic/storage";
 import { Api } from '../../../providers';
@@ -10,13 +10,14 @@ import { Api } from '../../../providers';
   templateUrl: 'bundle-list.html',
 })
 export class BundleListPage extends BaseUI {
+  @ViewChild(Searchbar) searchbar: Searchbar;
   workshop: string;
   plant: string;
   port_no: string;
   bundle_list: any[] = [];
   bundles: any[] = [];
   result: any = {}; //提交后返回的结果
-  err: string;       //错误提示
+  
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
@@ -24,10 +25,10 @@ export class BundleListPage extends BaseUI {
     public storage: Storage,
     public api:Api) {
     super();
-    this.bundle_list = navParams.get('bundle_list');
-    this.port_no = navParams.get('port_no');
-    this.workshop = navParams.get("workshop").toString();
-    this.plant = navParams.get('plant').toString();
+    this.bundle_list = navParams.get('bundle_list');//捆包号列表
+    this.port_no = navParams.get('port_no');//上料口
+    this.workshop = navParams.get("workshop").toString();//车间
+    this.plant = navParams.get('plant').toString();//工厂
   }
 
   confirm() {
@@ -37,11 +38,11 @@ export class BundleListPage extends BaseUI {
         this.bundles[i].productionStatus=3;//提交时状态改为3，表示被替换
        }
     }  
-    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, port_no: this.port_no, partPanel: this.bundles }).subscribe((res) => { 
-      this.result = res;
+    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundles }).subscribe((res) => { 
+      
+      this.viewCtrl.dismiss(res);
     });
-    //let data = '';
-    this.viewCtrl.dismiss();
+    //this.viewCtrl.dismiss(this.result);
   }
 
   ionViewDidEnter() {

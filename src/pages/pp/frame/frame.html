@@ -5,31 +5,61 @@
 </ion-header>
 <ion-content>
   <form (submit)="scanBox()">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="item.box_label" name="box_label"></ion-searchbar>
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="item.box_label" name="box_label">
+    </ion-searchbar>
   </form>
   <ion-list>
     <ion-item>
-      <ion-label color="primary">冲压一线</ion-label>
-      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of feedPort_list" value="{{t.portNo}}">{{t.portName}}
+      <ion-label color="primary">{{port_no}}</ion-label>
+      <ion-select [(ngModel)]="port_no" interface="popover" okText="选择"
+      cancelText="取消" placeholder="请选择" >
+        <ion-option *ngFor="let t of feedPort_list" value="{{t.port_no}}">
+          剩余数量：{{t.remain_pieces}}          
         </ion-option>
       </ion-select>
-      <ion-label color="primary">冲压一线</ion-label>
+      <ion-label color="primary">{{part_name}}</ion-label>
     </ion-item>
   </ion-list>
+
   <ion-list>
     <ion-item>
-      <ion-label color="primary">零件号</ion-label>
-      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of pressPart" value="">xx</ion-option>
+      <ion-label color="primary">{{item.pressPart.length>0?item.pressPart[0].part_no:'选择'}}</ion-label>
+      <ion-select [(ngModel)]="item.part_no" interface="popover" (ionChange)="changeFeed(item)" okText="选择"
+        cancelText="取消" placeholder="请选择">
+        <ion-option *ngFor="let t of item.pressPart" value="{{t.part_no}}">
+          消耗：{{t.usage}}
+        </ion-option>
       </ion-select>
+      <ion-label color="primary">{{item.pressPart.length>0?item.pressPart[0].part_name:''}}</ion-label>
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="item.pressPart.length>0">
+    <ion-item>
+      <ion-label>料箱号</ion-label>
+      <ion-label>{{item.box_label}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>车型</ion-label>
+      <ion-icon name="car"></ion-icon>
+      <ion-label>{{item.car_model}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>箱型</ion-label>
+      <ion-icon name="box"></ion-icon>
+      <ion-label>{{item.box_mode}}</ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>装箱数量：</ion-label>
+      <ion-label>{{item.pressPart[0].packing_qty}}</ion-label>
+      <ion-label><button ion-button icon-end (click)="changeQty(item.pressPart[0])">修改装箱信息</button></ion-label>
     </ion-item>
   </ion-list>
 </ion-content>
 <ion-footer>
   <ion-row id='errs' (click)="openErrList($event)">
     <ul class="list">
-      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">{{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
+        {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
     </ul>
   </ion-row>
   <ion-row>
@@ -37,7 +67,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">返回(F2)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary"  (click)="save()">提交(F1)</button>
+      <button no-margin ion-button full large color="primary" (click)="save()">提交(F1)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

@@ -12,8 +12,8 @@
   <ion-list>
     <ion-item>
       <ion-label color="primary">冲压线</ion-label>
-      <ion-select [(ngModel)]="item.portNo" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option  *ngFor="let t of feedPort_list" value="{{t.portNo}}">{{t.portName}}</ion-option>
+      <ion-select [(ngModel)]="item.portNo" (ngModelChange)="clearPartPanel()" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+        <ion-option  *ngFor="let t of feedPort_list"  value="{{t.portNo}}">{{t.portName}}</ion-option>
       </ion-select>
     </ion-item>
   </ion-list>

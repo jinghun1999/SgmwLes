@@ -13,22 +13,25 @@ import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
+
 @IonicPage()
 @Component({
-  selector: 'page-bundle',
-  templateUrl: 'bundle.html',
+  selector: 'page-suspicious-in-out',
+  templateUrl: 'suspicious-in-out.html',
 })
-export class BundlePage extends BaseUI {
+export class SuspiciousInOutPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
 
   code: string = '';                      //记录扫描编号
-  barTextHolderText: string = '请扫描捆包号';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
+  barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
+  workshop_list:any[]=[];//加载获取的的车间列表
   scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
-  item: any = {
-    bundles: [],
+  item: any = {    
+    plant: '',
+    workshop: '',
+    parts: [],
   };
   constructor(public navParams: NavParams,
     public toastCtrl: ToastController,
@@ -77,8 +80,22 @@ export class BundlePage extends BaseUI {
   }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
-      this.workshop = val;
+      this.item.plant = this.api.plant;
+      this.item.workshop = val;
+      this.getWorkshops();
     });
+  }
+  private getWorkshops() {
+    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
+      if (res.successful) {
+        this.workshop_list = res.data;
+      } else {
+        this.insertError(res.message);
+      }
+    },
+      err => {
+        this.insertError('系统级别错误，请返回重试');
+      });
   }
 
 //校验扫描
@@ -89,8 +106,8 @@ checkScanCode() {
     this.insertError(err);
   }
 
-  if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-    err = `标签${this.code}已扫描过，请扫描其他标签`;
+  if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
+    err = `料箱${this.code}已扫描过，请扫描其他标签`;
     this.insertError(err);
   }
 
@@ -111,38 +128,32 @@ checkScanCode() {
     else {
       this.resetScan();
     }
-  }
-
-  
+  }  
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetPartsStorageIn', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (res.data.plant === this.api.plant && res.data.workshop === this.workshop) {
-          if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {            
-            this.insertError(`标签${this.code}已扫描过，请扫描其他标签`);
+          if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {            
+            this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
             return;
           }
           let model = res.data;
-          this.item.bundles.splice(0, 0, {
+          this.item.parts.splice(0, 0, {
+            type:model.type,
             plant: model.plant,
-            bundleNo: model.bundleNo,
-            weight: model.weight,
-            workshop: model.workshop,
-            received_time: model.received_time,
-            bundleLabel: model.bundleLabel,
-            pieces: model.pieces,
-            actualReceivePieces: model.actualReceivePieces,
-            supplier: model.supplier,
-            sapNo: model.sapNo,
-            sapOrderNo: model.sapOrderNo
+            boxLabel: model.boxLabel,
+            boxModel: model.boxModel,
+            partNo: model.partNo,
+            partName: model.partName,
+            carModel: model.carModel,
+            packingQty: model.packingQty,
+            currentParts: model.currentParts,
+            bundle_no: model.bundle_no,
+            pressParts:model.pressParts
           });
-          this.scanCount = this.item.bundles.length;
-        }
-        else { 
-          
-        }
+          this.scanCount = this.item.parts.length;
+      
         this.resetScan();
       }
       else {
@@ -152,16 +163,17 @@ checkScanCode() {
       err => {
         this.insertError('系统级别错误');
       });
+    this.resetScan();
   }
 
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.actualReceivePieces,
+      max_parts: model.packingQty,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.actualReceivePieces = data.receive
+        model.packingQty = data.receive
       }
     });
     _m.present();
@@ -189,14 +201,14 @@ checkScanCode() {
     this.insertError('正在撤销...', 2);
     this.code = '';
     this.errors = [];
-    this.item.bundles = [];
+    this.item.parts = [];
     this.insertError("撤销成功");
     this.resetScan();
   }
 
   //删除
   delete(i) {
-    this.item.bundles.splice(i, 1);
+    this.item.parts.splice(i, 1);
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -205,26 +217,25 @@ checkScanCode() {
   }
   //提交
   outStock() {
-    if (!this.item.bundles) {
+    if (!this.item.parts) {
       this.insertError('请先扫描捆包号');
       return;
     };
 
-    if(new Set(this.item.bundles).size !== this.item.bundles.length){
+    if(new Set(this.item.parts).size !== this.item.parts.length){
       this.insertError("提交的数据中存在重复的捆包号，请检查！");
       return;
     };
 
-    // if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-    //   err = `标签${this.code}已扫描过，请扫描其他标签`;
+    // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
+    //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
     //   this.insertError(err);
     // }
 
-    this.api.post('PP/PostPanelMaterial', {
+    this.api.post('PP/PostPartsStorageOut', {
       plant: this.api.plant,
-      workshop: this.workshop,
-      bundle_no: this.code,
-      partPanel: this.item.bundles
+      workshop: this.item.workshop,
+      parts: this.item.parts
     }).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功');
@@ -237,7 +248,7 @@ checkScanCode() {
         this.insertError('系统级别错误');
         this.resetScan();
       });    
-    this.item.bundles = [];    
+    this.item.parts = [];    
     this.resetScan();
   }
 }

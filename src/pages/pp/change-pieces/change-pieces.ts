@@ -31,6 +31,10 @@ export class ChangePiecesPage {
       this.err = '提示消息：请输入箱数！';
       return;
     }
+    if (!isNaN(this._parts) && this.receivePieces > 0 && this.receivePieces > this._parts) {      
+      this.err = '已超过数量';
+      return;
+    }
     
     let data = { receive: this.receivePieces };
     this.viewCtrl.dismiss(data);

@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>不良品报废</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <form (submit)="scan()">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code">
+    </ion-searchbar>
+  </form>
+  <!-- <ion-list>
+    <ion-item>
+      <ion-label color="primary">目标仓库</ion-label>
+      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}" [disabled]="t.value===workshop">{{t.text}}
+        </ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list> -->
+  <div>
+    <div class="ds-box" *ngFor="let part of item.parts;let i=index">
+      <h4>
+        <ion-icon name="qr_code" style="color:green"></ion-icon> 料箱号：{{part.boxLabel}}
+         捆包号：{{part.bundle_no}}
+      </h4>
+      <h5>
+        <ion-icon name="part"></ion-icon> {{part.partNo}}
+        <ion-icon name="car"></ion-icon>车型: {{part.carModel}}
+        
+      </h5>
+      <h5>
+        {{part.partName}}
+        <ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}
+      </h5>
+      <tr>
+        <td>
+          <button ion-button item-end (click)="changeQty(part)"  [color]='light'>修改出库数</button>
+        </td>
+        <td>
+          <tr>
+             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
+          </tr>
+          <tr>
+            <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
+          </tr>
+      </td>
+      </tr> 
+          <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-row id='errs' (click)="openErrList($event)">
+    <ul class="list">
+      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
+        {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+    </ul>
+  </ion-row>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" [disabled]="!item.parts.length"
+        (click)="save()">提交(F2)</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

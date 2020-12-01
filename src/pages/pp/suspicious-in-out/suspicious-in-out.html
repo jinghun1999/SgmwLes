@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>冲压件入库</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <form (submit)="scan()">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code">
+    </ion-searchbar>
+  </form>
+  <ion-col no-padding>
+    <button no-margin ion-button full large color="Aquamarine"  (click)="inRepair()">移入返修区</button>
+  </ion-col>
+  <ion-col no-padding>
+    <button no-margin ion-button full large color="Snow" [disabled]="!item.parts.length"
+      (click)="outRepair()">移除返修区</button>
+  </ion-col>
+  <div>
+    <div class="ds-box" *ngFor="let part of item.parts;let i=index">
+      <h4>
+        <ion-icon name="qr_code" style="color:green"></ion-icon> 料箱号：{{part.boxLabel}}
+        <span style="float:right;font-size:small;">捆包号：{{part.bundle_no}}</span>
+      </h4>
+      <h6>
+        <ion-icon name="part"></ion-icon> {{part.partNo}}
+        <span style="float:right;">
+          <ion-icon name="car"></ion-icon>车型: {{part.carModel}}
+        </span>
+      </h6>
+      <h5>
+        {{part.partName}}
+        <span style="float: right;"><ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}</span> 
+      </h5>
+
+      <td>
+        <button ion-button item-end (click)="changeQty(part)" [color]='light'>修改入库数</button>
+      </td>
+      <td>
+        <tr>
+          <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
+        
+          <span style="float: left;font-size:small;">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
+          <button ion-button color="danger" (click)="delete(i)" style="float: right;">X</button>
+        </tr>
+        
+      </td>
+    </div>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-row id='errs' (click)="openErrList($event)">
+    <ul class="list">
+      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
+        {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
+    </ul>
+  </ion-row>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="primary" [disabled]="!item.parts.length"
+        (click)="save()">提交(F2)</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>
