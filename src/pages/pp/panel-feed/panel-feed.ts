@@ -94,9 +94,9 @@ export class PanelFeedPage extends BaseUI {
           this.feedPort_list = ports;
           this.storage.get('PortNo').then((val) => {
             //1.从缓存中获取数据，            
-            const result = ports.find((f: any) => f.portNo == val);
-            if (val && result) {
-              this.item.portNo = result.portNo;
+            const a = ports.find((f: any) => f.portNo == val);
+            if (val && a) {
+              this.item.portNo = a.portNo;
             } else if (ports.length) {
               const a = ports.find((f: any) => f.isSelect); 
               this.item.portNo = a? a.portNo: ports[0].portNo;
@@ -133,73 +133,29 @@ export class PanelFeedPage extends BaseUI {
         plant: this.item.plant,
         workshop: this.item.workshop,
         port_no: this.code,
-      })
-      .subscribe(
+        selectPort_no: this.item.portNo,
+      }).subscribe(
         (res: any) => {
           if (res.successful) {
             const bundle = res.data;
+            // 上料口
             if (bundle.type == 1) {
-              // 上料口
-              this.item.portNo = bundle.portNo;
               if (bundle.part.length) {
-                //part值>0 ,有parts，弹框显示
-                this.item.partPanel = [];
                 //不管是否有捆包，都把之前扫描的捆包号清除
-                const _m = this.modalCtrl.create('BundleListPage', {
-                  //1.1 弹框显示捆包号
-                  plant: this.api.plant,
-                  workshop: this.item.workshop,
-                  bundle_list: bundle.part,
-                  port_no: this.item.portNo,
-                });
-                _m.onDidDismiss((data) => {
-                  if (data) {
-                    if (data.successful) {
-                      this.updateDropDownList(this.code);
-                      this.storage.set('PortNo', this.code); //缓存当前上料口
-                      super.showToast(this.toastCtrl, '提交成功');
-                    } else {
-                      //提交失败
-                      this.insertError(data.message);
-                    }
-                  } else {
-                    //选择关闭操作
-                  }
-                });
-                _m.present();
+                this.updateDropDownList(bundle.portNo); 
+                this.openDig(bundle.part);
               } else {
-                this.updateDropDownList(this.item.portNo); //更新下拉框
-                this.storage.set('PortNo', this.item.portNo); //缓存当前上料口
+                this.updateDropDownList(this.item.portNo); 
               }
             } else {
               // 捆包号
+              // 已经扫描过捆包号，直接添加明细
               if (this.item.partPanel.length) {
-                //已经扫描过捆包号，直接添加明细
                 this.item.partPanel.splice(0, 0, bundle);
               } else {
                 // 没有扫描过捆包号，先获取下拉框是否包含捆包号
-                this.api.get('pp/getFeedingPort', {
-                    plant: this.item.plant,
-                    workshop: this.item.workshop,
-                    port_no: this.item.portNo,
-                  }).subscribe(
-                    (res: any) => {
-                      if (res.successful) {
-                        if(res.data.part.length) {
-                          this.scanOk(res.data.part);
-                        } else {
-                          //不包含捆包号，记录扫描的捆包号明细
-                          this.item.partPanel.splice(0, 0, bundle);
-                        }
-                      } else {
-                        this.insertError(res.message);
-                      }
-                    },
-                    (error) => {
-                      this.insertError('系统级别错误');
-                      this.setFocus();
-                    }
-                  );
+                this.openDig(bundle.part); 
+                this.item.partPanel.splice(0, 0, bundle);
               }
             }
           } else {
@@ -212,56 +168,29 @@ export class PanelFeedPage extends BaseUI {
       );
     this.setFocus();
   }
-  scanOk = (parts: []) => {
-    //当前下拉框包含捆包号，弹框显示
+
+  openDig = (parts: []) => {
     const _m = this.modalCtrl.create('BundleListPage', {
+      //1.1 弹框显示捆包号
       plant: this.api.plant,
       workshop: this.item.workshop,
       bundle_list: parts,
       port_no: this.item.portNo,
     });
     _m.onDidDismiss((data) => {
-      //获取弹框操作返回的值,选择关闭返回undefined
       if (data) {
-        //选择 提交
         if (data.successful) {
-          //提交成功
-          this.updateDropDownList(this.item.portNo); //更新下拉框
-          this.item.partPanel = []; //清除扫描的捆包号
-          this.storage.set('PortNo', this.item.portNo); //缓存当前上料口
-          super.showToast(this.toastCtrl, '提交成功');
-          //添加新扫描的捆包号明细
-          this.api.get('pp/getFeedingPort', {
-              plant: this.item.plant,
-              workshop: this.item.workshop,
-              port_no: this.code,
-            }).subscribe(
-              (res: any) => {
-                if (res.successful) {
-                  this.item.partPanel.splice(0, 0, res.data);
-                } else {
-                  this.insertError(res.message);
-                }
-              },
-              (error) => {
-                this.insertError('pp/getFeedingPort Error');
-              }
-            );
+          this.updateDropDownList(this.code);
+          this.storage.set('PortNo', this.code); //缓存当前上料口
         } else {
-          //提交失败,显示异常
-          this.insertError('提交失败' + data.message);
+          //提交失败
+          this.insertError(data.message);
         }
-      } else {
-        this.code = '';
       }
     });
     _m.present();
-  };
-  //显示错误信息列表
-  openErrList(e) {
-    console.log(e.target);
   }
-
+  
   //提交
   panelSubmit() {
     let err = '';
