@@ -174,7 +174,8 @@ export class CloseFramePage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packingQty = data.receive
+        model.packingQty = model.packingQty - data.receive
+        this.targetItem.pasrt.packingQty += data.receive;
       }
     });
     _m.present();
