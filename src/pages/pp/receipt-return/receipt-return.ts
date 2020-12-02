@@ -264,6 +264,14 @@ checkScanCode() {
     });
     _m.present();
   }
+  focusInput = () => {
+    this.searchbar.setElementClass('bg-red', false);
+    this.searchbar.setElementClass('bg-green', true);
+  };
+  blurInput = () => {
+    this.searchbar.setElementClass('bg-green', false);
+    this.searchbar.setElementClass('bg-red', true);
+  };
 }
 
 

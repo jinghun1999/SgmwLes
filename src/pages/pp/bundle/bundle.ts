@@ -81,46 +81,46 @@ export class BundlePage extends BaseUI {
     });
   }
 
-//校验扫描
-checkScanCode() {
-  let err = '';
-  if (this.code == '') {
-    err = '请扫描捆包号！';
-    this.insertError(err);
-  }
+  //校验扫描
+  checkScanCode() {
+    let err = '';
+    if (this.code == '') {
+      err = '请扫描捆包号！';
+      this.insertError(err);
+    }
 
-  if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-    err = `标签${this.code}已扫描过，请扫描其他标签`;
-    this.insertError(err);
-  }
+    if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
+      err = `标签${this.code}已扫描过，请扫描其他标签`;
+      this.insertError(err);
+    }
 
-  if (err.length > 0) {
-    this.searchbar.setFocus();
-    return false;
+    if (err.length > 0) {
+      this.searchbar.setFocus();
+      return false;
+    }
+    return true;
   }
-  return true;
-}
 
 
   //开始扫描
   scan() {
-    if (this.checkScanCode()) {      
-        //扫捆包号
-        this.scanSheet();      
+    if (this.checkScanCode()) {
+      //扫捆包号
+      this.scanSheet();
     }
     else {
       this.resetScan();
     }
   }
 
-  
+
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {
         if (res.data.plant === this.api.plant && res.data.workshop === this.workshop) {
-          if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {            
+          if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
             this.insertError(`标签${this.code}已扫描过，请扫描其他标签`);
             return;
           }
@@ -140,8 +140,8 @@ checkScanCode() {
           });
           this.scanCount = this.item.bundles.length;
         }
-        else { 
-          
+        else {
+
         }
         this.resetScan();
       }
@@ -177,7 +177,7 @@ checkScanCode() {
       }, {
         text: '确认撤销',
         handler: () => {
-          this.cancel_do();
+          this.navCtrl.popToRoot();
         }
       }]
     });
@@ -185,14 +185,14 @@ checkScanCode() {
   }
 
   //撤销
-  cancel_do() {
-    this.insertError('正在撤销...', 2);
-    this.code = '';
-    this.errors = [];
-    this.item.bundles = [];
-    this.insertError("撤销成功");
-    this.resetScan();
-  }
+  // cancel_do() {
+  //   this.insertError('正在撤销...', 2);
+  //   this.code = '';
+  //   this.errors = [];
+  //   this.item.bundles = [];
+  //   this.insertError("撤销成功");
+  //   this.resetScan();
+  // }
 
   //删除
   delete(i) {
@@ -210,7 +210,7 @@ checkScanCode() {
       return;
     };
 
-    if(new Set(this.item.bundles).size !== this.item.bundles.length){
+    if (new Set(this.item.bundles).size !== this.item.bundles.length) {
       this.insertError("提交的数据中存在重复的捆包号，请检查！");
       return;
     };
@@ -228,16 +228,24 @@ checkScanCode() {
     }).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功');
+        this.item.bundles = [];
       }
       else {
         this.insertError(res.message);
       }
     },
       err => {
-        this.insertError('系统级别错误');
-        this.resetScan();
-      });    
-    this.item.bundles = [];    
+        this.insertError('提交失败');
+      });
+
     this.resetScan();
   }
+  focusInput = () => {
+    this.searchbar.setElementClass('bg-red', false);
+    this.searchbar.setElementClass('bg-green', true);
+  };
+  blurInput = () => {
+    this.searchbar.setElementClass('bg-green', false);
+    this.searchbar.setElementClass('bg-red', true);
+  };
 }

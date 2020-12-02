@@ -5,7 +5,7 @@
 </ion-header>
 <ion-content>
   <form (submit)="scanBox()">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="item.box_label" name="box_label">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="item.box_label" name="box_label" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
   <ion-list>
@@ -67,7 +67,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">返回(F2)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" (click)="save()">提交(F1)</button>
+      <button no-margin ion-button full large color="primary" [disabled]="!item.pressPart.length" (click)="save()">提交(F1)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

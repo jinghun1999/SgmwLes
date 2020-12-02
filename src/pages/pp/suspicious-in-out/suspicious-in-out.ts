@@ -251,4 +251,12 @@ checkScanCode() {
     this.item.parts = [];    
     this.resetScan();
   }
+  focusInput = () => {
+    this.searchbar.setElementClass('bg-red', false);
+    this.searchbar.setElementClass('bg-green', true);
+  };
+  blurInput = () => {
+    this.searchbar.setElementClass('bg-green', false);
+    this.searchbar.setElementClass('bg-red', true);
+  };
 }

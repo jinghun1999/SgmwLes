@@ -6,7 +6,7 @@
 
 <ion-content>
   <form (submit)="scan()">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
   <ion-col no-padding>

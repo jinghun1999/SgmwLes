@@ -27,6 +27,7 @@ export class FramePage extends BaseUI {
   feedPort_list: any[] = [];  //获取的上料口列表
   //port_no: string = '';//显示上料口的第一位置
   part_name: string = '';//显示上料口的第二位置
+  box_label:string='';
   item: any = {
     current_parts: 0,
     plant: '',
@@ -82,10 +83,10 @@ export class FramePage extends BaseUI {
     this.keyPressed.unsubscribe();
   }
   insertError = (msg: string, t: number = 0) => {
-    this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
-    // this.zone.run(() => {
-    //   this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
-    // });
+    //this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+    this.zone.run(() => {
+      this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+    });
   }
 
   ionViewDidLoad() {
@@ -161,13 +162,14 @@ export class FramePage extends BaseUI {
         this.item.box_label = frame.box_label,
         this.item.car_model = frame.car_model,
         this.item.box_mode = frame.box_mode,
-        this.item.port_no = frame.port_no
+        this.item.port_no = frame.port_no,
+        this.box_label = frame.box_label
       }
       else {
         this.insertError(res.message);
       }
     }, error => {
-      this.insertError('系统级别错误');
+      this.insertError('获取不到料箱信息，请重新扫描');
     });
     this.setFocus();
   };
@@ -175,25 +177,37 @@ export class FramePage extends BaseUI {
   //提交
   save()  {
     let err = '';
-    if (!this.item.source || !this.item.target) {
-      err = '请选择目标仓库';
-      this.insertError(err);
+    // if (!this.item.source || !this.item.target) {
+    //   err = '请选择目标仓库';
+    //   this.insertError(err);
+    // }
+    if (this.item.pressPart) { 
+      err = '请扫描料箱号';
     }
     if (err.length) {
+      this.insertError(err);
       this.setFocus();
       return;
     }
     this.insertError('正在提交，请稍后...', 1);
+    this.item.box_label = this.box_label;
+    this.item.port_no = this.port_no;
     this.api.post('PP/PostFrame', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.storage.set('portNo', this.port_no);
-        this.insertError('提交成功', 2);
+        this.pressPart_list = [];
+        this.toastCtrl.create({
+          message: '提交成功',
+          duration: 1500,
+          position:'buttom'
+        }).present();
+        this.setFocus();
       } else {
         this.insertError(res.message);
       }
     },
       (error) => {
-        this.insertError('系统级别错误，请重试');
+        this.insertError('提交失败');
       });
     this.setFocus();
   }
@@ -230,17 +244,23 @@ export class FramePage extends BaseUI {
           this.insertError(res.message);
         }
       }, error => {
-        this.insertError('系统级别错误');
+        this.insertError('获取不到零件列表');
       });
     }
     this.setFocus();
   }
 
   cancel() {
-    if (this.navCtrl.canGoBack())
-      this.navCtrl.pop();
+    this.navCtrl.popToRoot(); //返回首页
   }
-
+  focusInput = () => {
+    this.searchbar.setElementClass('bg-red', false);
+    this.searchbar.setElementClass('bg-green', true);
+  };
+  blurInput = () => {
+    this.searchbar.setElementClass('bg-green', false);
+    this.searchbar.setElementClass('bg-red', true);
+  };
   setFocus() {
     this.item.box_label = '';
     this.searchbar.setFocus();

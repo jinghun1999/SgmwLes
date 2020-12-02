@@ -6,7 +6,7 @@
 
 <ion-content>
   <form (submit)="scan()" *ngIf="item.target">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="bundle_no" name="bundle_no">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="bundle_no" name="bundle_no" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
   <ion-list>

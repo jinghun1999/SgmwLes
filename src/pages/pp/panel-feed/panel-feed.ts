@@ -144,7 +144,7 @@ export class PanelFeedPage extends BaseUI {
                 this.updateDropDownList(bundle.portNo); 
                 this.openDig(bundle.part);
               } else {
-                this.updateDropDownList(this.code); 
+                this.updateDropDownList(bundle.portNo); 
               }
             } else {
               // 捆包号

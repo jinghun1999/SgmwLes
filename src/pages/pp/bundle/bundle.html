@@ -5,8 +5,9 @@
 </ion-header>
 
 <ion-content>
-  <form (submit)="scan()" >
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan"></ion-searchbar>
+  <form (submit)="scan()">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="scan"
+      (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
   <div>
     <div class="ds-box" *ngFor="let bundle of item.bundles;let i=index">
@@ -19,22 +20,23 @@
       </h5>
       <tr>
         <td>
-          <button ion-button item-end (click)="changeQty(bundle)"  [color]='light'>修改收货数</button>
+          <button ion-button item-end (click)="changeQty(bundle)" [color]='light'>修改收货数</button>
         </td>
         <td>
-          <tr>
-             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
-            <!--<p *ngIf="false">{{bundle.pieces}}</p> -->
-          </tr>
-          <tr>
-            <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
-          </tr>
+      <tr>
+        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
+        <!--<p *ngIf="false">{{bundle.pieces}}</p> -->
+      </tr>
+      <tr>
+        <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
+      </tr>
       </td>
-      </tr> 
-          <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
+      </tr>
+      <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>
     </div>
   </div>
-  <ul class="alert-message">
+  <ul class="alert-message" ion-end>
+    
     <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
       {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
   </ul>
@@ -42,7 +44,7 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="danger"  (click)="cancel()">撤销(F1)</button>
+      <button no-margin ion-button full large color="danger" (click)="cancel()">返回(F1)</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large color="primary" [disabled]="!item.bundles.length"
