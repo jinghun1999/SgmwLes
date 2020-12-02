@@ -70,7 +70,7 @@ export class MovePage extends BaseUI {
   removekey = () =>{
     this.keyPressed.unsubscribe();
   }
-  insertError =(msg: string, t: number = 0)=> {
+  insertError = (msg: string, t: string = 'e') => {
     this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
   }
 
@@ -183,13 +183,13 @@ export class MovePage extends BaseUI {
       return;
     }
     //let loading = super.showLoading(this.loadingCtrl, '正在提交...');
-    this.insertError('正在提交，请稍后...', 1);
+    this.insertError('正在提交，请稍后...', 'i');
     this.api.post('move/postMove', this.item).subscribe((res: any) => {
         if (res.successful) {
           this.item.trans_code = '';
           this.item.parts = [];
           //super.showToast(this.toastCtrl, '提交成功', 'success');
-          this.insertError('提交成功', 2);
+          this.insertError('提交成功', 's');
         } else {
           this.insertError(res.message);
         }
