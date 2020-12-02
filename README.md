@@ -5,7 +5,7 @@
 ionic cordova platform add android              // 添加Android Platform （iOS:ionic platform add ios）
 ionic build android                             // build项目 (iOS:ionic build ios)  
 ionic emulate android                           // 用模拟器运行 (iOS:ionic emulate ios)  
-ionic cordova run android -lc                              // 用Android真机运行（与模拟器二选一就好啦~~）
+ionic cordova run android -lc                   // 用Android真机运行（与模拟器二选一就好啦~~）
 ```
 查看已经添加的插件：
 ```Bash
