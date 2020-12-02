@@ -1,0 +1,7 @@
+<div>
+  <ul class="alert-message">
+    <li *ngFor="let e of data" [ngClass]="{'danger': e.type==='e', 'info': e.type==='i', 'success': e.type==='s'}">
+      {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}
+    </li>
+  </ul>
+</div>
