@@ -86,7 +86,7 @@ export class OutPage extends BaseUI {
   removekey = () =>{
     this.keyPressed.unsubscribe();
   }
-  insertError =(msg: string, t: number = 0)=> {
+  insertError =(msg: string, t: string = 'e')=> {
     this.zone.run(() => {
       this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
     });
@@ -242,7 +242,7 @@ export class OutPage extends BaseUI {
               }
             });
             if(res.message) {
-              this.insertError(res.message, 1);
+              this.insertError(res.message, 'i');
             }
           }
         }
@@ -254,7 +254,7 @@ export class OutPage extends BaseUI {
         this.resetScan();
       },
       err => {
-        this.insertError('系统错误，请稍后再试', 1);
+        this.insertError('系统错误，请稍后再试');
         //super.showToast(this.toastCtrl, '系统错误，请稍后再试', 'error');
         //loading.dismiss();
         this.resetScan();
@@ -390,12 +390,12 @@ export class OutPage extends BaseUI {
 
   cancel_do() {
     //let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...', 'i');
     this.api.get('wm/GetCancelRequest', {t: 0, requestId: this.sheet.id}).subscribe((res: any) => {
         if (res.successful && res.data) {
           this.reset_page();
           //super.showToast(this.toastCtrl, '撤销成功！', 'success');
-          this.insertError('撤销成功！', 2);
+          this.insertError('撤销成功！', 's');
         } else {
           this.insertError(res.message);
         }
