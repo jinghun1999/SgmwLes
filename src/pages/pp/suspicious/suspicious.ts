@@ -268,4 +268,12 @@ export class SuspiciousPage extends BaseUI {
     this.InOut = 0;
     console.log(this.InOut);    
   }
+  focusInput = () => {
+    this.searchbar.setElementClass('bg-red', false);
+    this.searchbar.setElementClass('bg-green', true);
+  };
+  blurInput = () => {
+    this.searchbar.setElementClass('bg-green', false);
+    this.searchbar.setElementClass('bg-red', true);
+  };
 }
