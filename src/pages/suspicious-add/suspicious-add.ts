@@ -79,7 +79,7 @@ export class SuspiciousAddPage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
   }
 

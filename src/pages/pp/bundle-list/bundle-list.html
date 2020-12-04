@@ -22,11 +22,9 @@
         <span style="float: right;font-size:smaller;color: red;margin:1rem">重量：{{bundle.weight}}</span>
       </tr>
       <tr>
-        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
-        <!-- <p *ngIf="false">{{bundle.pieces}}</p> -->      
-        <span style="float: left;font-size:small;color: red;margin:1rem">当前第箱，共扫描箱</span>
+        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>  
+        <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共{{this.bundlesCount}}箱</span>
       </tr>
-            
     </div>
   </ion-list>
 </ion-content>

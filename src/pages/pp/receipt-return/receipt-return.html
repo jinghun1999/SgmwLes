@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title>退货管理</ion-title>
+    <ion-title>退货接收</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -9,25 +9,27 @@
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
-  <ion-item *ngIf="item.parts.length>0">
-    <ion-input [(ngModel)]="reason" (click)="receiptReson()" placeholder="退货原因"></ion-input>
-  </ion-item>
   <div>
-    <div class="ds-box" *ngFor="let bundle of item.bundles;let i=index">
+    <div class="ds-box" *ngFor="let part of item.parts;let i=index">
       <h4>
-        <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{bundle.bundleNo}}
-        <span style="float: right;font-size:smaller;color: red;margin:1rem">重量：{{bundle.weight}}</span>
+        <ion-icon name="qr_code" style="color:green"></ion-icon> 料箱号：{{part.boxLabel}}
+         捆包号：{{part.bundle_no}}
       </h4>
       <h5>
-        <ion-icon name="contact"></ion-icon> {{bundle.supplier}}
+        <ion-icon name="part"></ion-icon> {{part.partNo}}
+        <ion-icon name="car"></ion-icon>车型: {{part.carModel}}        
+      </h5>
+      <h5>
+        {{part.partName}}
+        <ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}
       </h5>
       <tr>
         <td>
-          <button ion-button item-end (click)="changeQty(bundle)"  [color]='light'>修改收货数</button>
+          <button ion-button item-end (click)="changeQty(part)"  [color]='light'>修改出库数</button>
         </td>
         <td>
           <tr>
-             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
+             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
           </tr>
           <tr>
             <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
@@ -37,15 +39,9 @@
           <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
     </div>
   </div>
+  <message-list [data]="errors"></message-list>
 </ion-content>
-
 <ion-footer>
-  <ion-row id='errs' (click)="openErrList($event)">
-    <ul class="list">
-      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
-        {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
-    </ul>
-  </ion-row>
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>

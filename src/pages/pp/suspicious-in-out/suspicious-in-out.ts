@@ -59,8 +59,10 @@ export class SuspiciousInOutPage extends BaseUI {
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();//为输入框设置焦点
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -73,7 +75,7 @@ export class SuspiciousInOutPage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -198,7 +200,7 @@ checkScanCode() {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...');
     this.code = '';
     this.errors = [];
     this.item.parts = [];

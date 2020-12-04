@@ -56,8 +56,10 @@ export class BundlePage extends BaseUI {
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();//为输入框设置焦点
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });    
   }
   ionViewWillUnload() {
     this.removekey();
@@ -70,7 +72,7 @@ export class BundlePage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t:string  = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -240,12 +242,7 @@ export class BundlePage extends BaseUI {
 
     this.resetScan();
   }
-  focusInput = () => {
-    this.searchbar.setElementClass('bg-red', false);
-    this.searchbar.setElementClass('bg-green', true);
-  };
-  blurInput = () => {
-    this.searchbar.setElementClass('bg-green', false);
-    this.searchbar.setElementClass('bg-red', true);
-  };
+
+  focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
+  blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
 }

@@ -23,11 +23,15 @@ export class FramePage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   port_no: string = '';   //选中的上料口
+  part_no: string = ''; //选中的零件号
   pressPart_list: any[] = [];  //获取的零件列表
   feedPort_list: any[] = [];  //获取的上料口列表
-  //port_no: string = '';//显示上料口的第一位置
+
+  part: any = {
+    packing_qty: 0     //装箱数量
+  };
   part_name: string = '';//显示上料口的第二位置
-  box_label:string='';
+  box_label: string = '';  //扫描输入的料箱号
   item: any = {
     current_parts: 0,
     plant: '',
@@ -36,6 +40,7 @@ export class FramePage extends BaseUI {
     car_model: '',  //车模
     box_mode: '',  //箱模
     port_no: '',
+    bundle_no: '',
     part_no: '',
     pressPart: [],  //要提交的零件列表
     feedingPort: [],  //要提交的上料口列表
@@ -68,8 +73,10 @@ export class FramePage extends BaseUI {
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -82,8 +89,7 @@ export class FramePage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
-    //this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -96,14 +102,14 @@ export class FramePage extends BaseUI {
       this.getWorkshops();
     });
   }
-
+  //获取上料口列表
   private getWorkshops() {
     this.api.get('PP/GetFrameLoad', { plant: this.item.plant, workshop: this.item.workshop }).subscribe((res: any) => {
       if (res.successful) {
         this.feedPort_list = res.data.feedingPort;
         this.storage.get('portNo').then((val) => {   //从缓存中获取数据
-          if (val) {
-            this.port_no = this.feedPort_list.find((f) => f.port_no = val).port_no;
+          if (val && this.feedPort_list.find((f) => f.port_no == val)) {
+            this.port_no = val;
           }
           else if (this.feedPort_list.find((f) => f.isSelect)) {
             let feedPort = this.feedPort_list.find((f) => f.isSelect);
@@ -120,50 +126,55 @@ export class FramePage extends BaseUI {
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('无法获取上料口');
       });
     this.setFocus();
   }
   //扫描执行过程
   scanBox() {
     let err = '';
-    if (!this.item.box_label) {
+    if (!this.box_label) {
       err = '无效的料箱号，请重试';
     }
-    // if (!this.item.feedingPort) { 
-    //   err = '请先扫描料箱号';
-    // }
-    // if (!this.port_no) {
-    //   err = '请选择上料口';
-    // }
-    // if((new Set(this.)).size != arr.length){
-    //   alert("数组有重复值")
-    // }
-
+    
     if (err.length > 0) {
       this.insertError(err);
       this.setFocus();
       return;
     }
 
-    this.api.get('PP/GetFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.item.box_label }).subscribe((res: any) => {
-      if (res.successful) {
+    this.api.get('PP/GetFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
+      if (res.successful) {        
         let frame = res.data;
-        if (frame.pressPart.length > 0) {
-          this.item.part_no = frame.pressPart[0].part_no;
-          this.item.pressPart = frame.pressPart;
+        //this.feedPort_list= frame.feedingPort;
+        if (frame.pressPart && frame.pressPart.length > 0) {
+          this.pressPart_list = frame.pressPart;
+          let model = null;
+          if (this.pressPart_list.find((f) => f.isSelect)) {
+            model = this.pressPart_list.find((f) => f.isSelect)
+          }
+          else { 
+            model = this.pressPart_list[0];
+          }
+          this.part.packing_qty = model.packing_qty;
+          this.item.part_no = model.part_no;
+          this.item.car_model = model.car_model;
+          this.item.box_mode = model.box_mode;
+          this.part_no = model.part_no;
+          console.log(model);
+          model.part_type == 3 ? this.changeFeed(model) : null;
+          
+
+          // if (model.part_type == 3) {
+          //   this.changeFeed(model);
+          //  };
+                 
         }
-        if (frame.feedingPort.length > 0) {
-          this.item.feedingPort = frame.feedingPort;
-        }
-        this.item.current_parts = frame.current_parts,
-        this.item.plant = frame.plant,
-        this.item.workshop = frame.workshop,
-        this.item.box_label = frame.box_label,
-        this.item.car_model = frame.car_model,
-        this.item.box_mode = frame.box_mode,
-        this.item.port_no = frame.port_no,
-        this.box_label = frame.box_label
+        else { 
+          this.insertError("找不到零件");
+        }  
+          //this.item.plant = frame.plant,
+           this.item.box_label = frame.box_label    
       }
       else {
         this.insertError(res.message);
@@ -175,32 +186,36 @@ export class FramePage extends BaseUI {
   };
 
   //提交
-  save()  {
+  save() {
     let err = '';
-    // if (!this.item.source || !this.item.target) {
-    //   err = '请选择目标仓库';
-    //   this.insertError(err);
-    // }
-    if (this.item.pressPart) { 
+
+    if (this.pressPart_list.length == 0) {
       err = '请扫描料箱号';
+    }
+    if (!this.part_no || !this.port_no) { 
+      err = '冲压线或零件号不能为空';
     }
     if (err.length) {
       this.insertError(err);
       this.setFocus();
       return;
     }
-    this.insertError('正在提交，请稍后...', 1);
-    this.item.box_label = this.box_label;
+    this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.port_no).bundle_no;
     this.item.port_no = this.port_no;
+    this.item.part_no = this.part_no;
+    this.item.pressPart.splice(0,1,this.pressPart_list.find(f => f.part_no == this.part_no));
+    this.item.current_parts = this.part.packing_qty;
+
+    this.insertError('正在提交，请稍后...');
     this.api.post('PP/PostFrame', this.item).subscribe((res: any) => {
+      console.log(res);
       if (res.successful) {
-        this.storage.set('portNo', this.port_no);
         this.pressPart_list = [];
-        this.toastCtrl.create({
-          message: '提交成功',
-          duration: 1500,
-          position:'buttom'
-        }).present();
+        this.item.pressPart = [];
+        this.part.packing_qty = 0;
+        this.storage.set("portNo",this.port_no); //缓存冲压线
+        this.getWorkshops();//重新加载上料口列表
+        this.insertError("提交成功", 's');        
         this.setFocus();
       } else {
         this.insertError(res.message);
@@ -230,24 +245,30 @@ export class FramePage extends BaseUI {
   }
   //零件下拉框改变时
   changeFeed(feedPort) {
-    if (feedPort.pressPart.part_type == 3) {
-      this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: feedPort.part_no }).subscribe((res: any) => {
-        if (res.successful) {        
-          if (res.data.find((f) => f.isSelect).port_no) {
-            this.port_no = res.data.find((f) => f.isSelect).port_no;
+    if (feedPort.part_type == 3) {  //双件双模
+      this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: this.part_no }).subscribe((res: any) => {
+        if (res.successful) {  
+          this.feedPort_list = res.data;
+          if (this.feedPort_list.find((f) => f.isSelect) && this.feedPort_list.length>0) {
+            this.port_no = this.feedPort_list.find((f) => f.isSelect).port_no;
+            this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.port_no).bundle_no;
           }
           else { 
-            this.port_no = res.data[0].port_no;
+            this.port_no = this.feedPort_list[0].port_no;
           }
         }
         else { 
           this.insertError(res.message);
         }
       }, error => {
-        this.insertError('获取不到零件列表');
+        this.insertError('获取不到捆包列表');
       });
     }
-    this.setFocus();
+    
+    // this.item.port_no = this.port_no;
+    // this.item.part_no = this.part_no;
+    // this.item.pressPart.splice(0,1,this.pressPart_list.find(f => f.part_no == this.part_no));
+    // this.part.packing_qty = this.pressPart_list.find(f => f.part_no == this.part_no).packing_qty;
   }
 
   cancel() {
@@ -262,7 +283,7 @@ export class FramePage extends BaseUI {
     this.searchbar.setElementClass('bg-red', true);
   };
   setFocus() {
-    this.item.box_label = '';
+    this.box_label = '';
     this.searchbar.setFocus();
   }
 }

@@ -3,6 +3,8 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ReceiptReturnPage } from './receipt-return';
+import {ComponentsModule} from "../../../components/components.module";
+
 
 @NgModule({
   declarations: [
@@ -10,6 +12,7 @@ import { ReceiptReturnPage } from './receipt-return';
   ],
   imports: [
     IonicPageModule.forChild(ReceiptReturnPage),
+    ComponentsModule
   ],
 })
 export class ReceiptReturnPageModule {}

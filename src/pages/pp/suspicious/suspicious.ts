@@ -25,7 +25,6 @@ export class SuspiciousPage extends BaseUI {
 
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
   keyPressed: any;
   InOut: number = 1;
   workshop_list: any[] = [];//加载获取的的车间列表
@@ -63,8 +62,10 @@ export class SuspiciousPage extends BaseUI {
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();//为输入框设置焦点
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -77,7 +78,7 @@ export class SuspiciousPage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -85,7 +86,7 @@ export class SuspiciousPage extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
-      this.workshop = val;
+      this.item.workshop = val;
       this.getWorkshops();
     });
   }
@@ -137,7 +138,7 @@ export class SuspiciousPage extends BaseUI {
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetSuspiciousInOut', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetSuspiciousInOut', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
           this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
@@ -203,7 +204,7 @@ export class SuspiciousPage extends BaseUI {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...');
     this.code = '';
     this.errors = [];
     this.item.parts = [];
@@ -237,12 +238,7 @@ export class SuspiciousPage extends BaseUI {
     //   this.insertError(err);
     // }
 
-    this.api.post('PP/PostSuspiciousInOut', {InOut:this.InOut,
-      plant: this.api.plant,
-      workshop: this.workshop,
-      target: this.item.target,
-      parts: this.item.parts
-    }).subscribe((res: any) => {
+    this.api.post('PP/PostSuspiciousInOut', {InOut:this.InOut,data:this.item}).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功');
       }
@@ -260,13 +256,11 @@ export class SuspiciousPage extends BaseUI {
   //移入返修区
   inRepair() {
     //console.log("移入");
-    this.InOut = 1;
-    console.log(this.InOut);
+    this.InOut = 1;    
   }
   outRepair() { 
     //console.log("移出");
-    this.InOut = 0;
-    console.log(this.InOut);    
+    this.InOut = 0; 
   }
   focusInput = () => {
     this.searchbar.setElementClass('bg-red', false);

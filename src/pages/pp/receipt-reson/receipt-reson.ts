@@ -7,7 +7,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
   templateUrl: 'receipt-reson.html',
 })
 export class ReceiptResonPage {
-  
+  placeholderText: string = '退货原因';// 
   receiptReson: string = '';  //输入的文字
   err: string;       //错误提示
 

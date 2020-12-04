@@ -19,21 +19,20 @@ import { Storage } from "@ionic/storage";
   selector: 'page-parts-storage-out',
   templateUrl: 'parts-storage-out.html',
 })
-export class PartsStorageOutPage  extends BaseUI {
+export class PartsStorageOutPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
 
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
   keyPressed: any;
-  //source: string = ''; //源仓库
-  workshop_list:any[]=[];//加载获取的的车间列表
+  isSave: boolean = false; //是否可提交
+  workshop_list: any[] = [];//加载获取的的车间列表
   scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
-  item: any = {    
+  item: any = {
     plant: '',
-    workshop: '',
-    target:'',
+    workshop: '',//目标仓库
+    target: '', //源仓库
     parts: [],
   };
   constructor(public navParams: NavParams,
@@ -57,13 +56,15 @@ export class PartsStorageOutPage  extends BaseUI {
         break;
       case 113:
         //f2
-        this.outStock();
+        this.save();
         break;
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();//为输入框设置焦点
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -76,7 +77,7 @@ export class PartsStorageOutPage  extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -84,7 +85,8 @@ export class PartsStorageOutPage  extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
-      this.workshop = val;
+      this.item.target = val;
+      console.log(val);
       this.getWorkshops();
     });
   }
@@ -92,7 +94,7 @@ export class PartsStorageOutPage  extends BaseUI {
     this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        this.item.target = this.workshop_list[0].value;
+        this.item.workshop = this.item.target;
       } else {
         this.insertError(res.message);
       }
@@ -102,62 +104,51 @@ export class PartsStorageOutPage  extends BaseUI {
       });
   }
 
-//校验扫描
-checkScanCode() {
-  let err = '';
-  if (this.code == '') {
-    err = '请扫描捆包号！';
-    this.insertError(err);
-  }
+  //校验扫描
+  checkScanCode() {
+    let err = '';
+    if (this.code == '') {
+      err = '请扫描捆包号！';
+      this.insertError(err);
+    }
 
-  if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    err = `料箱${this.code}已扫描过，请扫描其他标签`;
-    this.insertError(err);
-  }
+    if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
+      err = `料箱${this.code}已扫描过，请扫描其他标签`;
+      this.insertError(err);
+    }
 
-  if (err.length > 0) {
-    this.searchbar.setFocus();
-    return false;
+    if (err.length > 0) {
+      this.searchbar.setFocus();
+      return false;
+    }
+    return true;
   }
-  return true;
-}
 
 
   //开始扫描
   scan() {
-    if (this.checkScanCode()) {      
-        //扫捆包号
-        this.scanSheet();      
+    if (this.checkScanCode()) {
+      //扫捆包号
+      this.scanSheet();
     }
     else {
       this.resetScan();
     }
-  }  
+  }
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetPartsStorageOut', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetPartsStorageOut', { plant: this.api.plant, workshop: this.item.target, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-          if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {            
-            this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
-            return;
-          }
-          let model = res.data;
-          this.item.parts.splice(0, 0, {
-            type:model.type,
-            plant: model.plant,
-            boxLabel: model.boxLabel,
-            boxModel: model.boxModel,
-            partNo: model.partNo,
-            partName: model.partName,
-            carModel: model.carModel,
-            packingQty: model.packingQty,
-            currentParts: model.currentParts,
-            bundle_no: model.bundle_no,
-            pressParts:model.pressParts
-          });
-          this.scanCount = this.item.parts.length;
-      
+        if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
+          this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
+          return;
+        }
+        this.item.parts.splice(0, 0, res.data);
+        this.scanCount = this.item.parts.length;
+        if (this.scanCount > 0) {
+          this.isSave = true;
+        }
         this.resetScan();
       }
       else {
@@ -202,7 +193,7 @@ checkScanCode() {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...');
     this.code = '';
     this.errors = [];
     this.item.parts = [];
@@ -220,13 +211,13 @@ checkScanCode() {
     this.searchbar.setFocus();
   }
   //提交
-  outStock() {
+  save() {
     if (!this.item.parts) {
       this.insertError('请先扫描捆包号');
       return;
     };
 
-    if(new Set(this.item.parts).size !== this.item.parts.length){
+    if (new Set(this.item.parts).size !== this.item.parts.length) {
       this.insertError("提交的数据中存在重复的捆包号，请检查！");
       return;
     };
@@ -235,25 +226,22 @@ checkScanCode() {
     //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
     //   this.insertError(err);
     // }
-
-    this.api.post('PP/PostPartsStorageOut', {
-      plant: this.api.plant,
-      workshop: this.workshop,
-      target: this.item.target,
-      parts: this.item.parts
-    }).subscribe((res: any) => {
+    this.isSave = false;
+    this.api.post('PP/PostPartsStorageOut', { plant: this.item.plant, workshop: this.item.target, target: this.item.workshop, parts: this.item.parts }).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功');
+        this.insertError('提交成功', 'e');
+        this.item.parts = [];
       }
       else {
         this.insertError(res.message);
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('提交失败');
         this.resetScan();
-      });    
-    this.item.parts = [];    
+      });
+    
+    this.isSave = true;
     this.resetScan();
   }
   focusInput = () => {

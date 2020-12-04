@@ -9,15 +9,6 @@
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
-  <!-- <ion-list>
-    <ion-item>
-      <ion-label color="primary">目标仓库</ion-label>
-      <ion-select [(ngModel)]="item.target" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
-        <ion-option *ngFor="let t of workshop_list" value="{{t.value}}" [disabled]="t.value===workshop">{{t.text}}
-        </ion-option>
-      </ion-select>
-    </ion-item>
-  </ion-list> -->
   <div>
     <div class="ds-box" *ngFor="let part of item.parts;let i=index">
       <h4>
@@ -49,15 +40,9 @@
           <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
     </div>
   </div>
+  <message-list [data]="errors"></message-list>
 </ion-content>
-
 <ion-footer>
-  <ion-row id='errs' (click)="openErrList($event)">
-    <ul class="list">
-      <li *ngFor="let e of errors" [ngClass]="{'danger': e.type===0, 'info': e.type===1,  'success': e.type===2}">
-        {{e.time|date:'mm:ss'}}&nbsp;{{e.message}}</li>
-    </ul>
-  </ion-row>
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>

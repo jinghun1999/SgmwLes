@@ -62,13 +62,15 @@ export class CloseFramePage extends BaseUI {
         break;
       case 113:
         //f2
-        this.outStock();
+        this.save();
         break;
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();//为输入框设置焦点
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -81,7 +83,7 @@ export class CloseFramePage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -102,15 +104,13 @@ export class CloseFramePage extends BaseUI {
       }
     },
       err => {
-        this.insertError('系统级别错误，请返回重试');
+        this.insertError('无法获取车间，请稍后重试');
       });
   }
 
 //校验扫描
   checkScanCode() {
     let err = '';
-    
-
     if (this.sourceItem.parts.length+this.targetItem.length>2) { 
       err = '只能扫描2个料箱';
       return;
@@ -143,19 +143,26 @@ export class CloseFramePage extends BaseUI {
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetDefectiveProduct', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetCloseFrame', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
           if (this.sourceItem.parts.findIndex(p => p.boxLabel === this.code) >= 0) {            
             this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
             return;
         }        
-        if (this.isSource) {  //添加源料箱
-          this.sourceItem.parts.splice(0, 0, res.data); 
-          this.isSource =false;
-        } else {        //添加目标料箱
-          this.targetItem.parts.splice(0, 0, res.data);
-          this.isSource = true;
-        }        
+        if (this.sourceItem.parts.length == 0) {
+          this.sourceItem.parts.splice(0, 0, res.data);
+        }
+        else { 
+          this.targetItem.parts.splice(0, 0, res.data);          
+        }
+
+        // if (this.isSource) {  //添加源料箱
+        //   this.sourceItem.parts.splice(0, 0, res.data); 
+        //   this.isSource =false;
+        // } else {        //添加目标料箱
+        //   this.targetItem.parts.splice(0, 0, res.data);
+        //   this.isSource = true;
+        // }        
       }
       else {
         this.insertError(res.message);
@@ -174,8 +181,14 @@ export class CloseFramePage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packingQty = model.packingQty - data.receive
-        this.targetItem.pasrt.packingQty += data.receive;
+        model.packingQty -= data.receive;
+        this.targetItem.parts[0].packingQty += data.receive;
+
+        
+        // console.log(data);
+        // console.log(model.packingQty);
+        // console.log(this.targetItem.parts[0].packingQty);
+        //this.targetItem.parst[0].packingQty += data.receive;
       }
     });
     _m.present();
@@ -200,7 +213,7 @@ export class CloseFramePage extends BaseUI {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...');
     this.code = '';
     this.errors = [];
     this.sourceItem.parts = [];
@@ -218,7 +231,7 @@ export class CloseFramePage extends BaseUI {
     this.searchbar.setFocus();
   }
   //提交
-  outStock() {
+  save() {
     if (!this.sourceItem.parts) {
       this.insertError('请先扫描料箱号');
       return;
@@ -234,7 +247,7 @@ export class CloseFramePage extends BaseUI {
     //   this.insertError(err);
     // }
 
-    this.api.post('PP/PostDefectiveProduct', {
+    this.api.post('PP/PostCloseFrame', {
       plant: this.api.plant,
       workshop: this.workshop,
       parts: this.sourceItem.parts

@@ -22,8 +22,8 @@ import { fromEvent } from "rxjs/observable/fromEvent";
 export class PanelFeedPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   feedPort_list: any[] = []; //上料口选项
-  bundles: any[] = []; //提交时的临时表，bundles.push(item.partPanel),为了修改productionStatus的值
   code: string = ''; //扫描的上料口或捆包号
+  isSaveSuss: boolean = false; //判断弹框是否提交成功
   item: any = {
     plant: '', //工厂
     workshop: '', //车间
@@ -35,7 +35,8 @@ export class PanelFeedPage extends BaseUI {
   constructor(
     public navParams: NavParams,
     public toastCtrl: ToastController,
-    public loadingCtrl: LoadingController,
+    public loadingCtrl: LoadingController,    
+    private zone: NgZone,
     public alertCtrl: AlertController,
     public api: Api,
     public modalCtrl: ModalController,
@@ -57,7 +58,10 @@ export class PanelFeedPage extends BaseUI {
     }
   }
   ionViewDidEnter() {
-    this.addkey();
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -69,20 +73,19 @@ export class PanelFeedPage extends BaseUI {
   };
   removekey = () => {
     this.keyPressed.unsubscribe();
-  };
-  insertError = (msg: string, t: number = 0) => {
-    // this.zone.run(() => {
-    //   this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
-    // });
-    this.errors.splice(0, 1, { message: msg, type: t, time: new Date() });
-  };
+  };  
+
+  insertError = (msg: string, t: string = 'e') => {
+    this.zone.run(() => {
+      this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+    });
+  }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.workshop = val;
       this.getWorkshops();
     });
-    this.setFocus();
   }
   private getWorkshops() {
     this.api.get('pp/getPortNo', {
@@ -137,10 +140,14 @@ export class PanelFeedPage extends BaseUI {
         (res: any) => {
           if (res.successful) {
             const bundle = res.data;
+            console.log(bundle);
             // 上料口
-            if (bundle.type == 1) {
-              if (bundle.part.length) {
+            if (bundle.type == 1 ) {              
+              if (bundle.part.length>0) {
                 //不管是否有捆包，都把之前扫描的捆包号清除
+                for (let i = 0; i <= bundle.part.length - 1; i++) {                    
+                    bundle.part[i].productionStatus = 3;//弹框捆包号的生产状态由使用中改为被替换                  
+                }
                 this.updateDropDownList(bundle.portNo); 
                 this.openDig(bundle.part);
               } else {
@@ -150,11 +157,28 @@ export class PanelFeedPage extends BaseUI {
               // 捆包号
               // 已经扫描过捆包号，直接添加明细
               if (this.item.partPanel.length) {
+                if (bundle.productionStatus = 3) { 
+                  bundle.productionStatus = 1; //扫捆包号，生产状态有被替换改为使用中
+                }
                 this.item.partPanel.splice(0, 0, bundle);
               } else {
                 // 没有扫描过捆包号，先获取下拉框是否包含捆包号
-                this.openDig(bundle.part); 
-                this.item.partPanel.splice(0, 0, bundle);
+                if (bundle.part&&bundle.part.length>0) {
+                  for (let i = 0; i <= bundle.part.length - 1; i++) {                    
+                      bundle.part[i].productionStatus = 3;//弹框捆包号的生产状态由使用中改为被替换                    
+                  }
+                  this.openDig(bundle.part);
+                  if (this.isSaveSuss&&bundle.bundleNo) { 
+                    bundle.productionStatus = 1;  
+                    bundle.part = [];
+                    this.item.partPanel.splice(0, 0, bundle);
+                  }
+                }
+                else { 
+                  bundle.productionStatus = 1;       
+                  bundle.part = [];
+                  this.item.partPanel.splice(0, 0, bundle);
+                }                
               }
             }
           } else {
@@ -168,7 +192,7 @@ export class PanelFeedPage extends BaseUI {
     this.setFocus();
   }
 
-  openDig = (parts: any) => {
+  openDig = (parts: any)=> {
     const _m = this.modalCtrl.create('BundleListPage', {
       //1.1 弹框显示捆包号
       plant: this.api.plant,
@@ -179,8 +203,9 @@ export class PanelFeedPage extends BaseUI {
     _m.onDidDismiss((data) => {
       if (data) {
         if (data.successful) {
-          this.updateDropDownList(this.code);
-          this.storage.set('PortNo', this.code); //缓存当前上料口
+          this.updateDropDownList(this.item.portNo);  //更新下拉框上料口
+          this.storage.set('PortNo', this.item.portNo); //缓存当前上料口
+          this.isSaveSuss = true;
         } else {
           //提交失败
           this.insertError(data.message);
@@ -197,19 +222,14 @@ export class PanelFeedPage extends BaseUI {
       err = '请先选择冲压线';
     } else if (!this.item.partPanel) {
       err = '请先扫描上料口或捆包号';
-    } else if (new Set(this.item.bundles).size !== this.item.bundles.length) {
+    } else if (new Set(this.item.partPanel).size !== this.item.partPanel.length) {
       err = '提交的数据中存在重复的捆包号，请检查';
     }
     if (err.length) {
       this.insertError(err);
       this.setFocus();
       return;
-    }
-    for (let i = 0; i <= this.item.partPanel.length - 1; i++) {
-      this.bundles.push(this.item.partPanel[i]); //赋值给新的容器
-      this.bundles[i].productionStatus = 3; //提交把状态改为3，表示被替换
-    }
-
+    }      
     this.api.post('PP/PostFeedingPort', this.item).subscribe(
       (res: any) => {
         if (res.successful) {
@@ -250,8 +270,7 @@ export class PanelFeedPage extends BaseUI {
   }
   //撤销（会清除缓存）
   cancel_do() {
-    this.insertError('正在撤销...', 2);
-    this.bundles = [];
+    this.insertError('正在撤销...');
     this.item.partPanel = [];
     this.storage.set('PortNo', null); //清空缓存
     this.insertError('撤销成功');
@@ -268,6 +287,21 @@ export class PanelFeedPage extends BaseUI {
   clearPartPanel() {
     //下拉框改变，清空已扫描的捆包号
     this.item.partPanel = [];
+    this.api.get('pp/getFeedingPort', {plant: this.item.plant,
+      workshop: this.item.workshop,
+      port_no: this.item.portNo
+    }).subscribe((res: any) => {
+      if (res.successful) {
+        if (res.data.type == 1 && res.data.part.length > 0) {
+          this.openDig(res.data.part);
+        }
+      }
+      else { 
+         this.insertError(res.message);
+      }
+     }, error => { 
+
+    });
   }
 
   //更新上料口下拉框

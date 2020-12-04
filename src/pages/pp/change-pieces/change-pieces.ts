@@ -27,7 +27,7 @@ export class ChangePiecesPage {
   }
 
   confirm() {
-    if (this.receivePieces == 0) {
+    if (this.receivePieces < 0) {
       this.err = '提示消息：请输入箱数！';
       return;
     }

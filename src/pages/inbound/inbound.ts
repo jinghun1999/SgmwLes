@@ -80,7 +80,7 @@ export class InboundPage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
   }
 
@@ -224,7 +224,7 @@ export class InboundPage extends BaseUI {
               }
             });
             if(res.message) {
-              this.insertError(res.message, 1);
+              this.insertError(res.message);
             }
           }
         }
@@ -369,12 +369,12 @@ export class InboundPage extends BaseUI {
 
   cancel_do() {
     //let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...');
     this.api.get('wm/GetCancelRequest', {t: 1, requestId: this.sheet.id}).subscribe((res: any) => {
         if (res.successful && res.data) {
           this.reset_page();
           //super.showToast(this.toastCtrl, '撤销成功！', 'success');
-          this.insertError('撤销成功！', 2);
+          this.insertError('撤销成功！');
         } else {
           this.insertError(res.message);
         }

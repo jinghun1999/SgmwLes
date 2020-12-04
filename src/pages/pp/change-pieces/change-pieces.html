@@ -19,6 +19,7 @@
       <ion-input type="number" text-right placeholder="请输入数量" [(ngModel)]="receivePieces" (ngModelChange)="change()" min="0"></ion-input>
     </ion-item>
   </ion-list>
+  <message-list [data]="errors"></message-list>
 </ion-content>
 <ion-footer>
   <ion-row>

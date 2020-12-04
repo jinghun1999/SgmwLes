@@ -24,7 +24,6 @@ export class ReceiptReturnPage  extends BaseUI {
 
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
   keyPressed: any;
   reson: string = '';//退货原因
   workshop_list:any[]=[];//加载获取的的车间列表
@@ -57,13 +56,15 @@ export class ReceiptReturnPage  extends BaseUI {
         break;
       case 113:
         //f2
-        this.outStock();
+        this.save();
         break;
     }
   }
   ionViewDidEnter() {
-    this.addkey();
-    this.searchbar.setFocus();//为输入框设置焦点
+    setTimeout(() => {
+      this.addkey();
+      this.searchbar.setFocus();
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -76,7 +77,7 @@ export class ReceiptReturnPage  extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t: number = 0) => {
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -84,7 +85,7 @@ export class ReceiptReturnPage  extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
-      this.workshop = val;
+      this.item.workshop = val;
       this.getWorkshops();
     });
   }
@@ -105,12 +106,11 @@ export class ReceiptReturnPage  extends BaseUI {
 checkScanCode() {
   let err = '';
   if (this.code == '') {
-    err = '请扫描捆包号！';
+    err = '请扫描料箱号！';
     this.insertError(err);
   }
-
   if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    err = `料箱${this.code}已扫描过，请扫描其他捆包`;
+    err = `料箱${this.code}已扫描过，请扫描其他料箱`;
     this.insertError(err);
   }
 
@@ -121,11 +121,9 @@ checkScanCode() {
   return true;
 }
 
-
   //开始扫描
   scan() {
-    if (this.checkScanCode()) {      
-        
+    if (this.checkScanCode()) {
         this.scanSheet();      
     }
     else {
@@ -135,10 +133,10 @@ checkScanCode() {
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetReceiptReturns', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetReceiptReturns', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
           if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {            
-            this.insertError(`料箱${this.code}已扫描过，请扫描其他捆包`);
+            this.insertError(`料箱${this.code}已扫描过，请扫描其他料箱`);
             return;
           }
           let model = res.data;
@@ -201,7 +199,7 @@ checkScanCode() {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...', 2);
+    this.insertError('正在撤销...');
     this.code = '';
     this.errors = [];
     this.item.parts = [];
@@ -219,7 +217,7 @@ checkScanCode() {
     this.searchbar.setFocus();
   }
   //提交
-  outStock() {
+  save() {
     if (!this.item.parts) {
       this.insertError('请先扫描料箱号');
       return;
@@ -231,13 +229,13 @@ checkScanCode() {
     };
 
     // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    //   err = `料箱${this.code}已扫描过，请扫描其他捆包`;
+    //   err = `料箱${this.code}已扫描过，请扫描其他料箱`;
     //   this.insertError(err);
     // }
 
     this.api.post('PP/PostReceiptReturns', {
       plant: this.api.plant,
-      workshop: this.workshop,
+      workshop: this.item.workshop,
       parts: this.item.parts
     }).subscribe((res: any) => {
       if (res.successful) {
