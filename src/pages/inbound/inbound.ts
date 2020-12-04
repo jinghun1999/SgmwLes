@@ -224,7 +224,7 @@ export class InboundPage extends BaseUI {
               }
             });
             if(res.message) {
-              this.insertError(res.message);
+              this.insertError(res.message, 'i');
             }
           }
         }
@@ -369,12 +369,12 @@ export class InboundPage extends BaseUI {
 
   cancel_do() {
     //let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.insertError('正在撤销...');
+    this.insertError('正在撤销...', 'i');
     this.api.get('wm/GetCancelRequest', {t: 1, requestId: this.sheet.id}).subscribe((res: any) => {
         if (res.successful && res.data) {
           this.reset_page();
           //super.showToast(this.toastCtrl, '撤销成功！', 'success');
-          this.insertError('撤销成功！');
+          this.insertError('撤销成功！', 's');
         } else {
           this.insertError(res.message);
         }

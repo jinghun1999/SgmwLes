@@ -70,7 +70,7 @@ export class OutJisPage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError =(msg: string, t: number = 0)=> {
+  insertError =(msg: string, t: string = 'e')=> {
     this.zone.run(() => {
       this.errors.splice(0, 0, {message: msg, type: t, time: new Date()});
     });
@@ -168,7 +168,7 @@ export class OutJisPage extends BaseUI {
 
             if(res.message){
               //包装数不一致的提示信息
-              this.insertError(res.message, 1);
+              this.insertError(res.message, 'i');
             }
             this.setFocus();
           }
@@ -223,7 +223,7 @@ export class OutJisPage extends BaseUI {
   //出库
   jisOutStock() {
     if(this.fetching){
-      this.insertError('正在提交，请耐心等待，不要重复提交...', 1);
+      this.insertError('正在提交，请耐心等待，不要重复提交...', 'i');
       return;
     }
     let err = '';
@@ -240,7 +240,7 @@ export class OutJisPage extends BaseUI {
       return;
     }
     //let loading = super.showLoading(this.loadingCtrl, '正在提交...');
-    this.insertError('正在提交，请稍后...', 1);
+    this.insertError('正在提交，请稍后...', 'i');
     this.fetching = true;
     this.api.post('wm/postJisOutStock', this.item).subscribe((res: any) => {
       this.fetching = false;
@@ -251,7 +251,7 @@ export class OutJisPage extends BaseUI {
           if(res.message){
             this.insertError(res.message);
           }else {
-            this.insertError('提交成功', 1);
+            this.insertError('提交成功', 's');
           }
         } else {
           this.insertError(res.message);
