@@ -234,7 +234,6 @@ dateFunction(time){
         this.insertError('提交失败');
         this.item.bundles.length > 0 ? this.isSave = true : this.isSave = false;
       });
-    console.log(this.isSave);
     this.resetScan();
   }
 

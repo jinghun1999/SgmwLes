@@ -11,22 +11,19 @@
   </form>
   <div>
     <div class="ds-box" *ngFor="let bundle of item.bundles;let i=index">
-      <div class="row" style="font-size: large;color:green;">
-        <div class="col" >          
-            <ion-icon name="checkmark-circle-outline"></ion-icon>捆包号：{{bundle.bundleNo}}
+      <div class="row" >
+        <div class="col" style="font-size: large;color:green;" >          
+            <ion-icon name="checkmark-circle-outline"></ion-icon>捆包号:{{bundle.bundleNo}}
         </div>
         <div class="col">         
-            <span style="float: right;color: red;margin:1rem">重量：{{bundle.weight}}</span>                
+            <span style="float: right;color: red;margin:1rem">重量:{{bundle.weight}}</span>                
         </div>
       </div>
       <div class="row">
         <div class="col">         
             <ion-icon name="contact"></ion-icon> {{bundle.supplier}}         
         </div>        
-      </div>
-      <div class="row">       
-          <ion-icon name="alarm-outline"></ion-icon>收货时间： {{dateFunction(bundle.received_time)}}             
-      </div>
+      </div>      
       <div class="row">
         <div class="col">
           <button ion-button item-end (click)="changeQty(bundle)" [color]='light'>修改收货数</button>

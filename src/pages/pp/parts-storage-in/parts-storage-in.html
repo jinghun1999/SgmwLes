@@ -13,7 +13,7 @@
   <ion-list>
     <ion-item>
       <ion-label color="primary">来源仓库</ion-label>
-      <ion-select [(ngModel)]="item.workshop" interface="popover" okText="选择" cancelText="取消" placeholder="请选择">
+      <ion-select [(ngModel)]="item.target" interface="popover" (ngModelChange)="changWS()" okText="选择" cancelText="取消" placeholder="请选择">
         <ion-option *ngFor="let t of workshop_list" value="{{t.value}}">{{t.text}}
         </ion-option>
       </ion-select>
@@ -22,24 +22,26 @@
   <div>
     <div class="ds-box" *ngFor="let part of item.parts;let i=index">
       <div class="row">
-        <div class="col">料箱号：{{part.boxLabel}}</div>
-        <div class="col">捆包号：{{part.bundle_no}}</div>
+          <div class="col" style="color:green;font-size:x-large;">料箱号:{{part.boxLabel}}</div>
+        <div class="col">捆包号:{{part.bundle_no}}</div>
       </div>
       <div class="row">        
           <div class="col">{{part.partNo}}</div>
-          <div class="col">车型: {{part.carModel}}</div>        
+          <div class="col">车型:{{part.carModel}}</div>        
       </div>
       <div class="row">        
           <div class="col">{{part.partName}}</div>
-          <div class="col">箱型: {{part.boxModel}} </div>      
+          <div class="col">箱型:{{part.boxModel}} </div>      
       </div>
       <div class="row">
         <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改出库数</button></div>
-        <div class="col"><span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
+        <div class="col"><span style="float: left;font-size:small;color: red;margin:1rem">数量:{{part.packingQty}}</span>
+          <br>
+          <span style="float: left;font-size:small;color:gray;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
         </div>
-        <div class="col"><span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span></div>
+        
         <div class="col">
-          <button ion-button color="danger" (click)="delete(i)" style="float: right;">X</button>
+          <button ion-button color="danger" (click)="delete(i)" style="float: right;" >X</button>
         </div>
       </div>
     </div>
@@ -53,7 +55,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!isSave" (click)="save()">提交(F2)</button>
+      <button no-margin ion-button full large color="primary" [disabled]="isSave" (click)="save()">提交(F2)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

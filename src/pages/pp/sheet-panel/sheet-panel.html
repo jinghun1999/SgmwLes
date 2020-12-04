@@ -21,8 +21,8 @@
   </ion-list>
   <div>
     <div class="ds-box" *ngFor="let bundle of item.bundles;let i=index">
-      <div class="row" style="font-size: large;color:green;">
-        <div class="col" >          
+      <div class="row" >
+        <div class="col"style="font-size: large;color:green;" >          
             <ion-icon name="checkmark-circle-outline"></ion-icon>捆包号：{{bundle.bundleNo}}
         </div>
         <div class="col">         
@@ -43,7 +43,7 @@
         </div>
         <div class="col">
           <span style="font-size:small;color: red;margin:1rem">数量：{{bundle.pieces}}</span><br>
-          <span style="font-size:small;color:silver;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
+          <span style="font-size:small;color:silver;margin:1rem">当前第{{i+1}}箱，共扫描{{item.bundles.length}}箱</span>
         </div>
         <div class="col">
           <button style="float: right;" ion-button color="danger" (click)="delete(i)">X</button>
@@ -56,10 +56,10 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
+      <button no-margin ion-button full large color="light"(click)="cancel()">取消(F1)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!item.bundles.length"
+      <button no-margin ion-button full large color="primary" [disabled]="isSave"
         (click)="save()">提交(F2)</button>
     </ion-col>
   </ion-row>

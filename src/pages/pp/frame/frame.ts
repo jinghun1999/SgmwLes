@@ -146,7 +146,6 @@ export class FramePage extends BaseUI {
     this.api.get('PP/GetFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
       if (res.successful) {        
         let frame = res.data;
-        //this.feedPort_list= frame.feedingPort;
         if (frame.pressPart && frame.pressPart.length > 0) {
           this.pressPart_list = frame.pressPart;
           let model = null;
@@ -155,20 +154,14 @@ export class FramePage extends BaseUI {
           }
           else { 
             model = this.pressPart_list[0];
-          }
+          }         
           this.part.packing_qty = model.packing_qty;
           this.item.part_no = model.part_no;
           this.item.car_model = model.car_model;
           this.item.box_mode = model.box_mode;
           this.part_no = model.part_no;
-          console.log(model);
-          model.part_type == 3 ? this.changeFeed(model) : null;
-          
 
-          // if (model.part_type == 3) {
-          //   this.changeFeed(model);
-          //  };
-                 
+          model.part_type == 3 ? this.changeFeed(model) : null;
         }
         else { 
           this.insertError("找不到零件");

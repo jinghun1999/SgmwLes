@@ -25,8 +25,7 @@ export class PartsStorageInPage extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
-  isSave: boolean = false; //是否可提交
-  target: string = ''; //目标仓库-固定不变的
+  isSave: boolean = true; //防止重复提交，true禁用提交
   workshop_list: any[] = [];//加载获取的的车间列表
   scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
@@ -86,7 +85,7 @@ export class PartsStorageInPage extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
-      this.target = val;
+      this.item.workshop = val;
       this.getWorkshops();
     });
   }
@@ -94,7 +93,7 @@ export class PartsStorageInPage extends BaseUI {
     this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        this.item.workshop = this.target;
+        this.item.target = this.item.workshop;
       } else {
         this.insertError(res.message);
       }
@@ -107,7 +106,7 @@ export class PartsStorageInPage extends BaseUI {
   //校验扫描
   checkScanCode() {
     let err = '';
-    if (!this.code) {
+    if (this.code=='') {
       err = '请扫描料箱号！';
       this.insertError(err);
     }
@@ -146,16 +145,14 @@ export class PartsStorageInPage extends BaseUI {
         let model = res.data;
         this.item.parts.splice(0, 0, model);
         this.scanCount = this.item.parts.length;
-        if (this.scanCount > 0) {
-          this.isSave = true;
-         }
+        this.scanCount > 0 ? this.isSave = false :null;
       }
       else {
-        this.insertError(res.message);
+        this.insertError(res.message,'i');
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('扫描失败');
       });
     this.resetScan();
   }
@@ -205,9 +202,11 @@ export class PartsStorageInPage extends BaseUI {
     this.item.parts.splice(i, 1);
   }
   //手工调用，重新加载数据模型
-  resetScan() {
-    this.code = '';
-    this.searchbar.setFocus();
+  resetScan() { 
+    setTimeout(() => {
+      this.code = '';
+      this.searchbar.setFocus();
+     });           
   }
   //提交
   save() {
@@ -225,22 +224,26 @@ export class PartsStorageInPage extends BaseUI {
     //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
     //   this.insertError(err);
     // }
-    this.isSave = false;
-    this.item.target = this.target;
+    this.isSave = true;
     this.api.post('PP/PostPartsStorageIn', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功');
-        this.item.parts = [];
-        
+        this.item.parts = [];        
       }
       else {
-        this.insertError(res.message);
+        this.insertError(res.message); 
+        this.scanCount > 0 ? this.isSave = false : null;//抛异常没有清空明细，所以仍可继续提交，
       }
     },
       err => {
         this.insertError('提交失败');
+        this.scanCount > 0 ? this.isSave = false : null;
       });
-      this.isSave = true;
+    this.resetScan();
+  }
+  //下拉框改变
+  changWS(target: string) {    
+    this.item.parts = [];
     this.resetScan();
   }
   focusInput = () => {

@@ -237,13 +237,13 @@ export class PanelFeedPage extends BaseUI {
           //把选中的冲压线写入缓存，下次默认选中
           this.storage.set('PortNo', this.item.portNo);
           this.item.partPanel = [];
-          super.showToast(this.toastCtrl, '提交成功');
+          this.insertError('提交成功','s');
         } else {
           this.insertError(res.message);
         }
       },
       (error) => {
-        this.insertError('系统级别错误');
+        this.insertError('提交失败','e');
       }
     );
     this.setFocus();
@@ -274,7 +274,7 @@ export class PanelFeedPage extends BaseUI {
     this.insertError('正在撤销...');
     this.item.partPanel = [];
     this.storage.set('PortNo', null); //清空缓存
-    this.insertError('撤销成功');
+    this.insertError('撤销成功','s');
     this.errors = [];
     this.setFocus();
   }

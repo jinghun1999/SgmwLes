@@ -14,7 +14,6 @@ import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
 
-
 @IonicPage()
 @Component({
   selector: 'page-suspicious',
@@ -145,19 +144,7 @@ export class SuspiciousPage extends BaseUI {
           return;
         }
         let model = res.data;
-        this.item.parts.splice(0, 0, {
-          type: model.type,
-          plant: model.plant,
-          boxLabel: model.boxLabel,
-          boxModel: model.boxModel,
-          partNo: model.partNo,
-          partName: model.partName,
-          carModel: model.carModel,
-          packingQty: model.packingQty,
-          currentParts: model.currentParts,
-          bundle_no: model.bundle_no,
-          pressParts: model.pressParts
-        });
+        this.item.parts.splice(0, 0, model);
         this.scanCount = this.item.parts.length;
       
         this.resetScan();
