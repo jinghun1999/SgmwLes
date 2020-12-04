@@ -11,28 +11,34 @@
   </form>
   <div>
     <div class="ds-box" *ngFor="let bundle of item.bundles;let i=index">
-      <h4>
-        <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{bundle.bundleNo}}
-        <span style="float: right;font-size:smaller;color: red;margin:1rem">重量：{{bundle.weight}}</span>
-      </h4>
-      <h5>
-        <ion-icon name="contact"></ion-icon> {{bundle.supplier}}
-      </h5>
-      <tr>
-        <td>
+      <div class="row" style="font-size: large;color:green;">
+        <div class="col" >          
+            <ion-icon name="checkmark-circle-outline"></ion-icon>捆包号：{{bundle.bundleNo}}
+        </div>
+        <div class="col">         
+            <span style="float: right;color: red;margin:1rem">重量：{{bundle.weight}}</span>                
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">         
+            <ion-icon name="contact"></ion-icon> {{bundle.supplier}}         
+        </div>        
+      </div>
+      <div class="row">       
+          <ion-icon name="alarm-outline"></ion-icon>收货时间： {{dateFunction(bundle.received_time)}}             
+      </div>
+      <div class="row">
+        <div class="col">
           <button ion-button item-end (click)="changeQty(bundle)" [color]='light'>修改收货数</button>
-        </td>
-        <td>
-      <tr>
-        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>
-        <!--<p *ngIf="false">{{bundle.pieces}}</p> -->
-      </tr>
-      <tr>
-        <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
-      </tr>
-      </td>
-      </tr>
-      <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>
+        </div>
+        <div class="col">
+          <span style="font-size:small;color: red;margin:1rem">数量：{{bundle.pieces}}</span><br>
+          <span style="font-size:small;color:silver;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
+        </div>
+        <div class="col">
+          <button style="float: right;" ion-button color="danger" (click)="delete(i)">X</button>
+        </div>
+      </div>
     </div>
   </div>
   <message-list [data]="errors"></message-list>
@@ -43,7 +49,7 @@
       <button no-margin ion-button full large color="danger" (click)="cancel()">返回(F1)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!item.bundles.length"
+      <button no-margin ion-button full large color="primary" [disabled]="!isSave"
         (click)="outStock()">提交(F2)</button>
     </ion-col>
   </ion-row>

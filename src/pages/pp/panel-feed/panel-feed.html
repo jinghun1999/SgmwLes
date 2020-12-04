@@ -19,20 +19,26 @@
   </ion-list>
   <div>
     <div class="ds-box" *ngFor="let p of item.partPanel; let i = index">
-      <tr>
-        <h4>
-          <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{p.bundleNo}}
-        </h4>
-        <span style="float: left;font-size:small;color: red;margin:1rem">可用重量：{{p.weight}}</span>
-        <span style="float: left;font-size:small;color: red;margin:1rem">可用数量：{{p.pieces}}</span>
-      </tr>
+      <div class="row">
+        <div class="col">
+          <h4 style="margin: 0;">
+            <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{p.bundleNo}}
+          </h4>
+            <br>
+            <span style="font-size:small;color:gray">当前第{{i+1}}箱，共{{item.partPanel.length}}箱</span>
+          
+        </div>
+        <div class="col">
+          <span style="font-size:small;color: red;margin:1rem">可用重量：{{p.weight}}</span>
+          <br>
+          <span style="float: left;font-size:small;color: red;margin:1rem">可用数量：{{p.pieces}}</span>
+        </div>        
+      </div>
     </div>
   </div>
   <message-list [data]="errors"></message-list>
 </ion-content>
-
-<ion-footer>
-  
+<ion-footer>  
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light"  (click)="cancel()">取消(F1)</button>

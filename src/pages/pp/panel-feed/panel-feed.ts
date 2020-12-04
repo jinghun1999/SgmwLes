@@ -206,6 +206,7 @@ export class PanelFeedPage extends BaseUI {
           this.updateDropDownList(this.item.portNo);  //更新下拉框上料口
           this.storage.set('PortNo', this.item.portNo); //缓存当前上料口
           this.isSaveSuss = true;
+          this.insertError('提交成功','s');
         } else {
           //提交失败
           this.insertError(data.message);
@@ -300,7 +301,7 @@ export class PanelFeedPage extends BaseUI {
          this.insertError(res.message);
       }
      }, error => { 
-
+        this.insertError('获取捆包列表失败','e');
     });
   }
 

@@ -24,6 +24,7 @@ export class BundlePage extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '请扫描捆包号';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
+  isSave: boolean= false;//
   keyPressed: any;
   scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
@@ -59,7 +60,7 @@ export class BundlePage extends BaseUI {
     setTimeout(() => {
       this.addkey();
       this.searchbar.setFocus();
-    });    
+    });
   }
   ionViewWillUnload() {
     this.removekey();
@@ -72,7 +73,7 @@ export class BundlePage extends BaseUI {
   removekey = () => {
     this.keyPressed.unsubscribe();
   }
-  insertError = (msg: string, t:string  = 'e') => {
+  insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
       this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
@@ -82,7 +83,12 @@ export class BundlePage extends BaseUI {
       this.workshop = val;
     });
   }
-
+//修改带T的时间格式
+dateFunction(time){
+  var zoneDate = new Date(time).toJSON();
+  var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
+  return date;
+}
   //校验扫描
   checkScanCode() {
     let err = '';
@@ -121,49 +127,35 @@ export class BundlePage extends BaseUI {
     this.errors = [];
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (res.data.plant === this.api.plant && res.data.workshop === this.workshop) {
-          if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-            this.insertError(`标签${this.code}已扫描过，请扫描其他标签`);
-            return;
-          }
-          let model = res.data;
-          this.item.bundles.splice(0, 0, {
-            plant: model.plant,
-            bundleNo: model.bundleNo,
-            weight: model.weight,
-            workshop: model.workshop,
-            received_time: model.received_time,
-            bundleLabel: model.bundleLabel,
-            pieces: model.pieces,
-            actualReceivePieces: model.actualReceivePieces,
-            supplier: model.supplier,
-            sapNo: model.sapNo,
-            sapOrderNo: model.sapOrderNo
-          });
-          this.scanCount = this.item.bundles.length;
+        if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
+          this.insertError(`标签${this.code}已扫描过，请扫描其他标签`);
+          return;
         }
-        else {
-
+        let model = res.data;
+        this.item.bundles.splice(0, 0, model);
+        this.scanCount = this.item.bundles.length;
+        if (this.item.bundles.length > 0) { 
+          this.isSave = true;
         }
-        this.resetScan();
       }
       else {
         this.insertError(res.message);
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('扫描出错','e');
       });
+    this.resetScan();
   }
 
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.actualReceivePieces,
+      max_parts: model.pieces,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.actualReceivePieces = data.receive
+        model.pieces = data.receive
       }
     });
     _m.present();
@@ -213,7 +205,7 @@ export class BundlePage extends BaseUI {
     };
 
     if (new Set(this.item.bundles).size !== this.item.bundles.length) {
-      this.insertError("提交的数据中存在重复的捆包号，请检查！");
+      this.insertError("提交的数据中存在重复的捆包号，请检查！",'i');
       return;
     };
 
@@ -221,7 +213,8 @@ export class BundlePage extends BaseUI {
     //   err = `标签${this.code}已扫描过，请扫描其他标签`;
     //   this.insertError(err);
     // }
-
+    this.isSave = false;
+    console.log(this.isSave);
     this.api.post('PP/PostPanelMaterial', {
       plant: this.api.plant,
       workshop: this.workshop,
@@ -229,17 +222,19 @@ export class BundlePage extends BaseUI {
       partPanel: this.item.bundles
     }).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功');
+        this.insertError('提交成功','s');
         this.item.bundles = [];
       }
       else {
         this.insertError(res.message);
+        this.item.bundles.length > 0 ? this.isSave = true : this.isSave = false;
       }
     },
       err => {
         this.insertError('提交失败');
+        this.item.bundles.length > 0 ? this.isSave = true : this.isSave = false;
       });
-
+    console.log(this.isSave);
     this.resetScan();
   }
 

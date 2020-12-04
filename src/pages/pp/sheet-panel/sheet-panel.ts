@@ -82,7 +82,6 @@ export class SheetPanelPage  extends BaseUI {
     this.zone.run(() => {
       this.errors.splice(0, 1, { message: msg, type: t, time: new Date() });
     });
-    //this.errors.splice(0, 1, { message: msg, type: t, time: new Date() });
   }
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
@@ -143,19 +142,7 @@ export class SheetPanelPage  extends BaseUI {
       if (res.successful) {  
         if (res.data.plant === this.api.plant && res.data.workshop === this.workshop) { 
           let model = res.data;          
-          this.item.bundles.splice(0,0,{            
-            plant: model.plant,
-            bundleNo: model.bundleNo,
-            weight: model.weight,
-            workshop: model.workshop,
-            received_time: model.received_time,
-            bundleLabel: model.bundleLabel,
-            pieces: model.pieces,
-            actualReceivePieces: model.actualReceivePieces,
-            supplier: model.supplier,
-            sapNo: model.sapNo,
-            sapOrderNo:model.sapOrderNo
-          });  
+          this.item.bundles.splice(0, 0, model); 
           this.scanCount = this.item.bundles.length;
         }  
         this.resetScan();
@@ -253,6 +240,12 @@ export class SheetPanelPage  extends BaseUI {
         this.insertError('系统级别错误');
       });    
     this.resetScan();
+  }
+//修改带T的时间格式
+  dateFunction(time){
+    var zoneDate = new Date(time).toJSON();
+    var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
+    return date;
   }
   focusInput = () => {
     this.searchbar.setElementClass('bg-red', false);
