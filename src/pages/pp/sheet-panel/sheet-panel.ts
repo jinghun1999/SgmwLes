@@ -14,8 +14,6 @@ import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
-//导入more 的界面
-import { HomePage } from '../../home/home';
 
 @IonicPage()
 @Component({
@@ -94,19 +92,11 @@ export class SheetPanelPage extends BaseUI {
     });
   }
   private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
+    this.api.get('system/GetSheetPlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        this.storage.get('Target').then((val) => { 
-          if (val) {
-            this.workshop_list.find((w) => w.value == val) ? this.item.target = val : this.item.target = this.workshop_list[0].value;
-          }
-          else { 
-            this.item.target = this.workshop_list[0].value;
-          }
-        });
-      } else {
-        this.insertError(res.message);
+        let model = this.workshop_list.find((w) => w.isSelect);
+        model ? this.item.target = model.value : this.item.target = this.workshop_list[0].value;
       }
     },
       err => {
@@ -130,7 +120,7 @@ export class SheetPanelPage extends BaseUI {
   //校验扫描
   checkScanCode() {
     let err = '';
-    if (this.bundle_no) {
+    if (!this.bundle_no) {
       err = '请扫描捆包号！';
       this.insertError(err);
     }
@@ -151,15 +141,22 @@ export class SheetPanelPage extends BaseUI {
     this.api.get('PP/GetSheetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
+        if (this.item.bundles.findIndex(p => p.bundleNo === model.bundle_no) >= 0) {
+          err = `${model.bundle_no}已扫描，请扫描其他捆包号`;
+          this.insertError(err);
+          return;
+        }
+
         this.item.bundles.splice(0, 0, model);
-        this.item.bundles.length > 0 ? this.isSave = false : null;
       }
       else {
-        this.insertError(res.message);
+        this.insertError(res.message);        
+        this.item.bundles.length > 0 ? this.isSave = false : null;
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('系统级别错误');        
+        this.item.bundles.length > 0 ? this.isSave = false : null;
       });
     this.resetScan();
   }
@@ -176,9 +173,9 @@ export class SheetPanelPage extends BaseUI {
     });
     _m.present();
   }
-  
+
   //撤销操作
-  cancel() {       
+  cancel() {
     if (this.item.bundles.length > 0) {
       let prompt = this.alertCtrl.create({
         title: '操作提醒',
@@ -220,7 +217,7 @@ export class SheetPanelPage extends BaseUI {
   }
   //提交
   save() {
-    if (this.item.bundles.length == 0) {
+    if (!this.item.bundles.length) {
       this.insertError('请先扫描捆包号');
       return;
     };
@@ -233,8 +230,8 @@ export class SheetPanelPage extends BaseUI {
     }).subscribe((res: any) => {
       if (res.successful) {
         this.item.bundles = [];
-        this.storage.set('Target',this.item.target);
-        this.insertError('提交成功','s')
+
+        this.insertError('提交成功', 's')
       }
       else {
         this.insertError(res.message);
@@ -248,9 +245,10 @@ export class SheetPanelPage extends BaseUI {
     this.resetScan();
   }
   //修改带T的时间格式
-  dateFunction(time) {
-    var zoneDate = new Date(time).toJSON();
-    var date = new Date(+new Date(zoneDate) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+  dateFunction(time:string) {
+    // var zoneDate = new Date(time).toJSON();
+    // var date = new Date(+new Date(zoneDate) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
+    let date = time.replace(/T/g, " ");    
     return date;
   }
   focusInput = () => {

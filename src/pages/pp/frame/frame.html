@@ -9,18 +9,18 @@
       (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
-  <select [(ngModel)]="port_no" interface="popover" style="width: 100%;height: 5%;">
+  <select [(ngModel)]="item.port_no" interface="popover" style="width: 100%;height: 10%;">
     <option *ngFor="let t of feedPort_list" style="width: 100%;height: 10%;" value="{{t.port_no}}"> 
       {{t.port_name}}{{t.bundle_no}} 剩余{{t.remain_pieces}}
     </option>
   </select>
 
-  <select [(ngModel)]="part_no" style="width: 100%;height: 5%;" interface="popover" (ionChange)="changeFeed(item.pressPart)"  p>
-  <option *ngFor="let t of pressPart_list" style="width: 100%;height: 10%;" value="{{t.part_no}}">
+  <select [(ngModel)]="item.part_no" (ngModelChange)="changeFeed(item.part_no)" style="width: 100%;height: 10%;" interface="popover" >
+  <option *ngFor="let t of pressPart_list"  style="width: 100%;height: 10%;" value="{{t.part_no}}">
    {{t.part_no}}{{t.part_name}} 消耗：{{t.usage}}
   </option>
 </select>
-  <ion-list *ngIf="pressPart_list.length>0">
+  <ion-list *ngIf="item.box_label">
     <ion-item>
       <ion-label>料箱号</ion-label>
       <ion-icon name="qr_code"></ion-icon>
@@ -38,8 +38,8 @@
     </ion-item>
     <ion-item>
       <ion-label>装箱数量：</ion-label>
-      <ion-label>{{part.packing_qty}}</ion-label>
-      <ion-label><button ion-button icon-end (click)="changeQty(part)">修改装箱信息</button></ion-label>
+      <ion-label>{{item.current_parts}}</ion-label>
+      <ion-label><button ion-button icon-end (click)="changeQty(item)">修改装箱信息</button></ion-label>
     </ion-item>
   </ion-list>
   <message-list [data]="errors"></message-list>
@@ -47,7 +47,7 @@
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">返回(F2)</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">撤销(F2)</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large color="primary" [disabled]="!pressPart_list.length"

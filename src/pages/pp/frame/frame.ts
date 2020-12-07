@@ -22,14 +22,8 @@ import { Storage } from "@ionic/storage";
 export class FramePage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  port_no: string = '';   //选中的上料口
-  part_no: string = ''; //选中的零件号
   pressPart_list: any[] = [];  //获取的零件列表
   feedPort_list: any[] = [];  //获取的上料口列表
-
-  part: any = {
-    packing_qty: 0     //装箱数量
-  };
   part_name: string = '';//显示上料口的第二位置
   box_label: string = '';  //扫描输入的料箱号
   item: any = {
@@ -105,22 +99,18 @@ export class FramePage extends BaseUI {
   //获取上料口列表
   private getWorkshops() {
     this.api.get('PP/GetFrameLoad', { plant: this.item.plant, workshop: this.item.workshop }).subscribe((res: any) => {
+      console.log(res);
       if (res.successful) {
         this.feedPort_list = res.data.feedingPort;
-        this.storage.get('portNo').then((val) => {   //从缓存中获取数据
-          if (val && this.feedPort_list.find((f) => f.port_no == val)) {
-            this.port_no = val;
-          }
-          else if (this.feedPort_list.find((f) => f.isSelect)) {
-            let feedPort = this.feedPort_list.find((f) => f.isSelect);
-            this.port_no = feedPort.port_no;
-            this.part_name = feedPort.port_name;
-          } else {
-            let feedPort = this.feedPort_list[0];
-            this.port_no = feedPort.port_no;
-            this.part_name = feedPort.port_name;
-          }
-        });
+        if (this.feedPort_list.find((f) => f.isSelect)) {
+          let feedPort = this.feedPort_list.find((f) => f.isSelect);
+          this.item.port_no = feedPort.port_no;
+          this.part_name = feedPort.port_name;
+        } else {
+          let feedPort = this.feedPort_list[0];
+          this.item.port_no = feedPort.port_no;
+          this.part_name = feedPort.port_name;
+        }
       } else {
         this.insertError(res.message);
       }
@@ -133,10 +123,10 @@ export class FramePage extends BaseUI {
   //扫描执行过程
   scanBox() {
     let err = '';
-    if (!this.box_label) {
+    if (!this.box_label.trim()) {
       err = '无效的料箱号，请重试';
     }
-    
+
     if (err.length > 0) {
       this.insertError(err);
       this.setFocus();
@@ -144,7 +134,7 @@ export class FramePage extends BaseUI {
     }
 
     this.api.get('PP/GetFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
-      if (res.successful) {        
+      if (res.successful) {
         let frame = res.data;
         if (frame.pressPart && frame.pressPart.length > 0) {
           this.pressPart_list = frame.pressPart;
@@ -152,22 +142,22 @@ export class FramePage extends BaseUI {
           if (this.pressPart_list.find((f) => f.isSelect)) {
             model = this.pressPart_list.find((f) => f.isSelect)
           }
-          else { 
+          else {
             model = this.pressPart_list[0];
-          }         
-          this.part.packing_qty = model.packing_qty;
+          }
+          this.item.current_parts = model.packing_qty;
           this.item.part_no = model.part_no;
           this.item.car_model = model.car_model;
           this.item.box_mode = model.box_mode;
-          this.part_no = model.part_no;
+          this.item.part_no = model.part_no;
 
-          model.part_type == 3 ? this.changeFeed(model) : null;
+          model.part_type == 3 ? this.changeFeed(model.part_no) : null;
         }
-        else { 
+        else {
           this.insertError("找不到零件");
-        }  
-          //this.item.plant = frame.plant,
-           this.item.box_label = frame.box_label    
+        }
+        //this.item.plant = frame.plant,
+        this.item.box_label = frame.box_label
       }
       else {
         this.insertError(res.message);
@@ -182,33 +172,31 @@ export class FramePage extends BaseUI {
   save() {
     let err = '';
 
-    if (this.pressPart_list.length == 0) {
+    if (!this.pressPart_list.length) {
       err = '请扫描料箱号';
     }
-    if (!this.part_no || !this.port_no) { 
-      err = '冲压线或零件号不能为空';
+    if (!this.item.part_no || !this.item.port_no) {
+      err = '上料口或零件号不能为空';
     }
     if (err.length) {
       this.insertError(err);
       this.setFocus();
       return;
     }
-    this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.port_no).bundle_no;
-    this.item.port_no = this.port_no;
-    this.item.part_no = this.part_no;
-    this.item.pressPart.splice(0,1,this.pressPart_list.find(f => f.part_no == this.part_no));
-    this.item.current_parts = this.part.packing_qty;
+    this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.item.port_no).bundle_no;
+    this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
 
     this.insertError('正在提交，请稍后...');
     this.api.post('PP/PostFrame', this.item).subscribe((res: any) => {
-      console.log(res);
       if (res.successful) {
         this.pressPart_list = [];
         this.item.pressPart = [];
-        this.part.packing_qty = 0;
-        this.storage.set("portNo",this.port_no); //缓存冲压线
+        this.item.current_parts = 0;
+        this.item.box_label = '';
+        this.item.car_model = '';
+        this.item.box_mode = '';
         this.getWorkshops();//重新加载上料口列表
-        this.insertError("提交成功", 's');        
+        this.insertError("提交成功", 's');
         this.setFocus();
       } else {
         this.insertError(res.message);
@@ -227,45 +215,67 @@ export class FramePage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.packing_qty,
+      max_parts: model.current_parts,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packing_qty = data.receive
+        this.item.current_parts = data.receive
       }
     });
     _m.present();
   }
   //零件下拉框改变时
-  changeFeed(feedPort) {
-    if (feedPort.part_type == 3) {  //双件双模
-      this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: this.part_no }).subscribe((res: any) => {
-        if (res.successful) {  
+  changeFeed(part_no) {
+    if (this.pressPart_list.find((p)=>p.part_no == part_no).part_type==3) {  //双件双模
+      this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
+        if (res.successful) {
           this.feedPort_list = res.data;
-          if (this.feedPort_list.find((f) => f.isSelect) && this.feedPort_list.length>0) {
-            this.port_no = this.feedPort_list.find((f) => f.isSelect).port_no;
-            this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.port_no).bundle_no;
+          if (this.feedPort_list.find((f) => f.isSelect) && this.feedPort_list.length > 0) {
+            this.item.port_no = this.feedPort_list.find((f) => f.isSelect).port_no;
+            this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.item.port_no).bundle_no;
           }
-          else { 
-            this.port_no = this.feedPort_list[0].port_no;
+          else {
+            this.item.port_no = this.feedPort_list[0].port_no;
           }
         }
-        else { 
+        else {
           this.insertError(res.message);
         }
       }, error => {
         this.insertError('获取不到捆包列表');
       });
     }
-    
-    // this.item.port_no = this.port_no;
-    // this.item.part_no = this.part_no;
-    // this.item.pressPart.splice(0,1,this.pressPart_list.find(f => f.part_no == this.part_no));
-    // this.part.packing_qty = this.pressPart_list.find(f => f.part_no == this.part_no).packing_qty;
+
+   
+    this.item.car_model = this.pressPart_list.find((f) =>  f.part_no == part_no ).car_model;
+    this.item.box_mode = this.pressPart_list.find((f) =>  f.part_no == part_no ).box_mode;
+    this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
+    this.item.current_parts = this.pressPart_list.find(f => f.part_no == this.item.part_no).packing_qty;
   }
 
   cancel() {
-    this.navCtrl.popToRoot(); //返回首页
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '将撤销本次的操作记录,您确认要执行撤销操作吗？',
+      buttons: [
+        {
+          text: '不撤销',
+          handler: () => { },
+        },
+        {
+          text: '确认撤销',
+          handler: () => {
+            this.insertError('正在撤销...', 'i');
+            //this.item.partPanel = [];
+            //this.storage.set('PortNo', null); //清空缓存
+            this.insertError('撤销成功', 's');
+            //this.errors = [];
+            this.setFocus();
+          },
+        },
+      ],
+    });
+    prompt.present();
   }
   focusInput = () => {
     this.searchbar.setElementClass('bg-red', false);

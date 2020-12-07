@@ -85,9 +85,10 @@ export class BundlePage extends BaseUI {
   }
 //修改带T的时间格式
 dateFunction(time){
-  var zoneDate = new Date(time).toJSON();
-  var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
-  return date;
+  // var zoneDate = new Date(time).toJSON();
+  // var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
+  let data = time.replace(/T/g," ");
+  return data;
 }
   //校验扫描
   checkScanCode() {
@@ -98,7 +99,7 @@ dateFunction(time){
     }
 
     if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-      err = `标签${this.code}已扫描过，请扫描其他标签`;
+      err = `捆包${this.code}已扫描过，请扫描其他捆包`;
       this.insertError(err);
     }
 
@@ -126,13 +127,15 @@ dateFunction(time){
   scanSheet() {
     this.errors = [];
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
+      console.log(res.data);
       if (res.successful) {
-        if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-          this.insertError(`标签${this.code}已扫描过，请扫描其他标签`);
+        let model = res.data;
+        if (this.item.bundles.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
+          this.insertError(`捆包${model.bundleNo}已扫描过，请扫描其他捆包`);
           return;
         }
-        let model = res.data;
-        this.item.bundles.splice(0, 0, model);
+        //this.item.bundles.splice(0, 0, model);
+        this.item.bundles.push(model);
         this.scanCount = this.item.bundles.length;
         if (this.item.bundles.length > 0) { 
           this.isSave = true;
@@ -151,11 +154,11 @@ dateFunction(time){
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.pieces,
+      max_parts: model.actualReceivePieces,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.pieces = data.receive
+        model.actualReceivePieces = data.receive
       }
     });
     _m.present();
@@ -210,7 +213,7 @@ dateFunction(time){
     };
 
     // if (this.item.bundles.findIndex(p => p.bundleNo === this.code) >= 0) {
-    //   err = `标签${this.code}已扫描过，请扫描其他标签`;
+    //   err = `捆包${this.code}已扫描过，请扫描其他捆包`;
     //   this.insertError(err);
     // }
     this.isSave = false;

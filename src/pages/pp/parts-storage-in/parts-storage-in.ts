@@ -138,11 +138,11 @@ export class PartsStorageInPage extends BaseUI {
   scanSheet() {
     this.api.get('PP/GetPartsStorageIn', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-          this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
-          return;
-        }
         let model = res.data;
+        if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
+          this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
+          return;
+        }        
         this.item.parts.splice(0, 0, model);
         this.scanCount = this.item.parts.length;
         this.scanCount > 0 ? this.isSave = false :null;

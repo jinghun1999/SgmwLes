@@ -1,9 +1,11 @@
 import {Component, ViewChild} from '@angular/core';
-import { IonicPage, NavController, ToastController, LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, ToastController, LoadingController,AlertController } from 'ionic-angular';
 
 import {Api, User} from '../../providers';
 import { HomePage, BaseUI } from '../';
 // import {Storage} from "@ionic/storage";
+
+import { Events } from 'ionic-angular';    //导入
 
 @IonicPage()
 @Component({
@@ -22,16 +24,19 @@ export class LoginPage extends BaseUI{
 
   constructor(public navCtrl: NavController,
               //private storage: Storage,
+    public events:Events,
     public user: User,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
+    public alertCtrl:AlertController,
               public api: Api) {
     super();
     this.version = this.api.version;
+    console.log(this.api);
   }
-
   ionViewDidLoad() {
     this.setFocus();
+    
     /*let loading = super.showLoading(this.loadingCtrl, "正在加载数据...");
     setTimeout(() => {
       this.api.get('system/getPlants', {plant: this.api.plant}).subscribe((res: any) => {

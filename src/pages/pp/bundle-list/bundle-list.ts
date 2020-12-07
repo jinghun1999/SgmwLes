@@ -14,6 +14,7 @@ export class BundleListPage extends BaseUI {
   workshop: string;
   plant: string;
   port_no: string;
+  isCancel: boolean = true;// 弹框是否选择"关闭"操作，选择否，返回true
   bundlesCount: number = 0;//个数
   bundle_list: any[] = [];
   result: any = {}; //提交后返回的结果  
@@ -32,7 +33,7 @@ export class BundleListPage extends BaseUI {
   }
 
   confirm() {    
-    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {       
+    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {
       this.viewCtrl.dismiss(res);
     });
   }
@@ -44,5 +45,8 @@ export class BundleListPage extends BaseUI {
     console.log('ionViewDidLoad BundleListPage');
   }
 
-  cancel() { this.viewCtrl.dismiss(); }
+  cancel() {
+    let data = {'isCancel':this.isCancel};
+    this.viewCtrl.dismiss(data);
+  }
 }

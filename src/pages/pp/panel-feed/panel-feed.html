@@ -21,17 +21,17 @@
     <div class="ds-box" *ngFor="let p of item.partPanel; let i = index">
       <div class="row">
         <div class="col">
-          <h4 style="margin: 0;">
-            <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{p.bundleNo}}
+          <h4 style="margin: 0;white-space:nowrap;color:green;">
+            <ion-icon name="checkmark-circle-outline"></ion-icon> 捆包号：{{p.bundleNo}}
           </h4>
             <br>
-            <span style="font-size:small;color:gray">当前第{{i+1}}箱，共{{item.partPanel.length}}箱</span>
+            <span style="font-size:small;color:gray;white-space:nowrap;">当前第{{i+1}}箱，共{{item.partPanel.length}}箱</span>
           
         </div>
         <div class="col">
           <span style="font-size:small;color: red;margin:1rem">可用重量：{{p.weight}}</span>
           <br>
-          <span style="float: left;font-size:small;color: red;margin:1rem">可用数量：{{p.pieces}}</span>
+          <span style="float: left;font-size:small;color: red;margin:1rem">剩余数量：{{p.actualReceivePieces}}</span>
         </div>        
       </div>
     </div>
