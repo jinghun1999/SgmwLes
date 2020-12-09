@@ -10,61 +10,58 @@
     </ion-searchbar>
   </form>
   <ion-label *ngIf="sourceItem.parts.length"><h3>源料箱：</h3></ion-label>
+
   <div>
     <div class="ds-box" *ngFor="let part of sourceItem.parts;let i=index">
-      <h4>
-        <ion-icon name="qr_code" style="color:green"></ion-icon> 料箱号：{{part.boxLabel}}
-      </h4>
-      <h5>
-        <ion-icon name="part"></ion-icon> {{part.partNo}}
-        <ion-icon name="car" ion-end></ion-icon>车型: {{part.carModel}}        
-      </h5>
-      <h5>
-        {{part.partName}}
-        <ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}
-      </h5>
-      <tr>
-        <td>
-          <button ion-button item-end (click)="changeQty(part)"  [color]='light'>修改出库数</button>
-        </td>
-        <td>
-          <tr>
-             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
-          </tr>
-          <tr>
-            
-          </tr>
-      </td>
-      </tr> 
-          <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
+      <div class="row">
+          <div class="col" style="color:green;font-size:x-large;white-space:nowrap;">料箱号:{{part.boxLabel}}</div>
+        <div class="col"><span style="float: right;">捆包号:{{part.bundle_no}}</span></div>
+      </div>
+      <div class="row">        
+          <div class="col">{{part.partNo}}</div>
+          <div class="col"><span style="float: right;"><ion-icon name="car"></ion-icon>车型:{{part.carModel}}</span></div>        
+      </div>
+      <div class="row">        
+          <div class="col">{{part.partName}}</div>
+          <div class="col"><span style="float: right;"><ion-icon name="box"></ion-icon>箱型:{{part.boxModel}}</span></div>      
+      </div>
+      <div class="row">
+        <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改出库数</button></div>
+
+        <div class="col">
+          <span style="float: left;font-size:small;color: red;">包装数:{{part.packingQty}}</span><br>
+          <span style="float: left;font-size:small;color: red;">当前装箱数量{{part.currentParts}}:</span>          
+        </div>        
+        <div class="col">
+          <button ion-button color="danger" (click)="delete(0)" style="float: right;" >X</button>
+        </div>
+      </div>
     </div>
   </div>
+
   <ion-label *ngIf="targetItem.parts.length"><h3>目标料箱：<ion-icon name="arrow"></ion-icon></h3></ion-label>
   <div>
     <div class="ds-box" *ngFor="let part of targetItem.parts;let i=index">
-      <h4>
-        <ion-icon name="qr_code" style="color:green"></ion-icon> 料箱号：{{part.boxLabel}}
-        <ion-icon name="car" ion-end></ion-icon>车型: {{part.carModel}}
-      </h4>
-      <h5>
-        <ion-icon name="part"></ion-icon> {{part.partNo}}
-        <ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}
-        
-      </h5>
-      <h5>
-        {{part.partName}}        
-      </h5>
-      <tr>
-        <!-- <td>
-          <button ion-button item-end (click)="changeQty(part)"  [color]='light'>修改出库数</button>
-        </td> -->
-        <td>
-          <tr>
-             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
-          </tr>          
-      </td>
-      </tr> 
-          <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
+      <div class="row">
+          <div class="col" style="color:green;font-size:x-large;white-space:nowrap;">料箱号:{{part.boxLabel}}</div>
+        <div class="col"><span style="float: right;">捆包号:{{part.bundle_no}}</span></div>
+      </div>
+      <div class="row">        
+          <div class="col">{{part.partNo}}</div>
+          <div class="col"><span style="float: right;"><ion-icon name="car"></ion-icon>车型:{{part.carModel}}</span></div>        
+      </div>
+      <div class="row">        
+          <div class="col">{{part.partName}}</div>
+          <div class="col"><span style="float: right;"><ion-icon name="box"></ion-icon>箱型:{{part.boxModel}}</span></div>      
+      </div>
+      <div class="row">
+        <div class="col"><span>包装数:{{part.packingQty}}</span></div>
+        <div class="col"><span style="float: left;font-size:small;color: red;">当前装箱数量:{{part.currentParts}}</span>          
+        </div>        
+        <div class="col">
+          <button ion-button color="danger" (click)="delete(1)" style="float: right;" >X</button>
+        </div>
+      </div>
     </div>
   </div>
   <message-list [data]="errors"></message-list>
@@ -75,7 +72,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!sourceItem.parts.length&&!targetItem.parts.length"
+      <button no-margin ion-button full large color="primary" [disabled]="(sourceItem.parts.length + targetItem.parts.length)!=2"
         (click)="save()">提交(F2)</button>
     </ion-col>
   </ion-row>

@@ -17,7 +17,6 @@ import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
 import { SuspiciousProvider } from '../providers/suspicious';
 
-
 // The translate loader needs to know where to load i18n files
 // in Ionic's static asset pipeline.
 export function createTranslateLoader(http: HttpClient) {
@@ -43,7 +42,7 @@ export function provideSettings(storage: Storage) {
   // declarations: 数组类型的选项, 用来声明属于这个模块的指令,管道等等.
   //               然后我们就可以在这个模块中使用它们了.
   declarations: [
-    MyApp
+    MyApp,
   ],
   // imports: 数组类型的选项,我们的模块需要依赖的一些其他的模块,这样做的目的使我们这个模块
   //          可以直接使用别的模块提供的一些指令,组件等等.

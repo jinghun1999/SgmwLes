@@ -127,7 +127,6 @@ dateFunction(time){
   scanSheet() {
     this.errors = [];
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
-      console.log(res.data);
       if (res.successful) {
         let model = res.data;
         if (this.item.bundles.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
@@ -194,6 +193,7 @@ dateFunction(time){
   //删除
   delete(i) {
     this.item.bundles.splice(i, 1);
+    this.isSave= this.item.bundles.length == 0 ?  true :  false; 
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -202,8 +202,8 @@ dateFunction(time){
   }
   //提交
   outStock() {
-    if (!this.item.bundles) {
-      this.insertError('请先扫描捆包号');
+    if (this.item.bundles.length==0) {
+      this.insertError('请先扫描捆包号','i');
       return;
     };
 
@@ -217,7 +217,6 @@ dateFunction(time){
     //   this.insertError(err);
     // }
     this.isSave = false;
-    console.log(this.isSave);
     this.api.post('PP/PostPanelMaterial', {
       plant: this.api.plant,
       workshop: this.workshop,

@@ -15,23 +15,25 @@ export class ChangePiecesPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               public viewCtrl: ViewController) {
-    this._parts = navParams.get('max_parts');
-    this.receivePieces = navParams.get('max_parts');
+    this._parts = parseInt(this.navParams.get('max_parts'));
+    this.receivePieces = parseInt(this.navParams.get('max_parts'));
+    
   }
 
   change() { 
-    if (!isNaN(this._parts) && this.receivePieces > 0 && this.receivePieces > this._parts) {      
+    if ( this.receivePieces > this._parts) {      
       this.err = '已超过数量';
       return;
     }
   }
 
   confirm() {
-    if (this.receivePieces < 0) {
+    if ( !this.receivePieces || this.receivePieces < 0) {
       this.err = '提示消息：请输入箱数！';
       return;
     }
-    if (!isNaN(this._parts) && this.receivePieces > 0 && this.receivePieces > this._parts) {      
+
+    if ( this.receivePieces > this._parts) {      
       this.err = '已超过数量';
       return;
     }

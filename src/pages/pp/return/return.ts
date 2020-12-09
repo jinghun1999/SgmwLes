@@ -24,17 +24,15 @@ export class ReturnPage extends BaseUI {
 
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
   keyPressed: any;
-  //source: string = ''; //源仓库
-  workshop_list:any[]=[];//加载获取的的车间列表
-  scanCount: number = 0;//记录扫描总数
+  workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
-  item: any = {    
+  item: any = {
     plant: '',
     workshop: '',
     target:'',
-    parts: [],
+    remark:'',
+    partPanel: [],
   };
   constructor(public navParams: NavParams,
     public toastCtrl: ToastController,
@@ -57,7 +55,7 @@ export class ReturnPage extends BaseUI {
         break;
       case 113:
         //f2
-        this.outStock();
+        this.save();
         break;
     }
   }
@@ -86,7 +84,7 @@ export class ReturnPage extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
-      this.workshop = val;
+      this.item.workshop = val;
       this.getWorkshops();
     });
   }
@@ -94,80 +92,71 @@ export class ReturnPage extends BaseUI {
     this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        this.item.target = this.workshop_list[0].value;
+        //this.item.target = this.workshop_list[0].value;
       } else {
         this.insertError(res.message);
       }
     },
       err => {
-        this.insertError('系统级别错误，请返回重试');
+        this.insertError('扫描失败');
       });
   }
 
-//校验扫描
-checkScanCode() {
-  let err = '';
-  if (this.code == '') {
-    err = '请扫描料箱号！';
-    this.insertError(err);
+  //校验扫描
+  checkScanCode() {
+    let err = '';
+    if (this.code == '') {
+      err = '请扫描料箱号！';
+      this.insertError(err);
+    }
+    if (this.item.partPanel.findIndex(p => p.boxLabel === this.code) >= 0) {
+      err = `料箱${this.code}已扫描过，请扫描其他标签`;
+      this.insertError(err);
+    }
+
+    if (err.length > 0) {
+      this.searchbar.setFocus();
+      return false;
+    }
+    return true;
   }
-
-  if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    err = `料箱${this.code}已扫描过，请扫描其他标签`;
-    this.insertError(err);
+  //弹框
+  onFocus() { 
+    let _m= this.modalCtrl.create('ReceiptResonPage', { reson: this.item.remark });
+    _m.onDidDismiss(data => {
+      if (data) {
+       this.item.remark = data.reson
+      }
+    });
+    _m.present();
   }
-
-  if (err.length > 0) {
-    this.searchbar.setFocus();
-    return false;
-  }
-  return true;
-}
-
-
   //开始扫描
   scan() {
-    if (this.checkScanCode()) {      
-        //扫料箱号
-        this.scanSheet();      
+    if (this.checkScanCode()) {
+      //扫料箱号
+      this.scanSheet();
     }
     else {
       this.resetScan();
     }
-  }  
+  }
   //扫描执行的过程
   scanSheet() {
-    this.errors = [];
-    this.api.get('PP/GetReturn', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetReturn', { plant: this.api.plant, workshop: this.item.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {
-          if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {            
-            this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
-            return;
-          }
-          let model = res.data;
-          this.item.parts.splice(0, 0, {
-            type:model.type,
-            plant: model.plant,
-            boxLabel: model.boxLabel,
-            boxModel: model.boxModel,
-            partNo: model.partNo,
-            partName: model.partName,
-            carModel: model.carModel,
-            packingQty: model.packingQty,
-            currentParts: model.currentParts,
-            bundle_no: model.bundle_no,
-            pressParts:model.pressParts
-          });
-          this.scanCount = this.item.parts.length;
-      
-        this.resetScan();
+        if (this.item.partPanel.findIndex(p => p.bundleNo === res.data.bundleNo) >= 0) {
+          this.insertError(`料箱${res.data.bundleNo}已扫描过，请扫描其他标签`);
+          return;
+        }
+        let model = res.data;
+        this.item.partPanel.splice(0, 0, model);
       }
       else {
         this.insertError(res.message);
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('扫描失败,'+err);
       });
     this.resetScan();
   }
@@ -175,11 +164,11 @@ checkScanCode() {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.packingQty,
+      max_parts: model.actualReceivePieces,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packingQty = data.receive
+        model.actualReceivePieces = data.receive
       }
     });
     _m.present();
@@ -205,16 +194,15 @@ checkScanCode() {
   //撤销
   cancel_do() {
     this.insertError('正在撤销...');
-    this.code = '';
-    this.errors = [];
-    this.item.parts = [];
+    this.code = '';    
+    this.item.partPanel = [];
     this.insertError("撤销成功");
     this.resetScan();
   }
 
   //删除
   delete(i) {
-    this.item.parts.splice(i, 1);
+    this.item.partPanel.splice(i, 1);
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -222,40 +210,30 @@ checkScanCode() {
     this.searchbar.setFocus();
   }
   //提交
-  outStock() {
-    if (!this.item.parts) {
+  save() {
+    if (this.item.partPanel.length == 0) {
       this.insertError('请先扫描料箱号');
       return;
     };
-
-    if(new Set(this.item.parts).size !== this.item.parts.length){
+    if (new Set(this.item.partPanel).size !== this.item.partPanel.length) {
       this.insertError("提交的数据中存在重复的料箱号，请检查！");
       return;
     };
-
-    // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
-    //   this.insertError(err);
-    // }
-
-    this.api.post('PP/PostReturn', {
-      plant: this.api.plant,
-      workshop: this.workshop,
-      target: this.item.target,
-      parts: this.item.parts
-    }).subscribe((res: any) => {
+    let loading = super.showLoading(this.loadingCtrl, "提交中...");
+     this.api.post('PP/PostReturn', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功');
+        this.insertError('提交成功','s');
+        this.item.partPanel = [];
       }
       else {
-        this.insertError(res.message);
+        this.insertError(res.message);        
       }
+      loading.dismiss();
     },
       err => {
-        this.insertError('系统级别错误');
-        this.resetScan();
-      });    
-    this.item.parts = [];    
+        this.insertError('提交失败,'+err);
+        loading.dismiss();
+      });
     this.resetScan();
   }
   focusInput = () => {

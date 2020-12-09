@@ -86,15 +86,16 @@ export class PartsStorageOutPage extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.target = val;
-      console.log(val);
       this.getWorkshops();
     });
   }
   private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
+    this.api.get('system/GetFramePlants', { plant: this.api.plant }).subscribe((res: any) => {
+      console.log(res.data);
       if (res.successful) {
         this.workshop_list = res.data;
-        this.item.workshop = this.item.target;
+        let model = this.workshop_list.find((f) => f.isSelect);
+        model ? this.item.workshop = model.value : this.item.workshop = this.workshop_list[0].value;
       } else {
         this.insertError(res.message);
       }
@@ -141,7 +142,6 @@ changWS(target: string) {
   }
   //扫描执行的过程
   scanSheet() {
-    this.errors = [];
     this.api.get('PP/GetPartsStorageOut', { plant: this.api.plant, workshop: this.item.target, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
@@ -150,9 +150,7 @@ changWS(target: string) {
         }
         this.item.parts.splice(0, 0, res.data);
         this.scanCount = this.item.parts.length;
-        if (this.scanCount > 0) {
-          this.isSave = false;
-        }
+        this.item.parts ? this.isSave = false : this.isSave = true;
         this.resetScan();
       }
       else {
@@ -199,7 +197,6 @@ changWS(target: string) {
   cancel_do() {
     this.insertError('正在撤销...');
     this.code = '';
-    this.errors = [];
     this.item.parts = [];
     this.insertError("撤销成功");
     this.resetScan();
@@ -208,6 +205,7 @@ changWS(target: string) {
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
+    this.item.parts.length == 0 ? this.isSave = true : this.isSave = false;    
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -216,7 +214,7 @@ changWS(target: string) {
   }
   //提交
   save() {
-    if (!this.item.parts) {
+    if (this.item.parts.length==0) {
       this.insertError('请先扫描捆包号');
       return;
     };
@@ -225,11 +223,6 @@ changWS(target: string) {
       this.insertError("提交的数据中存在重复的捆包号，请检查！");
       return;
     };
-
-    // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
-    //   this.insertError(err);
-    // }
     this.isSave = true;
     this.api.post('PP/PostPartsStorageOut', { plant: this.item.plant, workshop: this.item.target, target: this.item.workshop, parts: this.item.parts }).subscribe((res: any) => {
       if (res.successful) {
@@ -238,13 +231,12 @@ changWS(target: string) {
       }
       else {
         this.insertError(res.message);
-        this.item.parts.length > 0 ? this.isSave = false : null;
+        this.item.parts? this.isSave = false : this.isSave = true;
       }
     },
       err => {
         this.insertError('提交失败');
-        this.item.parts.length > 0 ? this.isSave = false : null;
-        this.resetScan();
+        this.item.parts? this.isSave = false : this.isSave = true;
       });
     this.resetScan();
   }

@@ -81,7 +81,7 @@ export class SheetPanelPage extends BaseUI {
   }
   insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
-      this.errors.splice(0, 1, { message: msg, type: t, time: new Date() });
+      this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
     });
   }
   ionViewDidLoad() {
@@ -93,7 +93,7 @@ export class SheetPanelPage extends BaseUI {
   }
   private getWorkshops() {
     this.api.get('system/GetSheetPlants', { plant: this.api.plant }).subscribe((res: any) => {
-      if (res.successful) {
+      if (res.successful) {        
         this.workshop_list = res.data;
         let model = this.workshop_list.find((w) => w.isSelect);
         model ? this.item.target = model.value : this.item.target = this.workshop_list[0].value;
@@ -103,59 +103,36 @@ export class SheetPanelPage extends BaseUI {
         this.insertError('获取车间失败');
       });
   }
-  //开始扫描
+ 
+  //扫描执行的过程
   scan() {
-    if (this.checkScanCode()) {
-      //扫捆包号
-      this.scanSheet();
-    }
-    else {
-      this.resetScan();
-    }
-  }
-  //显示错误信息列表
-  openErrList(e) {
-    console.log(e.target);
-  }
-  //校验扫描
-  checkScanCode() {
-    let err = '';
     if (!this.bundle_no) {
-      err = '请扫描捆包号！';
-      this.insertError(err);
+      this.insertError('请扫描捆包号！');
+      return ;
     }
     if (this.item.bundles.findIndex(p => p.bundleNo === this.bundle_no) >= 0) {
-      err = `${this.bundle_no}已扫描，请扫描其他捆包号`;
-      this.insertError(err);
+      this.insertError(`捆包号${this.bundle_no}已扫描，请扫描其他捆包号`);
+      this.resetScan();
+      return ;
     }
-
-    if (err.length) {
-      this.searchbar.setFocus();
-      return false;
-    }
-    return true;
-  }
-  //扫描执行的过程
-  scanSheet() {
-    this.errors = [];
     this.api.get('PP/GetSheetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
-        if (this.item.bundles.findIndex(p => p.bundleNo === model.bundle_no) >= 0) {
-          err = `${model.bundle_no}已扫描，请扫描其他捆包号`;
-          this.insertError(err);
+        if (this.item.bundles.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
+          this.insertError(`捆包号${model.bundleNo}已扫描，请扫描其他捆包号`);
+          this.resetScan();
           return;
         }
-
         this.item.bundles.splice(0, 0, model);
+        this.isSave = this.item.bundles.length > 0 ? false : true;
       }
       else {
-        this.insertError(res.message);        
+        this.insertError(res.message);
         this.item.bundles.length > 0 ? this.isSave = false : null;
       }
     },
       err => {
-        this.insertError('系统级别错误');        
+        this.insertError('扫描失败');
         this.item.bundles.length > 0 ? this.isSave = false : null;
       });
     this.resetScan();
@@ -202,13 +179,12 @@ export class SheetPanelPage extends BaseUI {
     this.bundle_no = '';
     this.item.bundles = [];
     this.insertError("撤销成功");
-    //this.errors = [];
     this.resetScan();
   }
   //删除
   delete(i) {
     this.item.bundles.splice(i, 1);
-    this.resetScan();
+    this.isSave = this.item.bundles.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -217,7 +193,7 @@ export class SheetPanelPage extends BaseUI {
   }
   //提交
   save() {
-    if (!this.item.bundles.length) {
+    if (this.item.bundles.length == 0) {
       this.insertError('请先扫描捆包号');
       return;
     };
@@ -230,7 +206,6 @@ export class SheetPanelPage extends BaseUI {
     }).subscribe((res: any) => {
       if (res.successful) {
         this.item.bundles = [];
-
         this.insertError('提交成功', 's')
       }
       else {
@@ -245,10 +220,8 @@ export class SheetPanelPage extends BaseUI {
     this.resetScan();
   }
   //修改带T的时间格式
-  dateFunction(time:string) {
-    // var zoneDate = new Date(time).toJSON();
-    // var date = new Date(+new Date(zoneDate) + 8 * 3600 * 1000).toISOString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '');
-    let date = time.replace(/T/g, " ");    
+  dateFunction(time: string) {
+    let date = time.replace(/T/g, " ");
     return date;
   }
   focusInput = () => {

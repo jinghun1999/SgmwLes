@@ -11,6 +11,7 @@ import { Api } from '../../../providers';
 })
 export class BundleListPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
+  bundle: any = {};
   workshop: string;
   plant: string;
   port_no: string;
@@ -29,12 +30,13 @@ export class BundleListPage extends BaseUI {
     this.port_no = navParams.get('port_no');//上料口
     this.workshop = navParams.get("workshop").toString();//车间
     this.plant = navParams.get('plant').toString();//工厂
+    this.bundle=navParams.get('bundle');
     this.bundlesCount = this.bundle_list.length;
   }
 
   confirm() {    
     this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {
-      this.viewCtrl.dismiss(res);
+      this.viewCtrl.dismiss(res,this.bundle);
     });
   }
 

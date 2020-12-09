@@ -27,7 +27,6 @@ export class PartsStorageInPage extends BaseUI {
   keyPressed: any;
   isSave: boolean = true; //防止重复提交，true禁用提交
   workshop_list: any[] = [];//加载获取的的车间列表
-  scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
   item: any = {
     plant: '',
@@ -136,7 +135,7 @@ export class PartsStorageInPage extends BaseUI {
   }
   //扫描执行的过程
   scanSheet() {
-    this.api.get('PP/GetPartsStorageIn', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetPartsStorageIn', { plant: this.api.plant, workshop: this.item.target, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
         if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
@@ -144,14 +143,13 @@ export class PartsStorageInPage extends BaseUI {
           return;
         }        
         this.item.parts.splice(0, 0, model);
-        this.scanCount = this.item.parts.length;
-        this.scanCount > 0 ? this.isSave = false :null;
+        this.item.parts.length ? this.isSave = false :null;
       }
       else {
-        this.insertError(res.message,'i');
+        this.insertError(res.message,);
       }
     },
-      err => {
+      error => {
         this.insertError('扫描失败');
       });
     this.resetScan();
@@ -189,17 +187,18 @@ export class PartsStorageInPage extends BaseUI {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...');
+    this.insertError('正在撤销...','i');
     this.code = '';
-    this.errors = [];
+    //this.errors = [];
     this.item.parts = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
 
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
+    this.isSave = this.item.parts.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() { 
@@ -210,34 +209,29 @@ export class PartsStorageInPage extends BaseUI {
   }
   //提交
   save() {
-    if (!this.item.parts) {
-      this.insertError('请先扫描料箱号');
+    if (this.item.parts.length==0) {
+      this.insertError('请先扫描料箱号','i');
       return;
     };
 
     if (new Set(this.item.parts).size !== this.item.parts.length) {
-      this.insertError("提交的数据中存在重复的料箱号，请检查！");
+      this.insertError("明细列表存在重复的料箱号，请检查！",'i');
       return;
     };
-
-    // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
-    //   this.insertError(err);
-    // }
     this.isSave = true;
     this.api.post('PP/PostPartsStorageIn', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功');
-        this.item.parts = [];        
+        this.insertError('提交成功','s');
+        this.item.parts = [];
       }
       else {
-        this.insertError(res.message); 
-        this.scanCount > 0 ? this.isSave = false : null;//抛异常没有清空明细，所以仍可继续提交，
+        this.insertError('提交失败,'+res.message); 
+        this.item.parts.length ? this.isSave = false : null;//没有清空明细，所以仍可继续提交，
       }
     },
-      err => {
+      error => {
         this.insertError('提交失败');
-        this.scanCount > 0 ? this.isSave = false : null;
+        this.item.parts.length ? this.isSave = false : null;
       });
     this.resetScan();
   }

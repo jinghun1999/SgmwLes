@@ -10,6 +10,7 @@ import {
 import { Storage } from "@ionic/storage";
 import { Api, Menus, User } from "../../providers";
 import { BaseUI } from "../";
+import { l } from "@angular/core/src/render3";
 
 @IonicPage()
 @Component({
@@ -23,7 +24,7 @@ export class HomePage extends BaseUI {
   workshop: string;
   username: string;
   version: string;
-
+  
   constructor(
     public navCtrl: NavController,
     public items: Menus,
@@ -48,7 +49,7 @@ export class HomePage extends BaseUI {
   /**
    * The view loaded, let's query our items for the list
    */
-  ionViewDidLoad() {
+  ionViewDidLoad() {   
     this.getWorkshop();
   }
   getWorkshop = () => {

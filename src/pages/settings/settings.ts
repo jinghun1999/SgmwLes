@@ -58,7 +58,6 @@ export class SettingsPage extends BaseUI {
 
   logout() {
     this.user.logout().subscribe((re) => {
-      debugger;
       setTimeout(() => {
         // this.app.getRootNav().setRoot(LoginPage);
         this.app.getRootNav().setRoot('LoginPage', {}, {

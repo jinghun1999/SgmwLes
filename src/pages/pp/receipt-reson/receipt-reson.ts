@@ -1,20 +1,25 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
+import { Component,ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, ViewController,Searchbar } from 'ionic-angular';
+import { BaseUI } from '../../baseUI';
 
 @IonicPage()
 @Component({
   selector: 'page-receipt-reson',
   templateUrl: 'receipt-reson.html',
 })
-export class ReceiptResonPage {
+export class ReceiptResonPage extends BaseUI {
+  @ViewChild(Searchbar) searchbar: Searchbar;
+
   placeholderText: string = '退货原因';// 
   receiptReson: string = '';  //输入的文字
   err: string;       //错误提示
 
-  constructor(public navCtrl: NavController,
-              public navParams: NavParams,
-              public viewCtrl: ViewController) {
-    this.receiptReson = navParams.get('reson').toString();
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    public viewCtrl: ViewController) {
+    super();
+    this.receiptReson = this.navParams.get('reson');
   }
 
    confirm() {    
@@ -22,6 +27,9 @@ export class ReceiptResonPage {
     this.viewCtrl.dismiss(data);
   }
 
+  ionViewDidEnter() {
+   
+  }
   ionViewDidLoad() {
     console.log('ionViewDidLoad UnstandPage');
   }

@@ -25,9 +25,9 @@ export class ReceiptReturnPage  extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
+  isSave: boolean = true;
   reson: string = '';//退货原因
   workshop_list:any[]=[];//加载获取的的车间列表
-  scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
   item: any = {    
     plant: '',
@@ -140,20 +140,8 @@ checkScanCode() {
             return;
           }
           let model = res.data;
-          this.item.parts.splice(0, 0, {
-            type:model.type,
-            plant: model.plant,
-            boxLabel: model.boxLabel,
-            boxModel: model.boxModel,
-            partNo: model.partNo,
-            partName: model.partName,
-            carModel: model.carModel,
-            packingQty: model.packingQty,
-            currentParts: model.currentParts,
-            bundle_no: model.bundle_no,
-            pressParts:model.pressParts
-          });
-          this.scanCount = this.item.parts.length;
+        this.item.parts.splice(0, 0, model);
+        this.isSave = this.item.parts.length > 0 ? false : true;
       
         this.resetScan();
       }
@@ -210,6 +198,7 @@ checkScanCode() {
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
+    this.isSave = this.item.parts.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -218,7 +207,7 @@ checkScanCode() {
   }
   //提交
   save() {
-    if (!this.item.parts) {
+    if (this.item.parts.length==0) {
       this.insertError('请先扫描料箱号');
       return;
     };
@@ -227,29 +216,25 @@ checkScanCode() {
       this.insertError("提交的数据中存在重复的数据，请检查！");
       return;
     };
-
-    // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    //   err = `料箱${this.code}已扫描过，请扫描其他料箱`;
-    //   this.insertError(err);
-    // }
-
+    this.isSave = true;
     this.api.post('PP/PostReceiptReturns', {
       plant: this.api.plant,
       workshop: this.item.workshop,
       parts: this.item.parts
     }).subscribe((res: any) => {
       if (res.successful) {
+        this.item.parts = [];  
         this.insertError('提交成功');
       }
       else {
         this.insertError(res.message);
+        this.isSave = this.item.parts.length > 0 ? false : true;
       }
     },
       err => {
-        this.insertError('系统级别错误');
-        this.resetScan();
-      });    
-    this.item.parts = [];    
+        this.insertError('提交失败');
+        this.isSave = this.item.parts.length > 0 ? false : true;
+      });
     this.resetScan();
   }
   //修改收货原因

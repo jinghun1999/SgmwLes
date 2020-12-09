@@ -26,6 +26,7 @@ export class SuspiciousPage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
   InOut: number = 1;
+  isSave: boolean = true;
   workshop_list: any[] = [];//加载获取的的车间列表
   scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
@@ -202,6 +203,7 @@ export class SuspiciousPage extends BaseUI {
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
+    this.isSave = this.item.parts.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -210,7 +212,7 @@ export class SuspiciousPage extends BaseUI {
   }
   //提交
   outStock() {
-    if (!this.item.parts) {
+    if (this.item.parts.length==0) {
       this.insertError('请先扫描料箱号');
       return;
     };
@@ -227,17 +229,18 @@ export class SuspiciousPage extends BaseUI {
 
     this.api.post('PP/PostSuspiciousInOut', {InOut:this.InOut,data:this.item}).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功');
+        this.insertError('提交成功', 's');
+        this.item.parts = [];
       }
       else {
         this.insertError(res.message);
+        this.isSave = this.item.parts.length == 0 ? true : false;
       }
     },
       err => {
-        this.insertError('系统级别错误');
-        this.resetScan();
+        this.insertError('提交失败');
+        this.isSave = this.item.parts.length == 0 ? true : false;
       });
-    this.item.parts = [];
     this.resetScan();
   }
   //移入返修区
