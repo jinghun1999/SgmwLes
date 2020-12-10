@@ -24,8 +24,8 @@ export class SuspiciousInOutPage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   pressPart_list: any[] = [];  //获取的零件列表
   feedPort_list: any[] = [];  //获取的上料口列表
-  isSave: boolean = true;
   part_name: string = '';//显示上料口的第二位置
+  bundle_no: string = '';
   box_label: string = '';  //扫描输入的料箱号
   item: any = {
     current_parts: 0,
@@ -100,16 +100,16 @@ export class SuspiciousInOutPage extends BaseUI {
   //获取上料口列表
   private getWorkshops() {
     this.api.get('PP/GetFrameLoad', { plant: this.item.plant, workshop: this.item.workshop }).subscribe((res: any) => {
-      console.log(res);
       if (res.successful) {
-        this.feedPort_list = res.data.feedingPort;
+        this.feedPort_list = res.data.feedingPort; 
+        //console.log(res.data.feedingPort);
         if (this.feedPort_list.find((f) => f.isSelect)) {
           let feedPort = this.feedPort_list.find((f) => f.isSelect);
-          this.item.port_no = feedPort.port_no;
+          this.item.bundle_no = feedPort.bundle_no;
           this.part_name = feedPort.port_name;
         } else {
           let feedPort = this.feedPort_list[0];
-          this.item.port_no = feedPort.port_no;
+          this.item.bundle_no = feedPort.bundle_no;
           this.part_name = feedPort.port_name;
         }
       } else {
@@ -127,7 +127,6 @@ export class SuspiciousInOutPage extends BaseUI {
     if (!this.box_label.trim()) {
       err = '无效的料箱号，请重试';
     }
-
     if (err.length > 0) {
       this.insertError(err);
       this.setFocus();
@@ -153,10 +152,9 @@ export class SuspiciousInOutPage extends BaseUI {
           this.item.part_no = model.part_no;
 
           model.part_type == 3 ? this.changeFeed(model.part_no) : null;
-          this.isSave = false;
         }
         else {
-          this.insertError("找不到零件");
+          this.insertError("获取零件列表失败");
         }
         //this.item.plant = frame.plant,
         this.item.box_label = frame.box_label
@@ -173,10 +171,11 @@ export class SuspiciousInOutPage extends BaseUI {
   //提交
   save() {
     let err = '';
-    if (this.pressPart_list.length==0) {
+
+    if (!this.pressPart_list.length) {
       err = '请扫描料箱号';
     }
-    if (!this.item.part_no || !this.item.port_no) {
+    if (!this.item.part_no || !this.item.bundle_no) {
       err = '上料口或零件号不能为空';
     }
     if (err.length) {
@@ -184,10 +183,10 @@ export class SuspiciousInOutPage extends BaseUI {
       this.setFocus();
       return;
     }
-    this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.item.port_no).bundle_no;
+    this.item.port_no = this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
-    this.isSave = true;
-    this.insertError('正在提交，请稍后...');
+    
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostFrame', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.pressPart_list = [];
@@ -198,20 +197,21 @@ export class SuspiciousInOutPage extends BaseUI {
         this.item.box_mode = '';
         this.getWorkshops();//重新加载上料口列表
         this.insertError("提交成功", 's');
+        this.setFocus();
       } else {
         this.insertError(res.message);
-        this.item.part_no ? this.isSave = false : null;
       }
+      loading.dismiss();
     },
       (error) => {
         this.insertError('提交失败');
-        this.item.part_no ? this.isSave = false : null;
+        loading.dismiss();
       });
     this.setFocus();
   }
   //点击显示错误列表
   openErrList(e) {
-    console.log(e.target);
+    //console.log(e.target);
   }
 
   //非标跳转Modal页
@@ -233,11 +233,11 @@ export class SuspiciousInOutPage extends BaseUI {
         if (res.successful) {
           this.feedPort_list = res.data;
           if (this.feedPort_list.find((f) => f.isSelect) && this.feedPort_list.length > 0) {
-            this.item.port_no = this.feedPort_list.find((f) => f.isSelect).port_no;
-            this.item.bundle_no = this.feedPort_list.find((f) => f.port_no == this.item.port_no).bundle_no;
+            this.item.bundle_no = this.feedPort_list.find((f) => f.isSelect).bundle_no;
+            //this.item.bundle_no = this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).bundle_no;
           }
           else {
-            this.item.port_no = this.feedPort_list[0].port_no;
+            this.item.bundle_no = this.feedPort_list[0].bundle_no;
           }
         }
         else {
@@ -248,12 +248,11 @@ export class SuspiciousInOutPage extends BaseUI {
       });
     }
 
-   
+    this.item.port_no=this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;
     this.item.car_model = this.pressPart_list.find((f) =>  f.part_no == part_no ).car_model;
     this.item.box_mode = this.pressPart_list.find((f) =>  f.part_no == part_no ).box_mode;
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
     this.item.current_parts = this.pressPart_list.find(f => f.part_no == this.item.part_no).packing_qty;
-    this.item.part_no ? this.isSave = false : null;
   }
 
   cancel() {
@@ -271,6 +270,7 @@ export class SuspiciousInOutPage extends BaseUI {
             this.insertError('正在撤销...', 'i');
             this.item.part_no = '';
             this.item.port_no = '';
+            this.item.bundle_no = '';
             this.insertError('撤销成功', 's');
             this.setFocus();
           },
@@ -292,3 +292,5 @@ export class SuspiciousInOutPage extends BaseUI {
     this.searchbar.setFocus();
   }
 }
+
+  

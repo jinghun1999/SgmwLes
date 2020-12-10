@@ -6,46 +6,53 @@
 
 <ion-content>
   <form (submit)="scan()">
-    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
+    <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code"
+      (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
-  </form>  
+  </form>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large [ngStyle]="{'background-color':InOut == 1 ? 'Aquamarine' : 'AliceBlue' }" (click)="inRepair()">移入返修区</button>
+      <button no-margin ion-button full large [ngStyle]="{'background-color':item.InOut == 1 ? 'Aquamarine' : '#C0C0C0' }"
+        (click)="inRepair()">移入返修区</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large [ngStyle]="{'background-color':InOut == 0 ? 'Aquamarine' : 'AliceBlue' }"  (click)="outRepair()">移出返修区</button>
+      <button no-margin ion-button full large [ngStyle]="{'background-color':item.InOut == 0 ? 'Aquamarine' : '#C0C0C0' }"
+        (click)="outRepair()">移出返修区</button>
     </ion-col>
   </ion-row>
   <div>
     <div class="ds-box" *ngFor="let part of item.parts;let i=index">
-      <h4>
-        <ion-icon name="qr_code" style="color:green"></ion-icon> 料箱号：{{part.boxLabel}}
-         捆包号：{{part.bundle_no}}
-      </h4>
-      <h5>
-        <ion-icon name="part"></ion-icon> {{part.partNo}}
-        <ion-icon name="car"></ion-icon>车型: {{part.carModel}}
-        
-      </h5>
-      <h5>
-        {{part.partName}}
-        <ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}
-      </h5>
-      <tr>
-        <td>
-          <button ion-button item-end (click)="changeQty(part)"  [color]='light'>修改出库数</button>
-        </td>
-        <td>
-          <tr>
-             <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
-          </tr>
-          <tr>
-            <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共扫描{{scanCount}}箱</span>
-          </tr>
-      </td>
-      </tr> 
-          <button ion-button color="danger" (click)="delete(i)" icon-end>X</button>                
+      <div class="row">
+          <ion-icon name="qr_code" style="color:green;"></ion-icon><span style="font-size:larger;">料箱号：{{part.boxLabel}}</span> 
+      </div>
+      <div class="row">
+          <div class="col">            
+              <ion-icon name="chevron-up-outline"></ion-icon>
+            <span>{{part.partNo}}</span> 
+          </div>
+          <div class="col">
+            <ion-icon name="car"></ion-icon>车型: {{part.carModel}}
+          </div>
+      </div>
+      <div class="row">        
+          <div class="col">
+            <span>{{part.partName}}</span>
+          </div>
+          <div class="col">
+            <ion-icon name="box"></ion-icon>箱型: {{part.boxModel}}
+          </div>        
+      </div>
+      <div class="row">
+        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{part.packingQty}}</span>
+        <div class="col">
+        </div>
+        <div class="col">
+          <span style="float: left;font-size:small;color:gray;margin:1rem;white-space:nowrap;">当前第{{i+1}}箱，共扫描{{item.parts.length}}箱</span>
+        </div>
+        <div class="col">
+           <span style="float: right;"><button ion-button color="danger" (click)="delete(i)" icon-end>X</button></span>
+        </div>
+      </div>
     </div>
   </div>
   <message-list [data]="errors"></message-list>

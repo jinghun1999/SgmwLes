@@ -34,8 +34,8 @@
           <div class="col"><span style="float: right;"><ion-icon name="box"></ion-icon>箱型:{{part.boxModel}}</span></div>      
       </div>
       <div class="row">
-        <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改出库数</button></div>
-        <div class="col"><span style="float: left;font-size:small;color: red;">数量:{{part.packingQty}}</span>
+        <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改入库数</button></div>
+        <div class="col"><span style="float: left;font-size:small;color: red;">数量:{{part.currentParts}}</span>
           <br>
           <span style="float: left;font-size:small;color:gray;white-space:nowrap;">当前第{{i+1}}箱，共扫描{{item.parts.length}}箱</span>
         </div>        
@@ -54,7 +54,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="isSave" (click)="save()">提交(F2)</button>
+      <button no-margin ion-button full large color="primary" [disabled]="!item.parts.length" (click)="save()">提交(F2)</button>
     </ion-col>
   </ion-row>
 </ion-footer>

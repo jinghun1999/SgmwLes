@@ -26,7 +26,6 @@ export class CloseFramePage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
-  isSave: boolean = true;
   isSource: boolean = true; //true显示源料箱，false显示目标料箱。默认为true 
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];

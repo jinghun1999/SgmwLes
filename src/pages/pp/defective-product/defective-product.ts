@@ -26,7 +26,6 @@ export class DefectiveProductPage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
-  isSave: boolean = true;
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
   item: any = {
@@ -56,7 +55,7 @@ export class DefectiveProductPage extends BaseUI {
         break;
       case 113:
         //f2
-        this.outStock();
+        this.save();
         break;
     }
   }
@@ -198,7 +197,6 @@ export class DefectiveProductPage extends BaseUI {
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
-    this.isSave= this.item.parts.length == 0 ?  true :  false;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -206,7 +204,7 @@ export class DefectiveProductPage extends BaseUI {
     this.searchbar.setFocus();
   }
   //提交
-  outStock() {
+  save() {
     if (this.item.parts.length==0) {
       this.insertError('请先扫描料箱号');
       return;
@@ -217,11 +215,7 @@ export class DefectiveProductPage extends BaseUI {
       return;
     };
 
-    // if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-    //   err = `料箱${this.code}已扫描过，请扫描其他标签`;
-    //   this.insertError(err);
-    // }
-    this.isSave = true;
+    let loading = super.showLoading(this.loadingCtrl,'提交中');
     this.api.post('PP/PostDefectiveProduct', {
       plant: this.api.plant,
       workshop: this.workshop,
@@ -233,12 +227,12 @@ export class DefectiveProductPage extends BaseUI {
       }
       else {
         this.insertError(res.message);
-        this.item.parts ? this.isSave = false : null;
       }
+      loading.dismiss();
     },
       err => {
         this.insertError('提交失败');
-        this.item.parts ? this.isSave = false : null;
+        loading.dismiss();
       });
     this.resetScan();
   }

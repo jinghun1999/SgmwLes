@@ -22,7 +22,6 @@ export class PanelFeedPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   feedPort_list: any[] = []; //上料口选项
   code: string = ''; //扫描的上料口或捆包号
-  isSave: boolean = true;//true：提交按钮不可用
   item: any = {
     plant: '', //工厂
     workshop: '', //车间
@@ -178,12 +177,10 @@ export class PanelFeedPage extends BaseUI {
             }            
           } else {
             this.insertError(res.message);            
-          }
-          this.item.partPanel.length > 0  ? this.isSave = false : this.isSave = true;
+          }          
         },
         (error) => {
           this.insertError('扫描失败');
-          this.item.partPanel.length > 0 ? this.isSave = false : this.isSave = true;
         }
       );
     this.setFocus();
@@ -195,16 +192,14 @@ export class PanelFeedPage extends BaseUI {
       plant: this.api.plant,
       workshop: this.item.workshop,
       bundle_list: parts,
-      port_no: this.item.portNo,
-      bundle:bundle
+      port_no: this.item.portNo
     });
     _m.onDidDismiss((data) => {      
       if (data) {
         if (data.successful) {
           this.updateDropDownList(this.item.portNo);  //更新下拉框上料口
           this.insertError('提交成功', 's');
-          bundle ? this.item.partPanel.splice(0, 0, bundle) : null;
-          
+          bundle ? this.item.partPanel.splice(0, 0, bundle) : null;          
         } else if (data.isCancel && data.isCancel) { //选择"关闭"操作
           this.item.partPanel = [];
         }
@@ -213,7 +208,6 @@ export class PanelFeedPage extends BaseUI {
           this.insertError(data.message);
         }
       }
-      this.item.partPanel.length > 0 ? this.isSave = false : this.isSave = true;
     });
     _m.present();
   }
@@ -233,20 +227,20 @@ export class PanelFeedPage extends BaseUI {
       this.setFocus();
       return;
     }
-    this.isSave = true;
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostFeedingPort', this.item).subscribe(
       (res: any) => {
         if (res.successful) {
           this.item.partPanel = [];
           this.insertError('提交成功', 's');
         } else {
-          this.insertError(res.message); 
-          this.item.partPanel ? this.isSave = false : null;
+          this.insertError(res.message);
         }
+        loading.dismiss();
       },
       (error) => {
         this.insertError('提交失败');
-        this.item.partPanel ? this.isSave = false : null;
+        loading.dismiss();
       }
       
     );

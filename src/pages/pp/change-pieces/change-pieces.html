@@ -14,6 +14,11 @@
     <ion-item *ngIf="err">
       <ion-label color="danger">{{err}}</ion-label>
     </ion-item>
+    <ion-item *ngIf="pressParts!=0">
+      <select [(ngModel)]="part" style="width: 100%;height: 40%;">
+        <option  *ngFor="let part of pressParts;let i=index" value="{{part.part_no}}">{{part.part_no}}{{part.part_name}}</option>
+      </select>
+    </ion-item> 
     <ion-item>
       <ion-label>数量</ion-label>
       <ion-input type="number" text-right placeholder="请输入数量" [(ngModel)]="receivePieces" (ngModelChange)="change()" min="0"></ion-input>

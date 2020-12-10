@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title>冲压件装框</ion-title>
+    <ion-title>可疑品装框</ion-title>
   </ion-navbar>
 </ion-header>
 <ion-content>
@@ -9,8 +9,8 @@
       (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
-  <select [(ngModel)]="item.port_no" interface="popover" style="width: 100%;height: 10%;">
-    <option *ngFor="let t of feedPort_list" style="width: 100%;height: 10%;" value="{{t.port_no}}"> 
+  <select [(ngModel)]="item.bundle_no" interface="popover" style="width: 100%;height: 10%;">
+    <option *ngFor="let t of feedPort_list" style="width: 100%;height: 10%;" value="{{t.bundle_no}}"> 
       {{t.port_name}}{{t.bundle_no}} 剩余{{t.remain_pieces}}
     </option>
   </select>
@@ -50,7 +50,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">撤销(F2)</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="isSave"
+      <button no-margin ion-button full large color="primary" [disabled]="!item.pressPart.length"
         (click)="save()">提交(F1)</button>
     </ion-col>
   </ion-row>

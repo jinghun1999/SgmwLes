@@ -14,6 +14,7 @@ import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
+import { t } from '@angular/core/src/render3';
 
 @IonicPage()
 @Component({
@@ -24,7 +25,6 @@ export class SheetPanelPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   bundle_no: string;  //扫描的上料口或者捆包号
   scanCount: number;//总共扫描的数量
-  isSave: boolean = true;//禁止提交按钮多次提交，true禁止，false显示
   barTextHolderText: string = '扫描捆包号，光标在此处';
   workshop: string;
   item: any = {  //提交对象
@@ -123,17 +123,19 @@ export class SheetPanelPage extends BaseUI {
           this.resetScan();
           return;
         }
-        this.item.bundles.splice(0, 0, model);
-        this.isSave = this.item.bundles.length > 0 ? false : true;
+        if (model.pieces > 0) {
+          this.item.bundles.splice(0, 0, model);
+        } else { 
+          this.insertError(`捆包号${model.bundleNo}的剩余数量为0`);
+          return;
+        }        
       }
       else {
         this.insertError(res.message);
-        this.item.bundles.length > 0 ? this.isSave = false : null;
       }
     },
       err => {
         this.insertError('扫描失败');
-        this.item.bundles.length > 0 ? this.isSave = false : null;
       });
     this.resetScan();
   }
@@ -184,7 +186,6 @@ export class SheetPanelPage extends BaseUI {
   //删除
   delete(i) {
     this.item.bundles.splice(i, 1);
-    this.isSave = this.item.bundles.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -197,7 +198,7 @@ export class SheetPanelPage extends BaseUI {
       this.insertError('请先扫描捆包号');
       return;
     };
-    this.isSave = true;
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostSheetPanelMaterial', {
       plant: this.api.plant,
       workshop: this.workshop,
@@ -210,12 +211,12 @@ export class SheetPanelPage extends BaseUI {
       }
       else {
         this.insertError(res.message);
-        this.item.bundles.length > 0 ? this.isSave = false : this.isSave = true;
       }
+      loading.dismiss();
     },
       err => {
         this.insertError('提交失败');
-        this.item.bundles.length > 0 ? this.isSave = false : this.isSave = true;
+        loading.dismiss();
       });
     this.resetScan();
   }

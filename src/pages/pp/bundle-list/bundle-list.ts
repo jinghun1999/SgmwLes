@@ -1,5 +1,5 @@
-import { Component,ViewChild  } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController,Searchbar } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, ViewController, Searchbar, LoadingController } from 'ionic-angular';
 import { BaseUI } from '../../baseUI';
 import { Storage } from "@ionic/storage";
 import { Api } from '../../../providers';
@@ -11,7 +11,6 @@ import { Api } from '../../../providers';
 })
 export class BundleListPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
-  bundle: any = {};
   workshop: string;
   plant: string;
   port_no: string;
@@ -24,31 +23,32 @@ export class BundleListPage extends BaseUI {
     public navParams: NavParams,
     public viewCtrl: ViewController,
     public storage: Storage,
-    public api:Api) {
+    public loadingCtrl: LoadingController,
+    public api: Api) {
     super();
     this.bundle_list = navParams.get('bundle_list');//捆包号列表
     this.port_no = navParams.get('port_no');//上料口
     this.workshop = navParams.get("workshop").toString();//车间
     this.plant = navParams.get('plant').toString();//工厂
-    this.bundle=navParams.get('bundle');
-    this.bundlesCount = this.bundle_list.length;
   }
 
-  confirm() {    
+  confirm() {
+    let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {
-      this.viewCtrl.dismiss(res,this.bundle);
+      loading.dismiss();
+      this.viewCtrl.dismiss(res);
     });
   }
 
   ionViewDidEnter() {
-    
+
   }
   ionViewDidLoad() {
     console.log('ionViewDidLoad BundleListPage');
   }
 
   cancel() {
-    let data = {'isCancel':this.isCancel};
+    let data = { 'isCancel': this.isCancel };
     this.viewCtrl.dismiss(data);
   }
 }

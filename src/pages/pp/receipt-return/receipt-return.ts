@@ -25,7 +25,6 @@ export class ReceiptReturnPage  extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
-  isSave: boolean = true;
   reson: string = '';//退货原因
   workshop_list:any[]=[];//加载获取的的车间列表
   errors: any[] = [];
@@ -133,16 +132,13 @@ checkScanCode() {
   //扫描执行的过程
   scanSheet() {
     this.errors = [];
-    this.api.get('PP/GetReceiptReturns', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetReceiptReturns', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-          if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {            
-            this.insertError(`料箱${this.code}已扫描过，请扫描其他料箱`);
+          if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {            
+            this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他料箱`);
             return;
           }
-          let model = res.data;
-        this.item.parts.splice(0, 0, model);
-        this.isSave = this.item.parts.length > 0 ? false : true;
-      
+        this.item.parts.splice(0, 0, res.data);      
         this.resetScan();
       }
       else {
@@ -159,6 +155,7 @@ checkScanCode() {
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
       max_parts: model.packingQty,
+      pressParts: model.pressParts.length > 0 ? model.pressParts : 0
     });
     _m.onDidDismiss(data => {
       if (data) {
@@ -198,7 +195,6 @@ checkScanCode() {
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
-    this.isSave = this.item.parts.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -216,24 +212,20 @@ checkScanCode() {
       this.insertError("提交的数据中存在重复的数据，请检查！");
       return;
     };
-    this.isSave = true;
-    this.api.post('PP/PostReceiptReturns', {
-      plant: this.api.plant,
-      workshop: this.item.workshop,
-      parts: this.item.parts
-    }).subscribe((res: any) => {
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
+    this.api.post('PP/PostReceiptReturns', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.item.parts = [];  
+        this.item.parts = [];
         this.insertError('提交成功');
       }
       else {
         this.insertError(res.message);
-        this.isSave = this.item.parts.length > 0 ? false : true;
       }
+      loading.dismiss();
     },
       err => {
-        this.insertError('提交失败');
-        this.isSave = this.item.parts.length > 0 ? false : true;
+      loading.dismiss();
+      this.insertError('提交失败,'+err);
       });
     this.resetScan();
   }

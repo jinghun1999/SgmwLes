@@ -13,6 +13,7 @@ import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
+import { enterView } from '@angular/core/src/render3/instructions';
 
 @IonicPage()
 @Component({
@@ -148,8 +149,14 @@ export class ReturnPage extends BaseUI {
           this.insertError(`料箱${res.data.bundleNo}已扫描过，请扫描其他标签`);
           return;
         }
-        let model = res.data;
-        this.item.partPanel.splice(0, 0, model);
+        if (res.data.actualReceivePieces > 0) {
+          this.item.partPanel.splice(0, 0, res.data);
+        }
+        else { 
+          this.insertError(`料箱${res.data.bundleNo}的剩余数量为0`);
+          return;
+        }
+        
       }
       else {
         this.insertError(res.message);
@@ -195,8 +202,9 @@ export class ReturnPage extends BaseUI {
   cancel_do() {
     this.insertError('正在撤销...');
     this.code = '';    
+    this.item.remark = '';
     this.item.partPanel = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
 

@@ -24,7 +24,6 @@ export class FramePage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   pressPart_list: any[] = [];  //获取的零件列表
   feedPort_list: any[] = [];  //获取的上料口列表
-  isSave: boolean = true;
   part_name: string = '';//显示上料口的第二位置
   bundle_no: string = '';
   box_label: string = '';  //扫描输入的料箱号
@@ -153,7 +152,6 @@ export class FramePage extends BaseUI {
           this.item.part_no = model.part_no;
 
           model.part_type == 3 ? this.changeFeed(model.part_no) : null;
-          this.isSave =this.pressPart_list.length > 0 ? false : true;
         }
         else {
           this.insertError("找不到零件");
@@ -187,8 +185,7 @@ export class FramePage extends BaseUI {
     }
     this.item.port_no = this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
-    this.isSave = true;
-    this.insertError('正在提交，请稍后...');
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostFrame', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.pressPart_list = [];
@@ -202,12 +199,12 @@ export class FramePage extends BaseUI {
         this.setFocus();
       } else {
         this.insertError(res.message);
-        this.item.part_no ? this.isSave = false : null;
       }
+      loading.dismiss();
     },
       (error) => {
         this.insertError('提交失败');
-        this.item.part_no ? this.isSave = false : null;
+        loading.dismiss();
       });
     this.setFocus();
   }
@@ -255,7 +252,6 @@ export class FramePage extends BaseUI {
     this.item.box_mode = this.pressPart_list.find((f) =>  f.part_no == part_no ).box_mode;
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
     this.item.current_parts = this.pressPart_list.find(f => f.part_no == this.item.part_no).packing_qty;
-    this.item.part_no ? this.isSave = false : null;
   }
 
   cancel() {

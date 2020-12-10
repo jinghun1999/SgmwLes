@@ -25,7 +25,6 @@ export class PartsStorageInPage extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
-  isSave: boolean = true; //防止重复提交，true禁用提交
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
   item: any = {
@@ -143,7 +142,6 @@ export class PartsStorageInPage extends BaseUI {
           return;
         }        
         this.item.parts.splice(0, 0, model);
-        this.item.parts.length ? this.isSave = false :null;
       }
       else {
         this.insertError(res.message,);
@@ -158,11 +156,11 @@ export class PartsStorageInPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.packingQty,
+      max_parts: model.currentParts,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packingQty = data.receive
+        model.currentParts = data.receive
       }
     });
     _m.present();
@@ -198,7 +196,6 @@ export class PartsStorageInPage extends BaseUI {
   //删除
   delete(i) {
     this.item.parts.splice(i, 1);
-    this.isSave = this.item.parts.length == 0 ? true : false;
   }
   //手工调用，重新加载数据模型
   resetScan() { 
@@ -218,7 +215,7 @@ export class PartsStorageInPage extends BaseUI {
       this.insertError("明细列表存在重复的料箱号，请检查！",'i');
       return;
     };
-    this.isSave = true;
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostPartsStorageIn', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功','s');
@@ -226,12 +223,12 @@ export class PartsStorageInPage extends BaseUI {
       }
       else {
         this.insertError('提交失败,'+res.message); 
-        this.item.parts.length ? this.isSave = false : null;//没有清空明细，所以仍可继续提交，
       }
+      loading.dismiss();
     },
       error => {
-        this.insertError('提交失败');
-        this.item.parts.length ? this.isSave = false : null;
+        this.insertError('提交失败,' + error);
+        loading.dismiss();
       });
     this.resetScan();
   }

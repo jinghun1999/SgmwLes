@@ -25,7 +25,6 @@ export class PartsStorageOutPage extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
-  isSave: boolean = true; //是否可提交
   workshop_list: any[] = [];//加载获取的的车间列表
   scanCount: number = 0;//记录扫描总数
   errors: any[] = [];
@@ -91,7 +90,6 @@ export class PartsStorageOutPage extends BaseUI {
   }
   private getWorkshops() {
     this.api.get('system/GetFramePlants', { plant: this.api.plant }).subscribe((res: any) => {
-      console.log(res.data);
       if (res.successful) {
         this.workshop_list = res.data;
         let model = this.workshop_list.find((f) => f.isSelect);
@@ -144,13 +142,12 @@ changWS(target: string) {
   scanSheet() {
     this.api.get('PP/GetPartsStorageOut', { plant: this.api.plant, workshop: this.item.target, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
-          this.insertError(`料箱${this.code}已扫描过，请扫描其他标签`);
+        console.log(res.data);//boxLabel
+        if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
+          this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
           return;
         }
         this.item.parts.splice(0, 0, res.data);
-        this.scanCount = this.item.parts.length;
-        this.item.parts ? this.isSave = false : this.isSave = true;
         this.resetScan();
       }
       else {
@@ -204,8 +201,7 @@ changWS(target: string) {
 
   //删除
   delete(i) {
-    this.item.parts.splice(i, 1);
-    this.item.parts.length == 0 ? this.isSave = true : this.isSave = false;    
+    this.item.parts.splice(i, 1);;    
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -223,7 +219,7 @@ changWS(target: string) {
       this.insertError("提交的数据中存在重复的捆包号，请检查！");
       return;
     };
-    this.isSave = true;
+    let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostPartsStorageOut', { plant: this.item.plant, workshop: this.item.target, target: this.item.workshop, parts: this.item.parts }).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功', 's');
@@ -231,12 +227,12 @@ changWS(target: string) {
       }
       else {
         this.insertError(res.message);
-        this.item.parts? this.isSave = false : this.isSave = true;
+        loading.dismiss();
       }
     },
       err => {
+        loading.dismiss();
         this.insertError('提交失败');
-        this.item.parts? this.isSave = false : this.isSave = true;
       });
     this.resetScan();
   }
