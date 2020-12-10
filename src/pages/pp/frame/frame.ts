@@ -196,7 +196,6 @@ export class FramePage extends BaseUI {
         this.item.box_mode = '';
         this.getWorkshops();//重新加载上料口列表
         this.insertError("提交成功", 's');
-        this.setFocus();
       } else {
         this.insertError(res.message);
       }

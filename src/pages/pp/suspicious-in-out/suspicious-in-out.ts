@@ -187,7 +187,7 @@ export class SuspiciousInOutPage extends BaseUI {
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
     
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
-    this.api.post('PP/PostFrame', this.item).subscribe((res: any) => {
+    this.api.post('PP/PostFrameSuspicious', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.pressPart_list = [];
         this.item.pressPart = [];

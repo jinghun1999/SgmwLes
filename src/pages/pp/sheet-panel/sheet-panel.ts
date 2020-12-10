@@ -14,7 +14,6 @@ import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
-import { t } from '@angular/core/src/render3';
 
 @IonicPage()
 @Component({

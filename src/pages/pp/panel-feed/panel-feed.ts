@@ -241,8 +241,7 @@ export class PanelFeedPage extends BaseUI {
       (error) => {
         this.insertError('提交失败');
         loading.dismiss();
-      }
-      
+      }      
     );
     this.setFocus();
   }

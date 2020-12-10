@@ -195,7 +195,7 @@ changWS(target: string) {
     this.insertError('正在撤销...');
     this.code = '';
     this.item.parts = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
 

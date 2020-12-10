@@ -10,7 +10,7 @@ import {
 import { Storage } from "@ionic/storage";
 import { Api, Menus, User } from "../../providers";
 import { BaseUI } from "../";
-import { l } from "@angular/core/src/render3";
+//import { l } from "@angular/core/src/render3";
 
 @IonicPage()
 @Component({

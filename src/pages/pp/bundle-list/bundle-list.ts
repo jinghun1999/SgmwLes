@@ -34,19 +34,15 @@ export class BundleListPage extends BaseUI {
 
   confirm() {
     let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {
+    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {      
+      this.viewCtrl.dismiss(res);   
       loading.dismiss();
-      this.viewCtrl.dismiss(res);
-    });
+    }, error => { 
+        this.viewCtrl.dismiss(error); 
+        loading.dismiss();  
+    }    
+    );
   }
-
-  ionViewDidEnter() {
-
-  }
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad BundleListPage');
-  }
-
   cancel() {
     let data = { 'isCancel': this.isCancel };
     this.viewCtrl.dismiss(data);

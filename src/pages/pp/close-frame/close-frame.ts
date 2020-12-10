@@ -26,6 +26,7 @@ export class CloseFramePage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
+  parts: any[] = [];
   isSource: boolean = true; //true显示源料箱，false显示目标料箱。默认为true 
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
@@ -111,9 +112,10 @@ export class CloseFramePage extends BaseUI {
   //扫描
   scan() {
     let err = '';
-    if (this.sourceItem.parts.length + this.targetItem.length > 2) {
+    if (this.sourceItem.parts.length + this.targetItem.parts.length == 2) {
       err = '只能扫描2个料箱';
     }
+    console.log();
     if (this.code == '') {
       err = '请扫描捆包号！';
       this.insertError(err);
@@ -172,8 +174,17 @@ export class CloseFramePage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
+        if (this.targetItem.parts.length == 0) { 
+          this.insertError('请扫描目标料箱');
+          return;
+        }
+        if (this.targetItem.parts[0].packingQty + data.receive > this.targetItem.parts[0].currentParts) { 
+          this.insertError('包装数不能大于当前装箱数量');
+          return;
+        }
         model.packingQty -= data.receive;
         this.targetItem.parts[0].packingQty += data.receive;
+        
       }
     });
     _m.present();
@@ -199,11 +210,10 @@ export class CloseFramePage extends BaseUI {
   //撤销
   cancel_do() {
     this.insertError('正在撤销...');
-    this.code = '';
     //this.errors = [];
     this.sourceItem.parts = [];
     this.targetItem.parts = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
 
@@ -235,15 +245,17 @@ export class CloseFramePage extends BaseUI {
       this.resetScan();
       return;
     }
-
-    let loading = super.showLoading(this.loadingCtrl, "加载中...");
+    
+    let loading = super.showLoading(this.loadingCtrl, "提交中...");
+    this.parts.push(this.sourceItem.parts[0]);
+    this.parts.push(this.targetItem.parts[0]);
     this.api.post('PP/PostCloseFrame', {
       plant: this.api.plant,
       workshop: this.workshop,
-      parts: this.sourceItem.parts
+      parts: this.parts
     }).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功');
+        this.insertError('提交成功','s');
         this.sourceItem.parts = []; 
         this.targetItem.parts = [];
       }

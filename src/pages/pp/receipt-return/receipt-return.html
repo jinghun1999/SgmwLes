@@ -24,7 +24,7 @@
       </div>
       <div class="row">
         <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改入库数</button></div>
-        <div class="col"><span style="float: left;font-size:small;color: red;">数量:{{part.packingQty}}</span>
+        <div class="col"><span style="float: left;font-size:small;color: red;">数量:{{part.currentParts}}</span>
           <br>
           <span style="float: left;font-size:small;color:gray;white-space:nowrap;">当前第{{i+1}}箱，共扫描{{item.parts.length}}箱</span>
         </div>        

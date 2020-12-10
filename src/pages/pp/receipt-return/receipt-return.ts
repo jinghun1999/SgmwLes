@@ -138,8 +138,7 @@ checkScanCode() {
             this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他料箱`);
             return;
           }
-        this.item.parts.splice(0, 0, res.data);      
-        this.resetScan();
+        this.item.parts.splice(0, 0, res.data);  
       }
       else {
         this.insertError(res.message);
@@ -154,12 +153,22 @@ checkScanCode() {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.packingQty,
-      pressParts: model.pressParts.length > 0 ? model.pressParts : 0
+      max_parts: model.currentParts,
+      pressParts: model.pressParts
     });
-    _m.onDidDismiss(data => {
+    _m.onDidDismiss((data:any,part:string) => {
       if (data) {
-        model.packingQty = data.receive
+        model.currentParts = data.receive
+      }
+      if (part != "0") { 
+        const entity = model.pressParts.find((p) => p.part_no == part);
+        if (entity) { 
+          model.partNo = entity.part_no;
+          model.partName = entity.part_name;
+          model.packingQty = entity.packing_qty;
+          model.boxModel = entity.box_mode;
+          model.carModel = entity.car_model;
+        }
       }
     });
     _m.present();
@@ -186,7 +195,6 @@ checkScanCode() {
   cancel_do() {
     this.insertError('正在撤销...');
     this.code = '';
-    this.errors = [];
     this.item.parts = [];
     this.insertError("撤销成功");
     this.resetScan();
