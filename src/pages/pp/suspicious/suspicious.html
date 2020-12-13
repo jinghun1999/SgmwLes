@@ -1,6 +1,6 @@
 <ion-header>
   <ion-navbar color="primary">
-    <ion-title>可疑件管理</ion-title>
+    <ion-title>可疑品管理</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -22,8 +22,8 @@
   </ion-row>
   <div>
     <div class="ds-box" *ngFor="let part of item.parts;let i=index">
-      <div class="row">
-          <ion-icon name="qr_code" style="color:green;"></ion-icon><span style="font-size:larger;">料箱号：{{part.boxLabel}}</span> 
+      <div class="row" style="font-size:larger;color:green">
+          <ion-icon name="checkmark-circle-outline" ></ion-icon><span >料箱号：{{part.boxLabel}}</span> 
       </div>
       <div class="row">
           <div class="col">            

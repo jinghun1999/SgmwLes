@@ -160,7 +160,7 @@ export class PartsStorageInPage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.currentParts = data.receive
+        model.currentParts = data.receive;
       }
     });
     _m.present();

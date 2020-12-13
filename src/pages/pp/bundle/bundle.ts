@@ -22,7 +22,7 @@ export class BundlePage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
 
   code: string = '';                      //记录扫描编号
-  barTextHolderText: string = '请扫描捆包号';   //扫描文本框placeholder属性
+  barTextHolderText: string = '扫描捆包号,光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
   errors: any[] = [];
@@ -119,8 +119,6 @@ dateFunction(time){
       this.resetScan();
     }
   }
-
-
   //扫描执行的过程
   scanSheet() {
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
@@ -130,7 +128,6 @@ dateFunction(time){
           this.insertError(`捆包${model.bundleNo}已扫描过，请扫描其他捆包`);
           return;
         }
-        //this.item.bundles.splice(0, 0, model);
         this.item.bundles.push(model);
       }
       else {

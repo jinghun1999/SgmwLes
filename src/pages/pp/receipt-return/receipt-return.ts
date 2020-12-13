@@ -97,7 +97,7 @@ export class ReceiptReturnPage  extends BaseUI {
       }
     },
       err => {
-        this.insertError('系统级别错误，请返回重试');
+        this.insertError('获取车间列表失败');
       });
   }
 
@@ -145,7 +145,7 @@ checkScanCode() {
       }
     },
       err => {
-        this.insertError('系统级别错误');
+        this.insertError('扫描失败');
       });
     this.resetScan();
   }
@@ -162,10 +162,10 @@ checkScanCode() {
       }
       if (part != "0") { 
         const entity = model.pressParts.find((p) => p.part_no == part);
-        if (entity) { 
+        if (entity) {
           model.partNo = entity.part_no;
           model.partName = entity.part_name;
-          model.packingQty = entity.packing_qty;
+          //model.currentParts = entity.packing_qty;
           model.boxModel = entity.box_mode;
           model.carModel = entity.car_model;
         }

@@ -85,37 +85,21 @@ export class DefectiveProductPage extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.workshop = val;
-      this.getWorkshops();
     });
-  }
-  private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
-      if (res.successful) {
-        this.workshop_list = res.data;
-      } else {
-        this.insertError(res.message);
-      }
-    },
-      err => {
-        this.insertError('获取车间列表失败');
-      });
-  }
+  }  
 
   //校验扫描
   checkScanCode() {
     let err = '';
     if (this.code == '') {
       err = '请扫描料箱号！';
-      this.insertError(err);
     }
-
     if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
       err = `料箱${this.code}已扫描过，请扫描其他标签`;
-      this.insertError(err);
     }
-
     if (err.length > 0) {
-      this.searchbar.setFocus();
+      this.insertError(err);
+      this.resetScan();
       return false;
     }
     return true;
@@ -125,7 +109,6 @@ export class DefectiveProductPage extends BaseUI {
   //开始扫描
   scan() {
     if (this.checkScanCode()) {
-
       this.scanSheet();
     }
     else {
@@ -188,7 +171,6 @@ export class DefectiveProductPage extends BaseUI {
   cancel_do() {
     this.insertError('正在撤销...');
     this.code = '';
-    //this.errors = [];
     this.item.parts = [];
     this.insertError("撤销成功");
     this.resetScan();

@@ -93,21 +93,9 @@ export class CloseFramePage extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.sourceItem.plant = this.api.plant;
       this.workshop = val;
-      this.getWorkshops();
-    });
+    }); 
   }
-  private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
-      if (res.successful) {
-        this.workshop_list = res.data;
-      } else {
-        this.insertError(res.message);
-      }
-    },
-      err => {
-        this.insertError('无法获取车间，'+err);
-      });
-  }
+  
 
   //扫描
   scan() {
@@ -183,8 +171,7 @@ export class CloseFramePage extends BaseUI {
           return;
         }
         model.packingQty -= data.receive;
-        this.targetItem.parts[0].packingQty += data.receive;
-        
+        this.targetItem.parts[0].packingQty += data.receive;        
       }
     });
     _m.present();

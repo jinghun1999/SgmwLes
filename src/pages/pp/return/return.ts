@@ -149,13 +149,12 @@ export class ReturnPage extends BaseUI {
           return;
         }
         if (res.data.actualReceivePieces > 0) {
-          this.item.partPanel.splice(0, 0, res.data);
+          this.item.partPanel.push(res.data);
         }
-        else { 
-          this.insertError(`料箱${res.data.bundleNo}的剩余数量为0`);
+        else {
+          this.insertError(`料箱${res.data.bundleNo}的剩余数量为小于1`);
           return;
-        }
-        
+        }        
       }
       else {
         this.insertError(res.message);

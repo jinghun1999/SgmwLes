@@ -95,7 +95,7 @@ export class SheetPanelPage extends BaseUI {
       if (res.successful) {        
         this.workshop_list = res.data;
         let model = this.workshop_list.find((w) => w.isSelect);
-        model ? this.item.target = model.value : this.item.target = this.workshop_list[0].value;
+        model ? this.item.target = model.value : this.item.target = this.workshop;
       }
     },
       err => {
@@ -122,10 +122,10 @@ export class SheetPanelPage extends BaseUI {
           this.resetScan();
           return;
         }
-        if (model.pieces > 0) {
-          this.item.bundles.splice(0, 0, model);
+        if (model.actualReceivePieces > 0) {
+          this.item.bundles.push(model);
         } else { 
-          this.insertError(`捆包号${model.bundleNo}的剩余数量为0`);
+          this.insertError(`捆包号${model.bundleNo}的剩余数量小于1`);
           return;
         }        
       }

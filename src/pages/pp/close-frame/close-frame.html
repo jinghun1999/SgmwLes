@@ -14,8 +14,7 @@
   <div>
     <div class="ds-box" *ngFor="let part of sourceItem.parts;let i=index">
       <div class="row">
-          <div class="col" style="color:green;font-size:x-large;white-space:nowrap;">料箱号:{{part.boxLabel}}</div>
-        <div class="col"><span style="float: right;">捆包号:{{part.bundle_no}}</span></div>
+          <div class="col" style="color:green;font-size:x-large;white-space:nowrap;"><ion-icon name="checkmark-circle-outline"></ion-icon>料箱号:{{part.boxLabel}}</div>
       </div>
       <div class="row">        
           <div class="col">{{part.partNo}}</div>
@@ -29,7 +28,7 @@
         <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改出库数</button></div>
 
         <div class="col">
-          <span style="float: left;font-size:small;color: red;">包装数:{{part.packingQty}}</span><br>
+          <span style="float: left;font-size:small;">包装数:{{part.packingQty}}</span><br>
           <span style="float: left;font-size:small;color: red;">当前装箱数量{{part.currentParts}}:</span>          
         </div>        
         <div class="col">

@@ -33,7 +33,6 @@ export class User {
 
   login(accountInfo: any) {
     let seq = this.api.get('account/login', accountInfo).share();
-
     seq.subscribe((res: any) => {
       if (res.access_token) {
         this._loggedIn(res);
@@ -53,6 +52,7 @@ export class User {
       // this.storage.remove('TOKEN').then(res => {
       //   this._user = null;
       // });
+      window.localStorage.removeItem('env');
       window.localStorage.removeItem('TOKEN');
       this.storage.clear();
     }, err => {

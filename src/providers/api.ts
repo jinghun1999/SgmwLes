@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { AlertController, Events, ToastController } from 'ionic-angular';
 import { Storage } from "@ionic/storage";
 
+
 /**
  * Api is a generic REST Api handler. Set your API url first.
  */
@@ -10,16 +11,16 @@ import { Storage } from "@ionic/storage";
 export class Api {
   public plant: string = '1000';
   public version: string = 'P-201030';
+  
   //public api_host: string = 'http://localhost:49280';
   //public api_host: string = 'http://127.0.0.1:49280';
   //public api_host: string = 'http://localhost/lesapi';
   //public api_host: string = 'http://10.1.126.171/lesapi';
-  //public api_host: string =localStorage.getItem('env');
-  //public api_host: string = '';
+  //public api_host: string ='http://localhost:49280';
   //public api_host: string = 'http://10.34.243.14/lesapi';
   //url: string = localStorage.getItem('env')+'/api';
 
-  constructor(public http: HttpClient, public events: Events, public alertCtrl: AlertController, public toastCtrl: ToastController, public storage: Storage) {
+  constructor(public http: HttpClient, public events: Events, public alertCtrl: AlertController, public toastCtrl: ToastController, public storage: Storage) { 
   }
   get(endpoint: string, params?: any, reqOpts?: any) {
     if (!reqOpts) {
@@ -37,7 +38,7 @@ export class Api {
     }
 
     return this.http.get(localStorage.getItem('env')+'/api' + '/' + endpoint, reqOpts);
-  }
+  }  
 
   post(endpoint: string, body: any, reqOpts?: any) {
     return this.http.post(localStorage.getItem('env')+'/api' + '/' + endpoint, body, reqOpts);

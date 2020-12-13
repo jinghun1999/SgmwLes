@@ -15,16 +15,21 @@
       <ion-label color="danger">{{err}}</ion-label>
     </ion-item>
     <div class="ds-box" *ngFor="let bundle of bundle_list;let i=index">
-      <tr>
-        <h5>
-          <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{bundle.bundleNo}}          
-        </h5>
-        <span style="float: right;font-size:smaller;color: red;margin:1rem">重量：{{bundle.weight}}</span>
-      </tr>
-      <tr>
-        <span style="float: left;font-size:small;color: red;margin:1rem">数量：{{bundle.actualReceivePieces}}</span>  
-        <span style="float: left;font-size:small;color: red;margin:1rem">当前第{{i+1}}箱，共{{this.bundlesCount}}箱</span>
-      </tr>
+      <div class="row">
+        <div class="col">
+          <h5>
+            <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{bundle.bundleNo}}          
+          </h5>
+        </div>
+      </div>             
+      <div class="row">
+        <div class="col">
+          <span style="float: left;font-size:small;color: red;margin:1rem">剩余数量：{{bundle.actualReceivePieces}}</span> 
+        </div>
+        <div class="col">
+          <span style="float: left;font-size:small;color: red;margin:1rem">剩余重量{{bundle.weight}}</span>
+        </div>
+      </div>
     </div>
   </ion-list>
 </ion-content>

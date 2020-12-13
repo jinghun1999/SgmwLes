@@ -40,7 +40,7 @@ export class BundleListPage extends BaseUI {
     }, error => { 
         this.viewCtrl.dismiss(error); 
         loading.dismiss();  
-    }    
+    }     
     );
   }
   cancel() {

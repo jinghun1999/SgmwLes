@@ -93,7 +93,7 @@ export class PartsStorageOutPage extends BaseUI {
       if (res.successful) {
         this.workshop_list = res.data;
         let model = this.workshop_list.find((f) => f.isSelect);
-        model ? this.item.workshop = model.value : this.item.workshop = this.workshop_list[0].value;
+        model ? this.item.workshop = model.value : this.item.workshop = this.item.workshop = '';
       } else {
         this.insertError(res.message);
       }
@@ -110,24 +110,21 @@ export class PartsStorageOutPage extends BaseUI {
       err = '请扫描捆包号！';
       this.insertError(err);
     }
-
     if (this.item.parts.findIndex(p => p.boxLabel === this.code) >= 0) {
       err = `料箱${this.code}已扫描过，请扫描其他标签`;
       this.insertError(err);
     }
-
     if (err.length > 0) {
       this.searchbar.setFocus();
       return false;
     }
     return true;
   }
-//下拉框改变
-changWS(target: string) {    
-  this.item.parts = [];
-  this.resetScan();
-}
-
+  //下拉框改变
+  changWS(target: string) {
+    this.item.parts = [];
+    this.resetScan();
+  }
   //开始扫描
   scan() {
     if (this.checkScanCode()) {
@@ -142,7 +139,6 @@ changWS(target: string) {
   scanSheet() {
     this.api.get('PP/GetPartsStorageOut', { plant: this.api.plant, workshop: this.item.target, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        console.log(res.data);//boxLabel
         if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
           this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
           return;
@@ -195,13 +191,13 @@ changWS(target: string) {
     this.insertError('正在撤销...');
     this.code = '';
     this.item.parts = [];
-    this.insertError("撤销成功",'s');
+    this.insertError("撤销成功", 's');
     this.resetScan();
   }
 
   //删除
   delete(i) {
-    this.item.parts.splice(i, 1);;    
+    this.item.parts.splice(i, 1);;
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -210,7 +206,7 @@ changWS(target: string) {
   }
   //提交
   save() {
-    if (this.item.parts.length==0) {
+    if (this.item.parts.length == 0) {
       this.insertError('请先扫描捆包号');
       return;
     };
@@ -219,7 +215,7 @@ changWS(target: string) {
       this.insertError("提交的数据中存在重复的捆包号，请检查！");
       return;
     };
-    let loading = super.showLoading(this.loadingCtrl,'提交中...');
+    let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.post('PP/PostPartsStorageOut', { plant: this.item.plant, workshop: this.item.target, target: this.item.workshop, parts: this.item.parts }).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功', 's');
@@ -227,8 +223,8 @@ changWS(target: string) {
       }
       else {
         this.insertError(res.message);
-        loading.dismiss();
       }
+      loading.dismiss();
     },
       err => {
         loading.dismiss();
