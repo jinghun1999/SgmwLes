@@ -154,7 +154,6 @@ export class SheetPanelPage extends BaseUI {
 
   //撤销操作
   cancel() {
-    if (this.item.bundles.length > 0) {
       let prompt = this.alertCtrl.create({
         title: '操作提醒',
         message: '将撤销本次的操作记录,您确认要执行撤销操作吗？',
@@ -169,10 +168,6 @@ export class SheetPanelPage extends BaseUI {
         }]
       });
       prompt.present();
-    }
-    else {
-
-    }
   }
   //撤销
   cancel_do() {

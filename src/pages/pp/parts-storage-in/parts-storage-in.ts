@@ -160,7 +160,7 @@ export class PartsStorageInPage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.currentParts = data.receive;
+        model.packingQty-data.receive>0?model.currentParts = data.receive:this.insertError('数量不能大于包装数');        
       }
     });
     _m.present();

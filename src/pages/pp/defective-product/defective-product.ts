@@ -136,20 +136,6 @@ export class DefectiveProductPage extends BaseUI {
       });
     this.resetScan();
   }
-
-  //非标跳转Modal页
-  changeQty(model) {
-    let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.packingQty,
-    });
-    _m.onDidDismiss(data => {
-      if (data) {
-        model.packingQty = data.receive
-      }
-    });
-    _m.present();
-  }
-
   cancel() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
@@ -172,7 +158,7 @@ export class DefectiveProductPage extends BaseUI {
     this.insertError('正在撤销...');
     this.code = '';
     this.item.parts = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
 

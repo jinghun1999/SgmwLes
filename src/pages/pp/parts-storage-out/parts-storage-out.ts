@@ -159,11 +159,16 @@ export class PartsStorageOutPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.packingQty,
+      max_parts: model.currentParts,
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packingQty = data.receive
+        if (data.receive > 0) {        
+          model.packingQty - data.receive > 0 ? model.currentParts = data.receive :this.insertError('数量不能大于包装数') ;
+        }
+        else { 
+          this.insertError('数量不能小于1');
+        }
       }
     });
     _m.present();

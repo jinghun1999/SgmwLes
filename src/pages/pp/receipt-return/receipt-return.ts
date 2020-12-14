@@ -85,22 +85,8 @@ export class ReceiptReturnPage  extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.workshop = val;
-      this.getWorkshops();
     });
   }
-  private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
-      if (res.successful) {
-        this.workshop_list = res.data;
-      } else {
-        this.insertError(res.message);
-      }
-    },
-      err => {
-        this.insertError('获取车间列表失败');
-      });
-  }
-
 //校验扫描
 checkScanCode() {
   let err = '';
@@ -138,7 +124,7 @@ checkScanCode() {
             this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他料箱`);
             return;
           }
-        this.item.parts.splice(0, 0, res.data);  
+        this.item.parts.push(res.data);  
       }
       else {
         this.insertError(res.message);
@@ -158,6 +144,7 @@ checkScanCode() {
     });
     _m.onDidDismiss((data:any,part:string) => {
       if (data) {
+        
         model.currentParts = data.receive
       }
       if (part != "0") { 
@@ -165,7 +152,7 @@ checkScanCode() {
         if (entity) {
           model.partNo = entity.part_no;
           model.partName = entity.part_name;
-          //model.currentParts = entity.packing_qty;
+          //model.packingQty = entity.packing_qty;
           model.boxModel = entity.box_mode;
           model.carModel = entity.car_model;
         }
@@ -224,7 +211,7 @@ checkScanCode() {
     this.api.post('PP/PostReceiptReturns', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.item.parts = [];
-        this.insertError('提交成功');
+        this.insertError('提交成功','s');
       }
       else {
         this.insertError(res.message);
