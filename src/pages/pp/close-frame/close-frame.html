@@ -25,11 +25,11 @@
           <div class="col"><span style="text-align: right;"><ion-icon name="box"></ion-icon>箱型:{{part.boxModel}}</span></div>      
       </div>
       <div class="row">
-        <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改出库数</button></div>
+        <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改合框数</button></div>
 
         <div class="col">
-          <span style="text-align: left;font-size:small;">包装数:{{part.packingQty}}</span><br>
-          <span style="text-align: left;font-size:small;color: red;">当前装箱数量{{part.currentParts}}:</span>          
+          <span style="text-align: left;font-size:small;">当前装箱数:{{part.packingQty}}</span><br>
+          <span style="text-align: left;font-size:small;color: red;">合框数:{{part.closeframeParts}}</span>          
         </div>        
         <div class="col">
           <button ion-button color="danger" (click)="delete(0)" style="text-align: right;" >X</button>
@@ -37,7 +37,6 @@
       </div>
     </div>
   </div>
-
   <ion-label *ngIf="targetItem.parts.length"><h3>目标料箱：<ion-icon name="arrow"></ion-icon></h3></ion-label>
   <div>
     <div class="ds-box" *ngFor="let part of targetItem.parts;let i=index">
@@ -55,7 +54,7 @@
       </div>
       <div class="row">
         <div class="col"><span>包装数:{{part.packingQty}}</span></div>
-        <div class="col"><span style="text-align: left;font-size:small;color: red;">当前装箱数量:{{part.currentParts}}</span>          
+        <div class="col"><span style="text-align: left;font-size:small;color: red;">当前装箱数:{{part.currentParts}}</span>          
         </div>        
         <div class="col">
           <button ion-button color="danger" (click)="delete(1)" style="text-align: right;" >X</button>

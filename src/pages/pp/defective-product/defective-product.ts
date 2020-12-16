@@ -117,7 +117,6 @@ export class DefectiveProductPage extends BaseUI {
   }
   //扫描执行的过程
   scanSheet() {
-    this.errors = [];
     this.api.get('PP/GetDefectiveProduct', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;

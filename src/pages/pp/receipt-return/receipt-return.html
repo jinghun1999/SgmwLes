@@ -28,9 +28,8 @@
           <br>
           <span style="text-align: left;font-size:small;color:gray;white-space:nowrap;">当前第{{i+1}}箱，共扫描{{item.parts.length}}箱</span>
         </div>        
-        <div class="col">
-          <ion-icon name="delete"></ion-icon>
-          <button ion-button color="danger" (click)="delete(i)" style="text-align: right;" >X</button>
+        <div class="col" style="text-align: right;">
+          <button ion-button color="danger" (click)="delete(i)"  >X</button>
         </div>
       </div>
     </div>

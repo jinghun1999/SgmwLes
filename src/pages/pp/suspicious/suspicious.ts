@@ -90,7 +90,7 @@ export class SuspiciousPage extends BaseUI {
     });
   }
   private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
+    this.api.get('system/getPlants', {InOut:this.item.InOut, plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
       } else {

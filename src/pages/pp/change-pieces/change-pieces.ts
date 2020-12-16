@@ -21,12 +21,19 @@ export class ChangePiecesPage {
     this._parts = Number(this.navParams.get('max_parts'));
     this.receivePieces = Number(this.navParams.get('max_parts'));
     this.pressParts = this.navParams.get('pressParts');
+    this.part = this.navParams.get('part');
   }
 
   ionViewDidEnter() {
     if(this.pressParts &&this.pressParts.length>0) {
-      let model = this.pressParts.find((p) => p.isSelect);
-      model ? this.part = model.part_no : this.part = this.pressParts[0].part_no;
+      let model = this.pressParts.find((p) => p.part_no==this.part);
+      if (model) {
+        this.part = model.part_no;
+      }
+      else { 
+        this.part = this.pressParts[0].part_no;
+      }
+      this.changePart(this.part);
     }
   }
   change() {

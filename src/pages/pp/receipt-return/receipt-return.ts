@@ -140,11 +140,11 @@ checkScanCode() {
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
       max_parts: model.currentParts,
-      pressParts: model.pressParts
+      pressParts: model.pressParts,  //零件列表
+      part:model.partNo //当前料箱的零件号
     });
     _m.onDidDismiss((data:any,part:string) => {
-      if (data) {
-        
+      if (data) {        
         model.currentParts = data.receive
       }
       if (part != "0") { 
@@ -183,7 +183,7 @@ checkScanCode() {
     this.insertError('正在撤销...');
     this.code = '';
     this.item.parts = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
 
