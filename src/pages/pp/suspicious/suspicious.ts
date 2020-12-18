@@ -135,7 +135,7 @@ export class SuspiciousPage extends BaseUI {
   }
   //扫描执行的过程
   scanSheet() {
-    this.api.get('PP/GetSuspiciousInOut', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetSuspiciousInOut', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code,InOut:this.item.InOut }).subscribe((res: any) => {
       if (res.successful) {
         if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
           this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
@@ -222,9 +222,13 @@ export class SuspiciousPage extends BaseUI {
   //移入返修区
   inRepair() {
     this.item.InOut = 1;    
+    this.item.parts = [];
+    this.resetScan();
   }
   outRepair() { 
-    this.item.InOut = 0; 
+    this.item.InOut = 0;
+    this.item.parts = [];
+    this.resetScan();
   }
   focusInput = () => {
     this.searchbar.setElementClass('bg-red', false);

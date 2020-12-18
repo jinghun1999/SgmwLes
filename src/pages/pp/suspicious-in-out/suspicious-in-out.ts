@@ -221,6 +221,10 @@ export class SuspiciousInOutPage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
+        if (data.receive == 0) {
+          this.insertError('装箱数量不能为0');
+          return;
+         }
         this.item.current_parts = data.receive
       }
     });

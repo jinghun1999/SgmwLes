@@ -28,11 +28,11 @@
         <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改合框数</button></div>
 
         <div class="col">
-          <span style="text-align: left;font-size:small;">当前装箱数:{{part.packingQty}}</span><br>
+          <span style="text-align: left;font-size:small;">当前装箱数:{{part.currentParts}}</span><br>
           <span style="text-align: left;font-size:small;color: red;">合框数:{{part.closeframeParts}}</span>          
         </div>        
         <div class="col">
-          <button ion-button color="danger" (click)="delete(0)" style="text-align: right;" >X</button>
+          <button ion-button color="danger" (click)="delete(0)" style="float: right;" >X</button>
         </div>
       </div>
     </div>
@@ -56,8 +56,8 @@
         <div class="col"><span>包装数:{{part.packingQty}}</span></div>
         <div class="col"><span style="text-align: left;font-size:small;color: red;">当前装箱数:{{part.currentParts}}</span>          
         </div>        
-        <div class="col">
-          <button ion-button color="danger" (click)="delete(1)" style="text-align: right;" >X</button>
+        <div class="col" >
+          <button ion-button color="danger" (click)="delete(1)" style="float: right;" >X</button>
         </div>
       </div>
     </div>
@@ -67,11 +67,11 @@
 <ion-footer>  
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">取消(F1)</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">撤销</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large color="primary" [disabled]="(sourceItem.parts.length + targetItem.parts.length)!=2"
-        (click)="save()">提交(F2)</button>
+        (click)="save()">提交</button>
     </ion-col>
   </ion-row>
 </ion-footer>

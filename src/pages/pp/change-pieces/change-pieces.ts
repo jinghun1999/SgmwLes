@@ -38,6 +38,7 @@ export class ChangePiecesPage {
   }
   change() {
     this.receivePieces = Number(this.receivePieces);
+    
     if(this.receivePieces > this._parts) {
       this.err = '已超过数量';
       return;
@@ -45,6 +46,7 @@ export class ChangePiecesPage {
   }
 
   confirm() {
+    
     this.receivePieces = Number(this.receivePieces);
     if(this.receivePieces > this._parts) {
       this.err = '已超过数量';

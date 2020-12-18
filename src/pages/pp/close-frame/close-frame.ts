@@ -26,21 +26,19 @@ export class CloseFramePage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
-  canYa: number = 0;//可合框数
+  canYa: number = 0;//合框数 因为目标料箱可合框数不可能为负数
   partNo: string = '';//零件号
   parts: any[] = [];   //提交的料箱集合
   isSource: boolean = true; //true显示源料箱，false显示目标料箱。默认为true 
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
   sourceItem: any = {     //源料箱
-    type:1,
     plant: '',
     workshop: '',
     target: '',
     parts: []
   };
   targetItem: any = {     //目标料箱
-    type:2,
     plant: '',
     workshop: '',
     target: '',
@@ -141,39 +139,43 @@ export class CloseFramePage extends BaseUI {
           this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
           return;
         }
-        if (this.sourceItem.parts.length == 0) {
-          if (this.partNo.length) {
-            if (this.partNo != model.partNo) {
-              this.insertError('两个料箱的零件号必须一致');
-              return;
-            }
+        if (this.partNo.length) {
+          if (this.partNo != model.partNo) {
+            this.insertError('两个料箱的零件号必须一致');
+            return;
           }
-          else { 
-            this.partNo = model.partNo;
-          }
-          if (this.canYa != 0) { 
-            model.packingQty > this.canYa ? model.closeframeParts = this.canYa :model.closeframeParts=model.packingQty;
-          }
-          
-          this.partNo = model.partNo;
-          this.sourceItem.parts.push(model);
-          
         }
         else { 
-          if (this.partNo.length) {
-            if (this.partNo != model.partNo) {
-              this.insertError('两个料箱的零件号必须一致');
-              return;
-            }
-          }
-          else { 
-            this.partNo = model.partNo;
-          }          
-          this.canYa = model.packingQty - model.currentParts;  //可合框数   
-          let source = this.sourceItem.parts[0];
-          source.closeframeParts = this.canYa > source.packingQty ? source.packingQty : this.canYa;
+          this.partNo = model.partNo;
+        }   
+        //源料箱
+        if (this.sourceItem.parts.length == 0) {         
           
+          if (this.canYa != 0) {
+            model.currentParts>this.canYa?model.closeframeParts=this.canYa:model.closeframeParts=model.currentParts;
+           }
+          else { 
+            model.closeframeParts = model.currentParts;
+          }
+          this.partNo = model.partNo;
+          model.type = 1;
+          this.sourceItem.parts.push(model);          
+        }
+        //目标料箱
+        else {   
+          this.canYa = model.packingQty - model.currentParts;  //可合框数   
+          let source = this.sourceItem.parts[0]; 
+          source.closeframeParts == 0 ? source.closeframeParts = source.currentParts : null;
+          source.closeframeParts > this.canYa ? source.closeframeParts = this.canYa : null;
+          // if (source.closeframeParts > this.canYa) { 
+          //   if (source.currentParts < this.canYa) {
+          //     source.closeframeParts = source.currentParts;
+          //   } else { 
+          //     source.closeframeParts = this.canYa;
+          //   }            
+          // }
           model.closeframeParts = this.canYa;
+          model.type = 2;
           this.targetItem.parts.push(model);
         }
       }
@@ -193,8 +195,9 @@ export class CloseFramePage extends BaseUI {
       this.insertError('请扫描目标料箱');
       return;
     }    
+    const maxNum = model.packingQty > this.canYa ? this.canYa : model.packingQty;
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: this.canYa
+      max_parts: maxNum
     });
     _m.onDidDismiss(data => {
       if (data) {
@@ -202,7 +205,8 @@ export class CloseFramePage extends BaseUI {
           this.insertError('合框数不能大于'+this.canYa+'');
           return;
         }        
-        model.closeframeParts = data.receive;
+        model.closeframeParts =data.receive;
+        this.targetItem.parts[0].closeframeParts=this.targetItem.parts[0].currentParts+data.receive;
       }
     });
     _m.present();
@@ -228,7 +232,6 @@ export class CloseFramePage extends BaseUI {
   //撤销
   cancel_do() {
     this.insertError('正在撤销...');
-    //this.errors = [];
     this.sourceItem.parts = [];
     this.targetItem.parts = [];
     this.canYa = 0;
@@ -241,12 +244,12 @@ export class CloseFramePage extends BaseUI {
   //删除
   delete(i) {
     if (i == 0) {
-      this.sourceItem.parts.splice(0, 1);
+      this.sourceItem.parts.splice(0,1);
     }
     else { 
-      this.targetItem.parts.splice(0, 1);
+      this.targetItem.parts.splice(0,1);
       this.canYa = 0;
-      this.sourceItem.parts[0].closeframeParts = this.canYa;
+      this.sourceItem.parts[0]?this.sourceItem.parts[0].closeframeParts = this.canYa:null;
     }
     if (this.sourceItem.parts.length == 0 && this.targetItem.parts.length == 0) { 
       this.partNo = '';
@@ -278,8 +281,8 @@ export class CloseFramePage extends BaseUI {
     }
     
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
-    this.sourceItem.parts[0].closeframeParts = this.sourceItem.parts[0].packingQty - this.sourceItem.parts[0].closeframeParts;
-    this.targetItem.parts[0].closeframeParts = this.sourceItem.parts[0].packingQty + this.targetItem.parts[0].closeframeParts;
+    this.targetItem.parts[0].closeframeParts = this.targetItem.parts[0].currentParts + this.sourceItem.parts[0].closeframeParts;
+    this.sourceItem.parts[0].closeframeParts = this.sourceItem.parts[0].currentParts - this.sourceItem.parts[0].closeframeParts;
     this.parts.push(this.sourceItem.parts[0]);
     this.parts.push(this.targetItem.parts[0]);
     this.api.post('PP/PostCloseFrame', {
@@ -293,7 +296,6 @@ export class CloseFramePage extends BaseUI {
         this.canYa = 0;
         this.parts = [];
         this.insertError('提交成功','s');
-        
       }
       else {
         this.insertError(res.message);
