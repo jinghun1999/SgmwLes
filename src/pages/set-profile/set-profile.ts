@@ -53,7 +53,7 @@ export class SetProfilePage extends BaseUI {
         .get("system/getPlants", { plant: this.plant, type: -1 })
         .subscribe(
           (res: any) => {
-            // this.fetching = false;
+            this.fetching = false;
             if (res.successful) {
               this.list = res.data;
 
