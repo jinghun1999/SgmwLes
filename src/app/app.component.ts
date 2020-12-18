@@ -30,7 +30,9 @@ export class MyApp extends BaseUI {
     platform.ready().then(() => {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      if (window.localStorage.getItem('TOKEN')) {
+      //console.log(this.nav.);
+
+      if (window.localStorage.getItem('env') && window.localStorage.getItem('TOKEN')) {
         this.rootPage = HomePage;
       } else {
         this.rootPage = LoginPage;

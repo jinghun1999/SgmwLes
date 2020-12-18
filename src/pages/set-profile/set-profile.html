@@ -1,18 +1,10 @@
-<!--
-  Generated template for the SetProfilePage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
-
   <ion-navbar>
     <ion-title>设置工厂车间</ion-title>
   </ion-navbar>
-
 </ion-header>
-
 <ion-content padding-top>
+  <p *ngIf="fetching" style="text-align: center;">正在处理，请稍后...</p>
   <ion-list>
     <ion-item>
       <ion-label>工厂</ion-label>
@@ -27,7 +19,6 @@
     </ion-item>
   </ion-list>
 </ion-content>
-
 <ion-footer>
   <ion-row>
     <ion-col no-padding hidden>
