@@ -4,13 +4,29 @@ page-home {
   .ion-icon-big:nth-child(1){color:#007aff}
 
   ion-grid ion-row:nth-child(1) ion-col:nth-child(1) .ion-icon-big{color: #3c763d}
-  ion-grid ion-row:nth-child(1) ion-col:nth-child(2) .ion-icon-big{color: #e69d63
-  }
+  ion-grid ion-row:nth-child(1) ion-col:nth-child(2) .ion-icon-big{color: #8B008B}
+  ion-grid ion-row:nth-child(1) ion-col:nth-child(3) .ion-icon-big{color: #e69d63}
+
   ion-grid ion-row:nth-child(2) ion-col:nth-child(1) .ion-icon-big{color: #a94442}
   ion-grid ion-row:nth-child(2) ion-col:nth-child(2) .ion-icon-big{color: red}
+  ion-grid ion-row:nth-child(2) ion-col:nth-child(3) .ion-icon-big{color: #8B3E2F}
+
   ion-grid ion-row:nth-child(3) ion-col:nth-child(1) .ion-icon-big{color: #009d7b}
-  ion-grid ion-row:nth-child(3) ion-col:nth-child(2) .ion-icon-big{color: #cc7e00
-  }
+  ion-grid ion-row:nth-child(3) ion-col:nth-child(2) .ion-icon-big{color: #cc7e00}
+  ion-grid ion-row:nth-child(3) ion-col:nth-child(3) .ion-icon-big{color: #548B54}
+
+  
+  ion-grid ion-row:nth-child(4) ion-col:nth-child(1) .ion-icon-big{color: #473C8B}
+  ion-grid ion-row:nth-child(4) ion-col:nth-child(2) .ion-icon-big{color: #CD1076}
+  ion-grid ion-row:nth-child(4) ion-col:nth-child(3) .ion-icon-big{color: #CD2626}
+
+  ion-grid ion-row:nth-child(5) ion-col:nth-child(1) .ion-icon-big{color: #333399}
+  ion-grid ion-row:nth-child(5) ion-col:nth-child(2) .ion-icon-big{color: #3399ff}
+  ion-grid ion-row:nth-child(5) ion-col:nth-child(3) .ion-icon-big{color: #333300}
+
+  ion-grid ion-row:nth-child(6) ion-col:nth-child(1) .ion-icon-big{color: #9900ff}
+  ion-grid ion-row:nth-child(6) ion-col:nth-child(2) .ion-icon-big{color: #cc33ff}
+  ion-grid ion-row:nth-child(6) ion-col:nth-child(3) .ion-icon-big{color: #669966}
 
   ion-grid button{background-color: transparent;}
 }
