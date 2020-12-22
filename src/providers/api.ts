@@ -10,7 +10,7 @@ import { Storage } from "@ionic/storage";
 @Injectable()
 export class Api {
   public plant: string = '1000';
-  public version: string = 'P-201030';
+  public version: string = 'P-201222';
   
   //public api_host: string = 'http://localhost:49280';
   //public api_host: string = 'http://127.0.0.1:49280';
