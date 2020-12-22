@@ -98,7 +98,7 @@ export class SuspiciousPage extends BaseUI {
       }
     },
       err => {
-        this.insertError('系统级别错误，请返回重试');
+        this.insertError('获取车间列表失败');
       });
   }
 

@@ -64,10 +64,10 @@ export class HomePage extends BaseUI {
     this.api.get("system/getMenus").subscribe(
       (res: any) => {
         if (res.successful) {
-          this.gridList = res.data;
+          this.gridList = res.data;          
         } else {
-          super.showToast(this.toastCtrl, res.message, "error");
-        }
+          super.showToast(this.toastCtrl, res.message, "error");          
+        } 
         loading.dismiss();
       },
       (err) => {

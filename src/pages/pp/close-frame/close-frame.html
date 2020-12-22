@@ -9,8 +9,11 @@
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()" name="code">
     </ion-searchbar>
   </form>
-  <ion-label style="height: 10%;" *ngIf="sourceItem.parts.length"><h3>源料箱：</h3></ion-label>
-
+  <ion-list *ngIf="sourceItem.parts.length">
+    <ion-item>
+      <span style="height: 10%;font-size: larger;">源料箱:</span>
+    </ion-item>
+  </ion-list>
   <div>
     <div class="ds-box" *ngFor="let part of sourceItem.parts;let i=index">
       <div class="row">
@@ -37,12 +40,16 @@
       </div>
     </div>
   </div>
-  <ion-label *ngIf="targetItem.parts.length"><h3>目标料箱：<ion-icon name="arrow"></ion-icon></h3></ion-label>
+
+  <ion-list *ngIf="targetItem.parts.length">
+    <ion-item>
+      <span style="font-size: larger;">目标料箱：</span><ion-icon name='md-arrow-dropdown' style="font-size:larger;color:green;"></ion-icon>
+    </ion-item>
+  </ion-list>
   <div>
     <div class="ds-box" *ngFor="let part of targetItem.parts;let i=index">
       <div class="row">
           <div class="col" style="color:green;font-size:x-large;white-space:nowrap;">料箱号:{{part.boxLabel}}</div>
-        <div class="col"><span style="text-align: right;">捆包号:{{part.bundle_no}}</span></div>
       </div>
       <div class="row">        
           <div class="col">{{part.partNo}}</div>

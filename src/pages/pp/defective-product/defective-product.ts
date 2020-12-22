@@ -170,9 +170,27 @@ export class DefectiveProductPage extends BaseUI {
     this.code = '';
     this.searchbar.setFocus();
   }
+
+ //非标跳转Modal页
+  changeQty(model) {
+  let _m = this.modalCtrl.create('ChangePiecesPage', {
+    max_parts: model.currentParts,
+  });
+  _m.onDidDismiss(data => {
+    if (data) {
+      if (data.receive == 0) {
+        this.insertError('数量必须大于0');
+        return;
+       }
+      model.currentParts = data.receive
+    }
+  });
+  _m.present();
+}
+
   //提交
   save() {
-    if (this.item.parts.length==0) {
+    if (!this.item.parts.length) {
       this.insertError('请先扫描料箱号');
       return;
     };

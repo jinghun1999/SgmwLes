@@ -58,7 +58,7 @@ export class LoginPage extends BaseUI {
         "value":'http://172.168.0.1:49280'
       }
     ];    
-    this.gender = this.environment.find((e) => e.id == 2).value;
+    this.gender = this.environment[1].value;
     //localStorage.setItem('env', this.gender); 
     // this.api.getRequest().subscribe(data => { 
     //   console.log(data);
