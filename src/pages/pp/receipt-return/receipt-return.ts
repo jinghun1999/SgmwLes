@@ -28,6 +28,7 @@ export class ReceiptReturnPage  extends BaseUI {
   reson: string = '';//退货原因
   workshop_list:any[]=[];//加载获取的的车间列表
   errors: any[] = [];
+  partsCount: number = 0; 
   item: any = {    
     plant: '',
     workshop: '',
@@ -124,7 +125,7 @@ checkScanCode() {
             this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他料箱`);
             return;
           }
-        this.item.parts.push(res.data);  
+        this.item.parts.splice(0,0,res.data);  
       }
       else {
         this.insertError(res.message);
@@ -150,13 +151,13 @@ checkScanCode() {
       if (part != "0") {
         const entity = model.pressParts.find((p) => p.part_no == part);
         if (entity) {
-          console.log(entity);
           model.partNo = entity.part_no;
           model.partName = entity.part_name;
           model.packingQty = entity.packing_qty;
           model.boxModel = entity.box_mode;
           model.carModel = entity.car_model;
-
+          model.pressParts = [];
+          model.pressParts.push(entity);          
         }
       }
     });
@@ -209,6 +210,14 @@ checkScanCode() {
       this.insertError("提交的数据中存在重复的数据，请检查！");
       return;
     };
+    for (let i = 0; i < this.item.parts.length; i++) { 
+      if (this.item.parts[i].partNo.length == 0) { 
+        this.insertError('请先选择零件');
+        return;
+      }
+    }
+    
+
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostReceiptReturns', this.item).subscribe((res: any) => {
       if (res.successful) {

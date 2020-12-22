@@ -9,7 +9,7 @@ import { IonicPage, NavController, NavParams, ViewController,LoadingController }
 export class ChangePiecesPage {
 
   _parts: number = 0;  //最大可操作数
-  receivePieces: number = 0;  //输入的数
+  receivePieces: number=0;  //输入的数
   pressParts: any[] = [];//退货接收功能的零件列表
   part: string = '';   //选中的零件号
   err: string;       //错误提示
@@ -37,22 +37,27 @@ export class ChangePiecesPage {
     }
   }
   change() {
-    this.receivePieces = Number(this.receivePieces);
-    
+    if (this.receivePieces) { 
+      this.receivePieces = Number(this.receivePieces)
+    }
+    console.log(this.receivePieces+10);
     if(this.receivePieces > this._parts) {
       this.err = '已超过数量';
       return;
     }
   }
 
-  confirm() {
-    
+  confirm() {    
     this.receivePieces = Number(this.receivePieces);
+    if (this.receivePieces == 0) {
+      this.err = '数量不能等于0';
+      return;
+     }
     if(this.receivePieces > this._parts) {
       this.err = '已超过数量';
       return;
     }
-    const part = this.part ? this.part : "0";
+    const part = this.part ? this.part : '0';
     const data = { receive: this.receivePieces };
     this.viewCtrl.dismiss(data, part);
   }
