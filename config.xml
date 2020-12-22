@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="3" id="io.ionic.starter" version="0.1.3" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>Sgmw LES</name>
+<widget android-versionCode="4" id="io.ionic.starter" version="0.1.5" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>HX LES PDA</name>
     <description>上汽通用五菱物流执行终端</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Microsoft service team</author>
     <content src="index.html" />
