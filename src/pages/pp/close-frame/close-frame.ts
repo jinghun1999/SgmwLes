@@ -141,7 +141,7 @@ export class CloseFramePage extends BaseUI {
         }
         if (this.partNo.length) {
           if (this.partNo != model.partNo) {
-            this.insertError('两个料箱的零件号必须一致');
+            this.insertError('扫描料箱的零件号必须一致');
             return;
           }
         }
@@ -149,8 +149,7 @@ export class CloseFramePage extends BaseUI {
           this.partNo = model.partNo;
         }   
         //源料箱
-        if (this.sourceItem.parts.length == 0) {         
-          
+        if (this.sourceItem.parts.length == 0) {
           if (this.canYa != 0) {
             model.currentParts>this.canYa?model.closeframeParts=this.canYa:model.closeframeParts=model.currentParts;
            }
@@ -167,13 +166,6 @@ export class CloseFramePage extends BaseUI {
           let source = this.sourceItem.parts[0]; 
           source.closeframeParts == 0 ? source.closeframeParts = source.currentParts : null;
           source.closeframeParts > this.canYa ? source.closeframeParts = this.canYa : null;
-          // if (source.closeframeParts > this.canYa) { 
-          //   if (source.currentParts < this.canYa) {
-          //     source.closeframeParts = source.currentParts;
-          //   } else { 
-          //     source.closeframeParts = this.canYa;
-          //   }            
-          // }
           model.closeframeParts = this.canYa;
           model.type = 2;
           this.targetItem.parts.push(model);
@@ -279,10 +271,9 @@ export class CloseFramePage extends BaseUI {
       this.resetScan();
       return;
     }
-    
-    let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.targetItem.parts[0].closeframeParts = this.targetItem.parts[0].currentParts + this.sourceItem.parts[0].closeframeParts;
     this.sourceItem.parts[0].closeframeParts = this.sourceItem.parts[0].currentParts - this.sourceItem.parts[0].closeframeParts;
+    let loading = super.showLoading(this.loadingCtrl, "提交中...");    
     this.parts.push(this.sourceItem.parts[0]);
     this.parts.push(this.targetItem.parts[0]);
     this.api.post('PP/PostCloseFrame', {

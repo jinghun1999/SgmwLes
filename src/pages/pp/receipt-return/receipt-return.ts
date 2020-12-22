@@ -143,18 +143,20 @@ checkScanCode() {
       pressParts: model.pressParts,  //零件列表
       part:model.partNo //当前料箱的零件号
     });
-    _m.onDidDismiss((data:any,part:string) => {
-      if (data) {        
+    _m.onDidDismiss((data: any, part: string) => {
+      if (data) {
         model.currentParts = data.receive
       }
-      if (part != "0") { 
+      if (part != "0") {
         const entity = model.pressParts.find((p) => p.part_no == part);
         if (entity) {
+          console.log(entity);
           model.partNo = entity.part_no;
           model.partName = entity.part_name;
-          //model.packingQty = entity.packing_qty;
+          model.packingQty = entity.packing_qty;
           model.boxModel = entity.box_mode;
           model.carModel = entity.car_model;
+
         }
       }
     });
