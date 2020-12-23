@@ -118,7 +118,6 @@ checkScanCode() {
   }  
   //扫描执行的过程
   scanSheet() {
-    this.errors = [];
     this.api.get('PP/GetReceiptReturns', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
           if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {            
@@ -210,13 +209,30 @@ checkScanCode() {
       this.insertError("提交的数据中存在重复的数据，请检查！");
       return;
     };
+    //不选零件不允许提交
     for (let i = 0; i < this.item.parts.length; i++) { 
       if (this.item.parts[i].partNo.length == 0) { 
         this.insertError('请先选择零件');
         return;
       }
+      //有多个零件，只能提交一个
+      if (this.item.parts[i].pressParts.length > 1) { 
+        const part = this.item.parts[i].pressParts.find((p) => p.part_no == this.item.parts[i].partNo);
+        if (part) {
+          this.item.parts[i].pressParts.length = 0;
+          this.item.parts[i].pressParts.push(part);
+        }
+        else { 
+          this.insertError('请先选择零件');
+          return;
+        }
+      }
+      console.log(this.item.parts[i]);
     }
+
+
     
+    return;
 
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostReceiptReturns', this.item).subscribe((res: any) => {

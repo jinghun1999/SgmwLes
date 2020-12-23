@@ -94,15 +94,14 @@ export class FramePage extends BaseUI {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
       this.item.workshop = val;
-      this.getWorkshops();
+      this.getFeedPortList();
     });
   }
   //获取上料口列表
-  private getWorkshops() {
+  private getFeedPortList() {
     this.api.get('PP/GetFrameLoad', { plant: this.item.plant, workshop: this.item.workshop }).subscribe((res: any) => {
       if (res.successful) {
         this.feedPort_list = res.data.feedingPort; 
-        //console.log(res.data.feedingPort);
         if (this.feedPort_list.find((f) => f.isSelect)) {
           let feedPort = this.feedPort_list.find((f) => f.isSelect);
           this.item.bundle_no = feedPort.bundle_no;
@@ -194,7 +193,7 @@ export class FramePage extends BaseUI {
         this.item.box_label = '';
         this.item.car_model = '';
         this.item.box_mode = '';
-        this.getWorkshops();//重新加载上料口列表
+        this.getFeedPortList();//重新加载上料口列表
         this.insertError("提交成功", 's');
       } else {
         this.insertError(res.message);
@@ -230,13 +229,14 @@ export class FramePage extends BaseUI {
   }
   //零件下拉框改变时
   changeFeed(part_no) {
+    this.getFeedList();
+    
     if (this.pressPart_list.find((p)=>p.part_no == part_no).part_type==3) {  //双件双模
       this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
         if (res.successful) {
           this.feedPort_list = res.data;
           if (this.feedPort_list.find((f) => f.isSelect) && this.feedPort_list.length > 0) {
             this.item.bundle_no = this.feedPort_list.find((f) => f.isSelect).bundle_no;
-            //this.item.bundle_no = this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).bundle_no;
           }
           else {
             this.item.bundle_no = this.feedPort_list[0].bundle_no;
@@ -250,13 +250,21 @@ export class FramePage extends BaseUI {
       });
     }
 
+
     this.item.port_no=this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;
     this.item.car_model = this.pressPart_list.find((f) =>  f.part_no == part_no ).car_model;
     this.item.box_mode = this.pressPart_list.find((f) =>  f.part_no == part_no ).box_mode;
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
     this.item.current_parts = this.pressPart_list.find(f => f.part_no == this.item.part_no).packing_qty;
   }
-
+  getFeedList() { 
+    this.api.get('PP/GetFrameLoad', { plant: this.item.plant, workshop: this.item.workshop }).subscribe((res: any) => {
+      this.feedPort_list = res.data.feedingPort;
+    }, error => { 
+        this.insertError('获取上料口列表失败');
+    });
+  }
+  
   cancel() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
