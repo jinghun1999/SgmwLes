@@ -88,7 +88,7 @@ export class PartsStorageInPage extends BaseUI {
     });
   }
   private getWorkshops() {
-    this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
+    this.api.get('system/GetFramePlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
         console.log(res.data);  

@@ -89,7 +89,7 @@ export class PartsStorageOutPage extends BaseUI {
     });
   }
   private getWorkshops() {
-    this.api.get('system/GetFramePlants', { plant: this.api.plant }).subscribe((res: any) => {
+    this.api.get('system/GetFramePlantsOut', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
         let model = this.workshop_list.find((f) => f.isSelect);

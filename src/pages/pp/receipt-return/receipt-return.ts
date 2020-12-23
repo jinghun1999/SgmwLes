@@ -155,8 +155,8 @@ checkScanCode() {
           model.packingQty = entity.packing_qty;
           model.boxModel = entity.box_mode;
           model.carModel = entity.car_model;
-          model.pressParts = [];
-          model.pressParts.push(entity);          
+          // model.pressParts = [];
+          // model.pressParts.push(entity);          
         }
       }
     });
