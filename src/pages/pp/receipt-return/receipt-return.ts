@@ -227,12 +227,7 @@ checkScanCode() {
           return;
         }
       }
-      console.log(this.item.parts[i]);
     }
-
-
-    
-    return;
 
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostReceiptReturns', this.item).subscribe((res: any) => {
