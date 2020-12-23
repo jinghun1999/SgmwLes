@@ -9,10 +9,8 @@ import {
   ModalController,
   Searchbar
 } from 'ionic-angular';
-// import { NativeAudio } from '@ionic-native/native-audio/ngx';
 import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
-// import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
 @IonicPage()
 @Component({
@@ -30,8 +28,6 @@ export class BundlePage extends BaseUI {
   item: any = {
     bundles: [],
   };
-  // private onSuccess: any;
-  // private onError: any;
   constructor(public navParams: NavParams,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
@@ -40,18 +36,13 @@ export class BundlePage extends BaseUI {
     public alertCtrl: AlertController,
     public navCtrl: NavController,
     public modalCtrl: ModalController,
-    public storage: Storage,    
-    // private nativeAudio: NativeAudio,
+    public storage: Storage    
   ) {
     super();
-    // this.nativeAudio.preloadSimple('errSound', '../../../assets/audio/no.wav').then(this.onSuccess, this.onError);
-    // this.nativeAudio.preloadSimple('okSound', 'assets/audio/yes.wav')//.then(this.onSuccess, this.onError);
   }
   public errSound() {
-    // this.nativeAudio.play('errSound').then(this.onSuccess, this.onError);
   }
   public okSound() {
-    // this.nativeAudio.play('okSound').then(this.onSuccess, this.onError);
   }
   
   ionViewDidEnter() {
@@ -72,8 +63,6 @@ export class BundlePage extends BaseUI {
 
   //修改带T的时间格式
   dateFunction(time){
-    // var zoneDate = new Date(time).toJSON();
-    // var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
     let data = time.replace(/T/g," ");
     return data;
   }
@@ -117,6 +106,9 @@ export class BundlePage extends BaseUI {
           this.insertError(`捆包${model.bundleNo}已扫描过，请扫描其他捆包`);
           this.errSound();
         } else {
+          if (model.weight < 0|| model.weight.length==0) { 
+            model.weight = 0;
+          }
           this.item.bundles.push(model);
           this.okSound();
         }
@@ -162,16 +154,6 @@ export class BundlePage extends BaseUI {
     });
     prompt.present();
   }
-
-  //撤销
-  // cancel_do() {
-  //   this.insertError('正在撤销...', 2);
-  //   this.code = '';
-  //   this.errors = [];
-  //   this.item.bundles = [];
-  //   this.insertError("撤销成功");
-  //   this.resetScan();
-  // }
 
   //删除
   delete(i) {
