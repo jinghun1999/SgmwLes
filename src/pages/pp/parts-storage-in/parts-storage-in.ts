@@ -91,7 +91,14 @@ export class PartsStorageInPage extends BaseUI {
     this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        this.item.target = this.item.workshop;
+        console.log(res.data);  
+        const yuan = res.data.find((t) => t.isSelect);
+        if (yuan) {
+          this.item.target = yuan;
+        }
+        else {
+          res.data.length ? this.item.target = res.data[0].value : null;
+        }
       } else {
         this.insertError(res.message);
       }
@@ -104,7 +111,7 @@ export class PartsStorageInPage extends BaseUI {
   //校验扫描
   checkScanCode() {
     let err = '';
-    if (this.code=='') {
+    if (this.code == '') {
       err = '请扫描料箱号！';
       this.insertError(err);
     }
@@ -140,7 +147,7 @@ export class PartsStorageInPage extends BaseUI {
         if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
           this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
           return;
-        }        
+        }
         this.item.parts.splice(0, 0, model);
       }
       else {
@@ -160,7 +167,7 @@ export class PartsStorageInPage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
-        model.packingQty-data.receive>0?model.currentParts = data.receive:this.insertError('数量不能大于包装数');        
+        model.packingQty - data.receive > 0 ? model.currentParts = data.receive : this.insertError('数量不能大于包装数');
       }
     });
     _m.present();
@@ -185,11 +192,11 @@ export class PartsStorageInPage extends BaseUI {
 
   //撤销
   cancel_do() {
-    this.insertError('正在撤销...','i');
+    this.insertError('正在撤销...', 'i');
     this.code = '';
     //this.errors = [];
     this.item.parts = [];
-    this.insertError("撤销成功",'s');
+    this.insertError("撤销成功", 's');
     this.resetScan();
   }
 
@@ -198,31 +205,31 @@ export class PartsStorageInPage extends BaseUI {
     this.item.parts.splice(i, 1);
   }
   //手工调用，重新加载数据模型
-  resetScan() { 
+  resetScan() {
     setTimeout(() => {
       this.code = '';
       this.searchbar.setFocus();
-     });           
+    });
   }
   //提交
   save() {
-    if (this.item.parts.length==0) {
-      this.insertError('请先扫描料箱号','i');
+    if (this.item.parts.length == 0) {
+      this.insertError('请先扫描料箱号', 'i');
       return;
     };
 
     if (new Set(this.item.parts).size !== this.item.parts.length) {
-      this.insertError("明细列表存在重复的料箱号，请检查！",'i');
+      this.insertError("明细列表存在重复的料箱号，请检查！", 'i');
       return;
     };
-    let loading = super.showLoading(this.loadingCtrl,'提交中...');
+    let loading = super.showLoading(this.loadingCtrl, '提交中...');
     this.api.post('PP/PostPartsStorageIn', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('提交成功','s');
+        this.insertError('提交成功', 's');
         this.item.parts = [];
       }
       else {
-        this.insertError('提交失败,'+res.message); 
+        this.insertError('提交失败,' + res.message);
       }
       loading.dismiss();
     },
@@ -233,7 +240,7 @@ export class PartsStorageInPage extends BaseUI {
     this.resetScan();
   }
   //下拉框改变
-  changWS(target: string) {    
+  changWS(target: string) {
     this.item.parts = [];
     this.resetScan();
   }

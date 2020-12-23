@@ -18,28 +18,24 @@
   <div>
     <div class="ds-box" *ngFor="let part of item.partPanel;let i=index">      
       <div class="row">
-        <div class="col" style="font-size: large;color:green;white-space:nowrap">
-          <h4>
-            <ion-icon name="checkmark-circle-outline" style="color:green"></ion-icon> 捆包号：{{part.bundleNo}}
-          </h4>
-        </div>
         <div class="col">
-          <span style="text-align: right;color: red;margin:1rem">重量：{{part.weight}} </span>
+            <ion-icon name="checkmark-circle-outline" style="color:green;"></ion-icon>
+            <span style="font-size: large;color:green;white-space:nowrap;letter-spacing:-1px">捆包号:{{part.bundleNo}}</span> 
+            <span style="color: red;margin:1rem;letter-spacing:-1px">重量:{{part.weight}} </span>
         </div>
       </div>
       <div class="row">
-        <ion-icon name="person-circle-outline"></ion-icon>{{part.supplier}}
+        <ion-icon name="ios-contact"></ion-icon>{{part.supplier}}
       </div>
       <div class="row">
-        <div class="col"><button ion-button item-end (click)="changeQty(part)" [color]='light'>修改收货数</button></div>
-        <div class="col" style="font-size:small;color: red;margin:1rem">
-          剩余数量:{{part.actualReceivePieces}}
-          <br>
-          <span
-            style="font-size:small;color:silver;margin:1rem;white-space:nowrap">当前第{{i+1}}箱，共扫描{{item.partPanel.length}}箱</span>
-        </div>
         <div class="col">
-          <button style="text-align: right;" ion-button color="danger" (click)="delete(i)">X</button>
+          <button ion-button item-end (click)="changeQty(part)" [color]='light'>修改退货信息</button>
+          <span style="font-size:small;color: red;margin:1rem;white-space:nowrap">
+            数量:{{part.actualReceivePieces}}            
+          </span>
+          <span style="float: right;"><button ion-button color="danger" (click)="delete(i)">X</button></span>
+          <br>  
+          <span style="font-size:small;color:silver;margin:1rem;white-space:nowrap">当前第{{i+1}}箱，共扫描{{item.partPanel.length}}箱</span>
         </div>
       </div>
     </div>
