@@ -9,9 +9,10 @@ import {
   ModalController,
   Searchbar
 } from 'ionic-angular';
+// import { NativeAudio } from '@ionic-native/native-audio/ngx';
 import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
-import { fromEvent } from "rxjs/observable/fromEvent";
+// import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
 @IonicPage()
 @Component({
@@ -29,6 +30,8 @@ export class BundlePage extends BaseUI {
   item: any = {
     bundles: [],
   };
+  // private onSuccess: any;
+  // private onError: any;
   constructor(public navParams: NavParams,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
@@ -37,39 +40,24 @@ export class BundlePage extends BaseUI {
     public alertCtrl: AlertController,
     public navCtrl: NavController,
     public modalCtrl: ModalController,
-    public storage: Storage
+    public storage: Storage,    
+    // private nativeAudio: NativeAudio,
   ) {
     super();
+    // this.nativeAudio.preloadSimple('errSound', '../../../assets/audio/no.wav').then(this.onSuccess, this.onError);
+    // this.nativeAudio.preloadSimple('okSound', 'assets/audio/yes.wav')//.then(this.onSuccess, this.onError);
   }
-
-  keyDown(event) {
-    switch (event.keyCode) {
-      case 112:
-        //f1
-        this.cancel();
-        break;
-      case 113:
-        //f2
-        this.outStock();
-        break;
-    }
+  public errSound() {
+    // this.nativeAudio.play('errSound').then(this.onSuccess, this.onError);
   }
+  public okSound() {
+    // this.nativeAudio.play('okSound').then(this.onSuccess, this.onError);
+  }
+  
   ionViewDidEnter() {
     setTimeout(() => {
-      this.addkey();
       this.searchbar.setFocus();
     });
-  }
-  ionViewWillUnload() {
-    this.removekey();
-  }
-  addkey = () => {
-    this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
-      this.keyDown(event);
-    });
-  }
-  removekey = () => {
-    this.keyPressed.unsubscribe();
   }
   insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
@@ -81,13 +69,14 @@ export class BundlePage extends BaseUI {
       this.workshop = val;
     });
   }
-//修改带T的时间格式
-dateFunction(time){
-  // var zoneDate = new Date(time).toJSON();
-  // var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
-  let data = time.replace(/T/g," ");
-  return data;
-}
+
+  //修改带T的时间格式
+  dateFunction(time){
+    // var zoneDate = new Date(time).toJSON();
+    // var date = new Date(+new Date(zoneDate)+8*3600*1000).toISOString().replace(/T/g,' ').replace(/\.[\d]{3}Z/,'');
+    let data = time.replace(/T/g," ");
+    return data;
+  }
   //校验扫描
   checkScanCode() {
     let err = '';
@@ -103,11 +92,11 @@ dateFunction(time){
 
     if (err.length > 0) {
       this.searchbar.setFocus();
+      this.errSound();
       return false;
     }
     return true;
   }
-
 
   //开始扫描
   scan() {
@@ -126,17 +115,21 @@ dateFunction(time){
         let model = res.data;
         if (this.item.bundles.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
           this.insertError(`捆包${model.bundleNo}已扫描过，请扫描其他捆包`);
-          return;
+          this.errSound();
+        } else {
+          this.item.bundles.push(model);
+          this.okSound();
         }
-        this.item.bundles.push(model);
       }
       else {
         this.insertError(res.message);
+        this.errSound();
       }
     },
-      err => {
-        this.insertError('扫描出错','e');
-      });
+    err => {
+      this.insertError('扫描出错','e');
+      this.errSound();
+    });
     this.resetScan();
   }
 
@@ -193,11 +186,13 @@ dateFunction(time){
   outStock() {
     if (this.item.bundles.length==0) {
       this.insertError('请先扫描捆包号','i');
+      this.errSound();
       return;
     };
 
     if (new Set(this.item.bundles).size !== this.item.bundles.length) {
       this.insertError("提交的数据中存在重复的捆包号，请检查！",'i');
+      this.errSound();
       return;
     };
     let loading = super.showLoading(this.loadingCtrl,'提交中');
@@ -210,16 +205,19 @@ dateFunction(time){
       if (res.successful) {
         this.insertError('提交成功','s');
         this.item.bundles = [];
+        this.okSound();
       }
       else {
         this.insertError(res.message);
+        this.errSound();
       }
       loading.dismiss();
     },
-      err => {
-        this.insertError('提交失败');
-        loading.dismiss();
-      });
+    err => {
+      this.insertError('提交失败');
+      this.errSound();
+      loading.dismiss();
+    });
     this.resetScan();
   }
 
