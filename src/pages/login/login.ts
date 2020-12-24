@@ -45,7 +45,7 @@ export class LoginPage extends BaseUI {
       {
         id: 1,
         text: "开发环境",
-        value: "http://127.0.0.1:49280",
+        value: "http://localhost:8120",
       },
       {
         id: 2,
@@ -63,12 +63,12 @@ export class LoginPage extends BaseUI {
         value: "http://172.168.0.1:49280",
       },
     ];
-    this.gender = this.environment.find((e) => e.id == 2).value;
+    this.gender = this.environment[1].value;
   }
   //登录的时候存储
   changWS() {
-    localStorage.getItem("env") && localStorage.removeItem("env");
-    localStorage.setItem("env", this.gender);
+    localStorage.removeItem("env");
+    setTimeout(localStorage.setItem("env", this.gender), 300);
   }
   doLogin() {
     if (!this.account.name || !this.account.password) {
@@ -76,7 +76,7 @@ export class LoginPage extends BaseUI {
       this.setFocus();
       return;
     }
-    setTimeout(() => this.changWS(), 100);
+    this.changWS();
     let loading = super.showLoading(this.loadingCtrl, "登录中...");
     this.user.login(this.account).subscribe(
       (resp) => {

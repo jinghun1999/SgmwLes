@@ -40,6 +40,20 @@ export class FramePage extends BaseUI {
     pressPart: [],  //要提交的零件列表
     feedingPort: [],  //要提交的上料口列表
   };
+  ziPart: any = {
+    current_parts: 0,
+    plant: '',
+    workshop: '',
+    box_label: '',  //料箱号
+    car_model: '',  //车模
+    box_mode: '',  //箱模
+    port_no: '',
+    bundle_no: '',
+    part_no: '',
+    pressPart: [],  //要提交的零件列表
+    feedingPort: [],  //要提交的上料口列表
+  };
+
   keyPressed: any;
   errors: any[] = [];
   constructor(public navParams: NavParams,
@@ -116,7 +130,7 @@ export class FramePage extends BaseUI {
       }
     },
       err => {
-        this.insertError('无法获取上料口');
+        this.insertError('获取捆包列表失败');
       });
     this.setFocus();
   }
@@ -131,7 +145,6 @@ export class FramePage extends BaseUI {
       this.setFocus();
       return;
     }
-
     this.api.get('PP/GetFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
       if (res.successful) {
         let frame = res.data;
@@ -149,20 +162,19 @@ export class FramePage extends BaseUI {
           this.item.car_model = model.car_model;
           this.item.box_mode = model.box_mode;
           this.item.part_no = model.part_no;
+          (model.part_type == 3 || model.part_type == 2) && this.changeFeed(model.part_no);
 
-          model.part_type == 3 ? this.changeFeed(model.part_no) : null;
         }
         else {
-          this.insertError("找不到零件");
-        }
-        //this.item.plant = frame.plant,
+          this.insertError("获取零件失败");
+        }        
         this.item.box_label = frame.box_label
       }
       else {
         this.insertError(res.message);
       }
     }, error => {
-      this.insertError('获取不到料箱信息');
+      this.insertError('获取料箱信息失败');
     });
     this.setFocus();
   };
@@ -206,11 +218,6 @@ export class FramePage extends BaseUI {
       });
     this.setFocus();
   }
-  //点击显示错误列表
-  openErrList(e) {
-    //console.log(e.target);
-  }
-
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
@@ -249,6 +256,13 @@ export class FramePage extends BaseUI {
         this.insertError('获取不到捆包列表');
       });
     }
+
+    if (this.pressPart_list.find((p) => p.part_no == part_no).part_type == 2) { //单件双模
+      
+    }
+
+
+
 
 
     this.item.port_no=this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;

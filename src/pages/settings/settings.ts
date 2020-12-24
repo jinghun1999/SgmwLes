@@ -60,6 +60,7 @@ export class SettingsPage extends BaseUI {
     this.user.logout().subscribe((re) => {
       setTimeout(() => {
         // this.app.getRootNav().setRoot(LoginPage);
+        localStorage.removeItem('env');
         this.app.getRootNav().setRoot('LoginPage', {}, {
           animate: true,
           direction: 'forward'

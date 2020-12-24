@@ -174,7 +174,7 @@ export class SheetPanelPage extends BaseUI {
     this.insertError('正在撤销...');
     this.bundle_no = '';
     this.item.bundles = [];
-    this.insertError("撤销成功");
+    this.insertError("撤销成功",'s');
     this.resetScan();
   }
   //删除
