@@ -14,7 +14,7 @@ export class Api {
   public api_host: string = 'http://10.1.126.171/lesapi';   
 
   constructor(public http: HttpClient, public events: Events, public alertCtrl: AlertController, public toastCtrl: ToastController, public storage: Storage, public modalCtrl: ModalController) {
-    
+    //localStorage.removeItem('env');
   }
   get(endpoint: string, params?: any, reqOpts?: any) {
     if (!reqOpts) {
