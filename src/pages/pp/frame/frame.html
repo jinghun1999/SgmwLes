@@ -9,14 +9,14 @@
       (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
-  <select [(ngModel)]="item.bundle_no" interface="popover" style="width: 100%;height: 6%;">
-    <option *ngFor="let t of item.feedingPort" style="width: 100%;height: 6%;" value="{{t.bundle_no}}">
+  <select [(ngModel)]="item.bundle_no" interface="popover" style="width: 100%;height: 8%;">
+    <option *ngFor="let t of item.feedingPort" style="width: 100%;height: 8%;" value="{{t.bundle_no}}">
       {{t.port_name}}&nbsp;{{t.bundle_no}}&nbsp;剩余数量:{{t.remain_pieces}}
     </option>
   </select>
-  <select [(ngModel)]="item.part_no" (ngModelChange)="changeFeed(item.part_no)" style="width: 100%;height: 6%;"
+  <select [(ngModel)]="item.part_no" (ngModelChange)="changeFeed(item.part_no)" style="width: 100%;height: 8%;"
     interface="popover">
-    <option *ngFor="let t of item.pressPart" style="width: 100%;height: 5%;" value="{{t.part_no}}">
+    <option *ngFor="let t of item.pressPart" style="width: 100%;height: 8%;" value="{{t.part_no}}">
       {{t.part_no}}&nbsp;{{t.part_name}}&nbsp;消耗:{{t.usage}}
     </option>
   </select>
@@ -34,23 +34,22 @@
     </ion-item>
     <ion-item>
       <ion-label style="color: red;">装箱数量:&nbsp;{{item.current_parts}}&nbsp;<button ion-button icon-end
-          (click)="changeQty(item)">修改装箱信息</button></ion-label>
-      <ion-label style="float:right;"><button color="danger" (click)="delect()" ion-button icon-end>X</button>
+          (click)="changeQty(item)">修改装箱信息</button>&nbsp;
+      <button color="danger" (click)="delect()" ion-button icon-end>X</button>
       </ion-label>
     </ion-item>
   </ion-list>
 
-  <div>
     <h4 *ngIf="(item.part_type==2||item.part_type==3)">零件组:{{item.parts_group}}</h4>
     <select *ngIf="(item.part_type==2||item.part_type==3)" (ngModelChange)="changePart(ziPart.part_no)"
-      [(ngModel)]="ziPart.part_no" style="width: 100%;height: 6%;" interface="popover">
-      <option *ngFor="let t of item.pressPartGroup" style="width: 100%;height: 6%;" value="{{t.part_no}}">
+      [(ngModel)]="ziPart.part_no" style="width: 100%;height: 8%;" interface="popover">
+      <option *ngFor="let t of item.pressPartGroup" style="width: 100%;height: 8%;" value="{{t.part_no}}">
         {{t.part_no}}&nbsp;{{t.part_name}}&nbsp;消耗:{{t.usage}}
       </option>
     </select>
     <select *ngIf="(item.part_type==2||item.part_type==3)" [(ngModel)]="ziPart.bundle_no" interface="popover"
-      style="width: 100%;height: 6%;">
-      <option *ngFor="let t of item.feedingPortGroup;let i=index" style="width: 100%;height: 6%;"
+      style="width: 100%;height: 8%;">
+      <option *ngFor="let t of item.feedingPortGroup;let i=index" style="width: 100%;height: 8%;"
         value="{{t.bundle_no}}">
         捆包号:{{t.bundle_no}}&nbsp;剩余数量:{{t.remain_pieces}}
       </option>
@@ -72,8 +71,6 @@
         <ion-label><button ion-button icon-end (click)="changeQty(ziPart)">修改装箱信息</button></ion-label>
       </ion-item>
     </ion-list>
-  </div>
-
   <message-list [data]="errors"></message-list>
 </ion-content>
 <ion-footer>
@@ -82,7 +79,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">撤销</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="primary" [disabled]="!item.box_label.length"
+      <button no-margin ion-button full large color="primary" [disabled]="!item.box_label"
         (click)="save()">提交</button>
     </ion-col>
   </ion-row>

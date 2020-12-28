@@ -40,7 +40,6 @@ export class ChangePiecesPage {
     if (this.receivePieces) { 
       this.receivePieces = Number(this.receivePieces)
     }
-    console.log(this.receivePieces+10);
     if(this.receivePieces > this._parts) {
       this.err = '已超过数量';
       return;
