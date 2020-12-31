@@ -45,7 +45,7 @@ export class LoginPage extends BaseUI {
       {
         id: 1,
         text: "开发环境",
-        value: "http://192.168.1.4:8120",
+        value: "http://192.168.1.6:8120",
       },
       {
         id: 2,

@@ -9,12 +9,12 @@
       (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
-  <select [(ngModel)]="item.bundle_no" interface="popover" style="width: 100%;height: 8%;">
+  <select [(ngModel)]="item.bundle_no" (ngModelChange)="changeFeed(item.bundle_no)" interface="popover" style="width: 100%;height: 8%;">
     <option *ngFor="let t of item.feedingPort" style="width: 100%;height: 8%;" value="{{t.bundle_no}}">
       {{t.port_name}}&nbsp;{{t.bundle_no}}&nbsp;剩余数量:{{t.remain_pieces}}
     </option>
   </select>
-  <select [(ngModel)]="item.part_no" (ngModelChange)="changeFeed(item.part_no)" style="width: 100%;height: 8%;"
+  <select [(ngModel)]="item.part_no" (ngModelChange)="changePart(item.part_no)" style="width: 100%;height: 8%;"
     interface="popover">
     <option *ngFor="let t of item.pressPart" style="width: 100%;height: 8%;" value="{{t.part_no}}">
       {{t.part_no}}&nbsp;{{t.part_name}}&nbsp;消耗:{{t.usage}}
@@ -41,8 +41,7 @@
   </ion-list>
 
     <h4 *ngIf="(item.part_type==2||item.part_type==3)">零件组:{{item.parts_group}}</h4>
-    <select *ngIf="(item.part_type==2||item.part_type==3)" (ngModelChange)="changePart(ziPart.part_no)"
-      [(ngModel)]="ziPart.part_no" style="width: 100%;height: 8%;" interface="popover">
+    <select *ngIf="(item.part_type==2||item.part_type==3)" (ngModelChange)="changeZi(ziPart.part_no)"  [(ngModel)]="ziPart.part_no" style="width: 100%;height: 8%;" interface="popover">
       <option *ngFor="let t of item.pressPartGroup" style="width: 100%;height: 8%;" value="{{t.part_no}}">
         {{t.part_no}}&nbsp;{{t.part_name}}&nbsp;消耗:{{t.usage}}
       </option>

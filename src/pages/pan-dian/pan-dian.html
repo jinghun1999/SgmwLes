@@ -1,0 +1,24 @@
+
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>盘点料箱</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <div>
+    <div class="ds-box" *ngFor="let o of list" (click)="detail(o)">
+      <h4>{{o.code}}<small float-end>({{o.workshop}})</small></h4>
+      <h5>{{o.type}}/{{o.mode}} <span class="not-mine" *ngIf="!o.belong">未认领</span> <small float-end>{{o.status}}</small></h5>
+    </div>
+  </div>
+  <ion-infinite-scroll threshold="100px" (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="正在加载数据...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
