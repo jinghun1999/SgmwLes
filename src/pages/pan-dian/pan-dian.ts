@@ -32,7 +32,7 @@ export class PanDianPage extends BaseUI {
   }
 
   detail(o: any) {
-    this.navCtrl.push('InventoryPage', {item: o});
+    this.navCtrl.push('BoxInventoryPage', {item: o});
   }
 
   loadData() {

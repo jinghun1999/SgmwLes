@@ -58,7 +58,6 @@ export class SparePartsPage extends BaseUI {
     pressParts: []
   };
   item: any = {
-    InOut: '',
     plant: 1000,
     workshop: '',
     parts: []
@@ -139,9 +138,9 @@ export class SparePartsPage extends BaseUI {
     this.api.get('pp/getSpareParts', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let part = res.data;
-        if (!part.pressParts) { //没有子零件
-          this.pressParts = part;
-          this.canYa = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
+        if (!part.pressParts) { //pressParts为null
+          //this.pressParts = part;
+          this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
 
         } else if (part.pressParts.length == 1) {   //=1:扫描的是实框
           let pressParts = part.pressParts[0];
@@ -150,30 +149,23 @@ export class SparePartsPage extends BaseUI {
           this.spareItem.boxLabel = part.boxLabel;
           this.spareItem.boxModel = pressParts.box_mode;
           this.spareItem.partName = pressParts.part_name;
+          this.spareItem.SJcurrentParts = part.SJcurrentParts;  
           this.spareItem.packingQty = pressParts.packing_qty;
-          this.spareItem.currentParts = pressParts.currentParts;
-          this.spareItem.closeframeParts = pressParts.closeframeParts;
+          this.spareItem.currentParts = part.currentParts;
+          this.spareItem.closeframeParts = part.closeframeParts;;//合框数
           this.spareItem.pressParts = part.pressParts;
-          this.canYa = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
-          //计算合框数
         } else if (part.pressParts.length > 1) {//>1:扫描的是空框
           let pressParts = part.pressParts.find(p => p.isSelect) ? part.pressParts.find(p => p.isSelect) : part.pressParts[0];
           this.spareItem.partNo = pressParts.part_no;
           this.spareItem.carModel = pressParts.car_model;
           this.spareItem.boxModel = pressParts.box_mode;
           this.spareItem.boxLabel = part.boxLabel;
+          this.spareItem.SJcurrentParts = part.SJcurrentParts;
           this.spareItem.partName = pressParts.part_name;
           this.spareItem.packingQty = pressParts.packing_qty;
-          this.spareItem.currentParts = pressParts.currentParts;
-          this.spareItem.closeframeParts = pressParts.closeframeParts;
+          this.spareItem.currentParts = part.currentParts;
+          this.spareItem.closeframeParts = part.closeframeParts;;//合框数
           this.spareItem.pressParts = part.pressParts;
-          this.canYa = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
-          //计算合框数
-          // if (this.spareItem.closeframeParts > this.canYa) {
-            
-          //   this.this.spareItem.closeframeParts = this.canYa;
-
-          // }
         }
       }
       else {
@@ -181,13 +173,13 @@ export class SparePartsPage extends BaseUI {
       }
     },
       err => {
-        this.insertError('扫描过程出错,' + err);
+        this.insertError('扫描过程出错');
       });
     this.resetScan();
   }
   //修改合框数
   changeQty(model) {
-    if (this.pressParts.boxLabel) {
+    if (!this.spareItem.boxLabel) {
       this.insertError('请扫描料箱');
       return;
     }
@@ -196,8 +188,8 @@ export class SparePartsPage extends BaseUI {
     });
     _m.onDidDismiss(data => {
       if (data) {
-        if (data.receive > this.canYa) {
-          this.insertError('数量不能大于可合框数:' + this.canYa + '');
+        if (data.receive + this.spareItem.currentParts > this.spareItem.packingQty) {
+          this.insertError('数量不能大于合框数:' + model.closeframeParts + '');
           return;
         }
         model.closeframeParts = data.receive;
@@ -244,23 +236,24 @@ export class SparePartsPage extends BaseUI {
   }
   //提交
   save() {
-    // let err = '';
-    // if (err.length > 0) {
-    //   this.insertError(err);
-    //   this.resetScan();
-    //   return;
-    // }
-
-    if (this.spareItem.pressPart) {
-      this.spareItem.pressParts.lenght = 0;
-      this.spareItem.pressParts.push(this.pressParts);
+    if (!this.spareItem.boxLabel) {
+      this.insertError('请扫描料箱');
+      return;
+    }
+    if (this.spareItem.pressParts) { 
+      if (this.spareItem.pressParts.length > 0) { 
+        let pressParts = this.spareItem.pressParts.find(p=>p.part_no==this.spareItem.partNo);
+        this.spareItem.pressParts.length = 0;
+        this.spareItem.pressParts.push(pressParts);
+      }
     }
     this.item.parts.push(this.spareItem);
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.post('pp/postSpareParts', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.canYa = 0;
-        this.parts = [];
+        this.item.parts = [];
+        this.spareItem = {};
         this.insertError('提交成功', 's');
       }
       else {
@@ -277,19 +270,22 @@ export class SparePartsPage extends BaseUI {
   //切换散件
   changePress(part_no) {
     let pressParts = this.spareItem.pressParts.find(p => p.part_no == part_no);
-
-    this.spareItem.partName = pressParts.part_name;
+     this.spareItem.partName = pressParts.part_name;
     this.spareItem.carModel = pressParts.car_model;
     this.spareItem.boxModel = pressParts.box_mode;
     this.spareItem.packingQty = pressParts.packing_qty;
     this.spareItem.currentParts = pressParts.currentParts;
-    this.spareItem.closeframeParts = pressParts.closeframeParts;
+    this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;
 
     this.api.get('pp/getSwitchSpareParts', { plant: this.api.plant, workshop: this.workshop, part_no: part_no }).subscribe((res: any) => {
       if (res.successful) {
-        this.spareItem = res.data;
-        console.log(this.spareItem);
-        return;
+        let pressParts = res.data;
+        const boxLabel = this.spareItem.boxLabel;  //暂存料箱号
+        const parts = this.spareItem.pressParts; //暂存零件列表
+        this.spareItem = pressParts;
+        this.spareItem.boxLabel = boxLabel;
+        this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;//合框数
+        this.spareItem.pressParts = parts;
       }
       else {
         //没有WM库存

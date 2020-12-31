@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title>盘点料箱</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <form (submit)="searchPart()">
+    <ion-searchbar #searchbar placeholder="扫描或录入零件箱标签" [(ngModel)]="label" name="code" maxlength="19"
+      (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
+  </form>
+  <ion-list>
+    <ion-item>
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <h1>六角法兰面螺母M6×1</h1>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>24541706</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>实盘箱数</ion-col>
+          <ion-col>4</ion-col>
+          <ion-col>实盘箱数</ion-col>
+          <ion-col>1000</ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+  </ion-list>
+  <div class="ds-box" *ngFor=" let i of 4;i=index" >
+    <ion-row>
+      <ion-col>
+      <h4>散件库存</h4>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <button ion-button item-end (click)="changeQty()" [color]='light'>修改盘点数</button>
+      </ion-col>
+      <ion-col>
+        数量:20
+        <br>
+        当前第{{i+0}}箱，共4箱
+      </ion-col>
+      <ion-col>
+        已盘点
+      </ion-col>
+    </ion-row>
+  </div>
+
+</ion-content>
+
+<ion-footer>
+  <ion-row>
+    <ion-col no-padding>
+      <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
+    </ion-col>
+    <ion-col no-padding>
+      <button no-margin ion-button full large [disabled]="false" color="primary" (click)="save()">返回</button>
+    </ion-col>
+  </ion-row>
+</ion-footer>

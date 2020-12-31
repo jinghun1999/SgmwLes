@@ -11,8 +11,8 @@
   </form>
   <div>
     <h3>散件库存:</h3>
-    <select  [(ngModel)]="spareItem.partNo"  (ngModelChange)="changePress(spareItem.partNo)"  interface="popover" style="width: 100%;height: 8%;">
-      <option *ngFor="let t of spareItem.pressParts" style="width: 100%;height: 8%;"  value="{{t.part_no}}">
+    <select  [(ngModel)]="spareItem.partNo"  (ngModelChange)="changePress(spareItem.partNo)"  interface="popover" style="width: 100%;height: 10%;">
+      <option *ngFor="let t of spareItem.pressParts" style="width: 100%;height: 10%;"  value="{{t.part_no}}">
         {{t.part_no}}&nbsp;{{t.part_name}}
       </option>
     </select>
@@ -23,14 +23,16 @@
         </div>
         <div class="col"><span style="text-align: right;">
             <ion-icon name="ios-cube"></ion-icon>箱型:{{spareItem.boxModel}}
-          </span></div>
+          </span>
+        </div>
       </div>
       <div class="row">
-        <div class="col"><button ion-button item-end (click)="changeQty(spareItem)" [color]='light'>修改合框数</button></div>
+        <div class="col"><button ion-button item-end (click)="changeQty(spareItem)" [color]='light'>修改合框数</button>
+        </div>
         <div class="col">
-          <span style="text-align: left;font-size:small;">散件库存数:{{spareItem.currentParts}}</span>
+          <span style="text-align: left;font-size:small;">散件库存数:{{spareItem.SJcurrentParts}}</span>
           <br>
-          <span style="text-align: left;font-size:small;color: red;">装箱数量:{{spareItem.closeframeParts}}</span>
+          <span style="text-align: left;font-size:small;color: red;">合框数:{{spareItem.closeframeParts}}</span>
         </div>
       </div>
     </div>
@@ -58,11 +60,11 @@
         <div class="col">
           <span>{{spareItem.partName}}</span>
           <br>
-          <span>包装数:{{spareItem.packingQty}}</span> <span style="color:red">当前装箱数量:{{spareItem.closeframeParts}}</span><button ion-button color="danger" (click)="delete()" style="float: right;">X</button>
+          <span>包装数:{{spareItem.packingQty}}</span> <span style="color:red">当前装箱数量:{{spareItem.currentParts}}</span><button ion-button color="danger" (click)="delete()" style="float: right;">X</button>
         </div>       
       </div>
     </div>
-  </div>
+    </div>
   <message-list [data]="errors"></message-list>
 </ion-content>
 <ion-footer>

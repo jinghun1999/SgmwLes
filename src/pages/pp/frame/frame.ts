@@ -329,6 +329,14 @@ export class FramePage extends BaseUI {
     if (this.item.part_type == 2) { //单件双模
       this.item.feedingPortGroup = this.item.feedingPort;
       this.ziPart.bundle_no = this.item.bundle_no;
+    } else if (this.item.part_type == 3) { //双件双模
+      let port_no = this.item.feedingPort.find(f => f.bundle_no == bundle_no);
+    
+      let ziPartName = this.item.feedingPortGroup.find(f => f.port_no == port_no.port_no);
+      
+      if (ziPartName) { 
+        this.ziPart.bundle_no = ziPartName.bundle_no;
+      }
     }
   }
   //切换源零件
@@ -343,8 +351,14 @@ export class FramePage extends BaseUI {
       this.item.part_type = 3;
       this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
         if (res.successful) {
+          if (res.data.feedingPortGroup.length) {
+            this.item.feedingPortGroup = res.data.feedingPortGroup;//子捆包
+            this.ziPart.bundle_no = res.data.feedingPortGroup.find(f => f.isSelect) ? res.data.feedingPortGroup.find(f => f.isSelect).bundle_no : res.data.feedingPortGroup[0].bundle_no;
+          }
+          else {
+            this.item.feedingPortGroup.length = 0;
+          }
           if (res.data.feedingPort.length > 0) {
-
             this.item.feedingPort = res.data.feedingPort;//源上料口
             if (this.item.feedingPort.find((f) => f.isSelect) && this.item.pressPart.length > 0) {
               this.item.bundle_no = this.item.feedingPort.find((f) => f.isSelect).bundle_no;
@@ -352,6 +366,7 @@ export class FramePage extends BaseUI {
             else {
               this.item.bundle_no = this.item.feedingPort[0].bundle_no;
             }
+            this.changeFeed(this.item.bundle_no);
           }
           else {
             this.item.feedingPort.length = 0;
@@ -360,21 +375,14 @@ export class FramePage extends BaseUI {
 
           if (res.data.pressPartGroup.length) {
             this.item.pressPartGroup = res.data.pressPartGroup;//子零件
-            this.ziPart.part_no = res.data.pressPartGroup[0].part_no;
+            this.ziPart.part_no = res.data.pressPartGroup.find(p => p.isSelect) ? res.data.pressPartGroup.find(p => p.isSelect).part_no : res.data.pressPartGroup[0].part_no;
             this.changeZi(this.ziPart.part_no);
           }
           else {
             this.item.pressPartGroup.length = 0;
             this.insertError('找不到对应的子零件');
           }
-
-          if (res.data.feedingPortGroup.length) {
-            this.item.feedingPortGroup = res.data.feedingPortGroup;//子捆包
-            this.ziPart.bundle_no = res.data.feedingPortGroup[0].bundle_no;
-          }
-          else {
-            this.item.feedingPortGroup.length = 0;
-          }
+          
         }
         else {
 
@@ -391,13 +399,12 @@ export class FramePage extends BaseUI {
     }
 
     if (pressPart.part_type == 2) { //单件双模
-      console.log('单件双模');
       this.item.part_type = 2;
       this.api.get('PP/GetSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
         if (res.successful) {
           if (res.data.pressPartGroup.length) {
             this.item.pressPartGroup = res.data.pressPartGroup;
-            this.ziPart.part_no = res.data.pressPartGroup[0].part_no;
+            this.ziPart.part_no = res.data.pressPartGroup.find(f=>f.isSelect)?res.data.pressPartGroup.find(f=>f.isSelect).part_no:res.data.pressPartGroup[0].part_no;
             this.changeZi(this.ziPart.part_no);
           }
           else {
@@ -405,7 +412,6 @@ export class FramePage extends BaseUI {
             this.insertError('找不到对应的零件');
           }
           this.ziPart.bundle_no = this.item.bundle_no;
-          this.changeFeed(this.ziPart.bundle_no);
         }
         else {
           this.insertError(res.message);
@@ -417,7 +423,6 @@ export class FramePage extends BaseUI {
     }
 
     if (pressPart.part_type == 1) {   //单件单模
-      console.log('单件单模');
       this.item.part_type = 1;
     }
     this.item.car_model = pressPart.car_model;
@@ -425,7 +430,7 @@ export class FramePage extends BaseUI {
     this.item.current_parts = pressPart.currentParts;
   }
   //切换子零件
-  changeZi(part_no) { 
+  changeZi(part_no) {
     let part = this.item.pressPartGroup.find(p => p.part_no == part_no);
     //this.ziPart.box_label = part.box_label;
     this.ziPart.car_model = part.car_model;

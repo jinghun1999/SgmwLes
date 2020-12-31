@@ -114,6 +114,10 @@ export class SheetPanelPage extends BaseUI {
       this.resetScan();
       return ;
     }
+    if (this.item.bundles.length == 4) { 
+      this.insertError('最多只允许扫描4个捆包号');
+      return;
+    }
     this.api.get('PP/GetSheetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
@@ -192,6 +196,10 @@ export class SheetPanelPage extends BaseUI {
       this.insertError('请先扫描捆包号');
       return;
     };
+    // if (this.item.bundles.length> 4) { 
+    //   this.insertError('最多只允许提交4个捆包号');
+    //   return;
+    // }
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostSheetPanelMaterial', {
       plant: this.api.plant,
