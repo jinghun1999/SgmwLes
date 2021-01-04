@@ -23,9 +23,7 @@ export class SparePartsPage extends BaseUI {
 
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
   keyPressed: any;
-  canYa: number = 0;//合框数 因为目标料箱可合框数不可能为负数
   parts: any[] = [];   //提交的料箱集合
   errors: any[] = [];
   pressParts: any = {
@@ -55,6 +53,7 @@ export class SparePartsPage extends BaseUI {
     closeframeParts: 0,
     bundle_no: '',
     status: 0,
+    max_parts:0,
     pressParts: []
   };
   item: any = {
@@ -112,7 +111,6 @@ export class SparePartsPage extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.spareItem.plant = this.api.plant;
-      this.workshop = val;
       this.item.plant = this.api.plant;
       this.item.workshop = val;
     });
@@ -135,38 +133,27 @@ export class SparePartsPage extends BaseUI {
 
   //扫描执行的过程
   scanSheet() {
-    this.api.get('pp/getSpareParts', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('pp/getSpareParts', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let part = res.data;
         if (!part.pressParts) { //pressParts为null
-          //this.pressParts = part;
           this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
-
-        } else if (part.pressParts.length == 1) {   //=1:扫描的是实框
-          let pressParts = part.pressParts[0];
-          this.spareItem.partNo = pressParts.part_no;
-          this.spareItem.carModel = pressParts.car_model;
-          this.spareItem.boxLabel = part.boxLabel;
-          this.spareItem.boxModel = pressParts.box_mode;
-          this.spareItem.partName = pressParts.part_name;
-          this.spareItem.SJcurrentParts = part.SJcurrentParts;  
-          this.spareItem.packingQty = pressParts.packing_qty;
-          this.spareItem.currentParts = part.currentParts;
-          this.spareItem.closeframeParts = part.closeframeParts;;//合框数
-          this.spareItem.pressParts = part.pressParts;
-        } else if (part.pressParts.length > 1) {//>1:扫描的是空框
+          this.spareItem.max_parts = his.spareItem.packingQty - this.spareItem.currentParts;
+        } else if (part.pressParts.length > 0) {   //=1:扫描的是实框
           let pressParts = part.pressParts.find(p => p.isSelect) ? part.pressParts.find(p => p.isSelect) : part.pressParts[0];
           this.spareItem.partNo = pressParts.part_no;
           this.spareItem.carModel = pressParts.car_model;
-          this.spareItem.boxModel = pressParts.box_mode;
           this.spareItem.boxLabel = part.boxLabel;
-          this.spareItem.SJcurrentParts = part.SJcurrentParts;
+          this.spareItem.boxModel = pressParts.box_mode;
           this.spareItem.partName = pressParts.part_name;
+          this.spareItem.status = part.status;
+          this.spareItem.SJcurrentParts = part.SJcurrentParts;
           this.spareItem.packingQty = pressParts.packing_qty;
           this.spareItem.currentParts = part.currentParts;
           this.spareItem.closeframeParts = part.closeframeParts;;//合框数
           this.spareItem.pressParts = part.pressParts;
-        }
+          this.spareItem.max_parts = part.closeframeParts;
+        }        
       }
       else {
         this.insertError(res.message);
@@ -184,7 +171,8 @@ export class SparePartsPage extends BaseUI {
       return;
     }
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.closeframeParts
+      max_parts: model.max_parts,
+      receivePieces: model.closeframeParts
     });
     _m.onDidDismiss(data => {
       if (data) {
@@ -218,7 +206,6 @@ export class SparePartsPage extends BaseUI {
   //撤销
   cancel_do() {
     this.insertError('正在撤销...');
-    this.canYa = 0;
     this.parts = [];
     this.partNo = '';
     this.insertError("撤销成功", 's');
@@ -227,7 +214,7 @@ export class SparePartsPage extends BaseUI {
 
   //删除
   delete() {
-    console.log('delete');
+    this.spareItem.boxLabel = '';
   }
   //手工调用，重新加载数据模型
   resetScan() {
@@ -240,19 +227,19 @@ export class SparePartsPage extends BaseUI {
       this.insertError('请扫描料箱');
       return;
     }
-    if (this.spareItem.pressParts) { 
-      if (this.spareItem.pressParts.length > 0) { 
-        let pressParts = this.spareItem.pressParts.find(p=>p.part_no==this.spareItem.partNo);
+    if (this.spareItem.pressParts) {
+      if (this.spareItem.pressParts.length > 0) {
+        let pressParts = this.spareItem.pressParts.find(p => p.part_no == this.spareItem.partNo);
         this.spareItem.pressParts.length = 0;
         this.spareItem.pressParts.push(pressParts);
       }
     }
     this.item.parts.push(this.spareItem);
+    console.log(this.item.parts);
     let loading = super.showLoading(this.loadingCtrl, "提交中...");
     this.api.post('pp/postSpareParts', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.canYa = 0;
-        this.item.parts = [];
+        this.item.parts.length = 0;;
         this.spareItem = {};
         this.insertError('提交成功', 's');
       }
@@ -260,9 +247,10 @@ export class SparePartsPage extends BaseUI {
         this.insertError(res.message);
       }
       loading.dismiss();
+      this.resetScan();
     },
       err => {
-        this.insertError('提交失败，' + err);
+        this.insertError('提交失败');
         loading.dismiss();
       });
     this.resetScan();
@@ -270,14 +258,14 @@ export class SparePartsPage extends BaseUI {
   //切换散件
   changePress(part_no) {
     let pressParts = this.spareItem.pressParts.find(p => p.part_no == part_no);
-     this.spareItem.partName = pressParts.part_name;
+    this.spareItem.partName = pressParts.part_name;
     this.spareItem.carModel = pressParts.car_model;
     this.spareItem.boxModel = pressParts.box_mode;
     this.spareItem.packingQty = pressParts.packing_qty;
     this.spareItem.currentParts = pressParts.currentParts;
     this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;
 
-    this.api.get('pp/getSwitchSpareParts', { plant: this.api.plant, workshop: this.workshop, part_no: part_no }).subscribe((res: any) => {
+    this.api.get('pp/getSwitchSpareParts', { plant: this.api.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
       if (res.successful) {
         let pressParts = res.data;
         const boxLabel = this.spareItem.boxLabel;  //暂存料箱号
@@ -300,5 +288,5 @@ export class SparePartsPage extends BaseUI {
   blurInput = () => {
     this.searchbar.setElementClass('bg-green', false);
     this.searchbar.setElementClass('bg-red', true);
-  };
+  };  
 }

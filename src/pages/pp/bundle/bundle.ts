@@ -24,6 +24,7 @@ export class BundlePage extends BaseUI {
   barTextHolderText: string = '扫描捆包号,光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
+  max_parts: number = 0;//最大修改数
   errors: any[] = [];
   item: any = {
     bundles: [],
@@ -109,6 +110,8 @@ export class BundlePage extends BaseUI {
           if (model.weight < 0|| model.weight.length==0) { 
             model.weight = 0;
           }
+          this.max_parts = model.actualReceivePieces;
+          model.max_parts = model.actualReceivePieces;
           this.item.bundles.push(model);
           this.okSound();
         }
@@ -119,7 +122,7 @@ export class BundlePage extends BaseUI {
       }
     },
     err => {
-      this.insertError('扫描出错','e');
+      this.insertError('扫描出错');
       this.errSound();
     });
     this.resetScan();
@@ -128,7 +131,8 @@ export class BundlePage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.actualReceivePieces,
+      max_parts: model.max_parts,
+      receivePieces:  model.actualReceivePieces
     });
     _m.onDidDismiss(data => {
       if (data) {

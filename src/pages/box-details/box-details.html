@@ -29,7 +29,7 @@
       </ion-grid>
     </ion-item>
   </ion-list>
-  <div class="ds-box" *ngFor=" let i of 4;i=index" >
+  <div class="ds-box" >
     <ion-row>
       <ion-col>
       <h4>散件库存</h4>
@@ -39,13 +39,13 @@
       <ion-col>
         <button ion-button item-end (click)="changeQty()" [color]='light'>修改盘点数</button>
       </ion-col>
-      <ion-col>
-        数量:20
+      <ion-col [ngStyle]="{'background-color':red}">
+        <span style="color: red;">数量:20</span>
         <br>
-        当前第{{i+0}}箱，共4箱
+        <span>当前第{{i+0}}箱，共4箱</span>
       </ion-col>
       <ion-col>
-        已盘点
+        <span >未盘点</span>
       </ion-col>
     </ion-row>
   </div>

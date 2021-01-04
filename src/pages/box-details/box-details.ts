@@ -1,5 +1,17 @@
-import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import {
+  AlertController,
+  IonicPage,
+  Searchbar,
+  LoadingController,
+  NavController,
+  NavParams,
+  ToastController, ModalController,
+} from 'ionic-angular';
+
+import { BaseUI } from "../baseUI";
+import { Api } from "../../providers";
+import { Storage } from "@ionic/storage";
 
 @IonicPage()
 @Component({
@@ -8,18 +20,29 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class BoxDetailsPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
-  list: any[] = [
-    { id: 0 },
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-    
-  ];
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  label: string = '';
+  item: any = {
+    plant: '',
+    workshop:''
+  };
+  constructor(public navCtrl: NavController,
+    public navParams: NavParams,
+    public toastCtrl: ToastController,
+    public loadingCtrl: LoadingController,
+    public alertCtrl: AlertController,
+    public modalCtrl: ModalController,
+    private api: Api,
+  private storage :Storage) {
+    super();
   }
-
+  ionViewDidEnter(){
+    this.storage.get('WORKSHOP').then((val) => {
+      //console.log(val);
+      this.item.plant = this.api.plant;
+      this.item.workshop = val;
+    });
+  }
   ionViewDidLoad() {
     console.log('ionViewDidLoad BoxDetailsPage');
   }
-
 }

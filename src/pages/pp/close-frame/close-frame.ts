@@ -189,7 +189,8 @@ export class CloseFramePage extends BaseUI {
     }    
     const maxNum = model.packingQty > this.canYa ? this.canYa : model.packingQty;
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: maxNum
+      max_parts: maxNum,
+      receivePieces:model.closeframeParts
     });
     _m.onDidDismiss(data => {
       if (data) {

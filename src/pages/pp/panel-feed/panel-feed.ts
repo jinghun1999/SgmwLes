@@ -145,12 +145,13 @@ export class PanelFeedPage extends BaseUI {
               }
             } else {   // 扫描的是捆包号              
               // 已经扫描过捆包号，直接添加明细
-              if (this.item.partPanel.length>0) {
-                // if (bundle.productionStatus = 3) {
-                //   bundle.productionStatus = 1; //扫捆包号，生产状态有被替换改为使用中
-                // }
+              if (this.item.partPanel.length > 0) {
+                if (this.item.partPanel.length>=4) { 
+                  this.insertError('最多只能扫描4个捆包号');
+                  return;
+                }
                 bundle.productionStatus = 1;
-                bundle.part = [];
+                bundle.part.length = 0;;
                 this.item.partPanel.splice(0, 0, bundle);
               } else {
                 // 没有扫描过捆包号，先获取下拉框是否包含捆包号
@@ -161,7 +162,7 @@ export class PanelFeedPage extends BaseUI {
                   if (bundle.bundleNo) {  //把扫描的捆包号添加明细
                     let part = bundle.part;
                     bundle.productionStatus = 1;
-                    bundle.part = [];
+                    bundle.part.length = 0;
                     this.openDig(part,bundle);
                   }
                   else { 
@@ -170,7 +171,7 @@ export class PanelFeedPage extends BaseUI {
                 }
                 else { 
                   bundle.productionStatus = 1;
-                  bundle.part = [];
+                  bundle.part.length = 0;
                   this.item.partPanel.splice(0, 0, bundle);
                 }
               }              
@@ -201,7 +202,7 @@ export class PanelFeedPage extends BaseUI {
           this.insertError('提交成功', 's');
           bundle ? this.item.partPanel.splice(0, 0, bundle) : null;          
         } else if (data.isCancel && data.isCancel) { //选择"关闭"操作
-          this.item.partPanel = [];
+          this.item.partPanel.length = 0;;
         }
         else {
           //提交失败
@@ -222,6 +223,10 @@ export class PanelFeedPage extends BaseUI {
     } else if (new Set(this.item.partPanel).size !== this.item.partPanel.length) {
       err = '提交的数据中存在重复的捆包号，请检查';
     }
+    if (this.item.partPanel.length > 4) { 
+      err = '只能提交4个上料口';
+    }
+
     if (err.length>0) {
       this.insertError(err);
       this.setFocus();
@@ -231,7 +236,7 @@ export class PanelFeedPage extends BaseUI {
     this.api.post('PP/PostFeedingPort', this.item).subscribe(
       (res: any) => {
         if (res.successful) {
-          this.item.partPanel = [];
+          this.item.partPanel.length = 0;
           this.insertError('提交成功', 's');
         } else {
           this.insertError(res.message);
@@ -268,7 +273,7 @@ export class PanelFeedPage extends BaseUI {
   //撤销
   cancel_do() {
     this.insertError('正在撤销...', 'i');
-    this.item.partPanel = [];
+    this.item.partPanel.length = 0;
     this.insertError('撤销成功', 's');
     this.setFocus();
   }
@@ -281,7 +286,7 @@ export class PanelFeedPage extends BaseUI {
 
   clearPartPanel() {
     //下拉框改变，清空已扫描的捆包号
-    this.item.partPanel = [];
+    this.item.partPanel.length = 0;
     this.api.get('pp/getFeedingPort', {
       plant: this.item.plant,
       workshop: this.item.workshop,
@@ -308,7 +313,7 @@ export class PanelFeedPage extends BaseUI {
   //更新上料口下拉框
   updateDropDownList(portNo) {
     this.item.portNo = portNo;
-    this.item.partPanel = [];
+    this.item.partPanel.length = 0;
   }
 
   focusInput = () => {

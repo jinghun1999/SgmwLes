@@ -46,13 +46,18 @@
         {{t.part_no}}&nbsp;{{t.part_name}}&nbsp;消耗:{{t.usage}}
       </option>
     </select>
-    <select *ngIf="(item.part_type==2||item.part_type==3)" [(ngModel)]="ziPart.bundle_no" interface="popover"
+    <select *ngIf="((item.part_type==2||item.part_type==3)&&ziPart.bundle_no!='')" [(ngModel)]="ziPart.bundle_no" interface="popover"
       style="width: 100%;height: 8%;">
       <option *ngFor="let t of item.feedingPortGroup;let i=index" style="width: 100%;height: 8%;"
         value="{{t.bundle_no}}">
         捆包号:{{t.bundle_no}}&nbsp;剩余数量:{{t.remain_pieces}}
       </option>
     </select>
+      <select *ngIf="item.feedingPortGroup.length==0 && ziPart.bundle_no==''&&(item.part_type==2||item.part_type==3)" class="red" style="width: 100%;height: 8%;">
+        <option selected = "selected">       
+         当前上料口没有和它方向相同的捆包
+        </option>
+      </select> 
     <ion-list *ngIf="(item.part_type==2||item.part_type==3)">
       <ion-item>
         <ion-label><ion-icon name="ios-cube"></ion-icon>料箱号:&nbsp;{{ziPart.box_label}}</ion-label>

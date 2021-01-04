@@ -121,11 +121,13 @@ export class ReceiptReturnPage extends BaseUI {
   scanSheet() {
     this.api.get('PP/GetReceiptReturns', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
-          this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他料箱`);
+        let model = res.data;
+        if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
+          this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他料箱`);
           return;
         }
-        this.item.parts.splice(0, 0, res.data);
+        model.max_parts = model.currentParts;
+        this.item.parts.splice(0, 0, model);
       }
       else {
         this.insertError(res.message);
@@ -140,7 +142,8 @@ export class ReceiptReturnPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.currentParts,
+      max_parts: model.max_parts,
+      receivePieces: model.currentParts,
       pressParts: model.pressParts,  //零件列表
       part: model.partNo //当前料箱的零件号
     });

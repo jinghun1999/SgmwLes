@@ -92,7 +92,6 @@ export class ReturnPage extends BaseUI {
     this.api.get('system/getPlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        //this.item.target = this.workshop_list[0].value;
       } else {
         this.insertError(res.message);
       }
@@ -144,15 +143,17 @@ export class ReturnPage extends BaseUI {
   scanSheet() {
     this.api.get('PP/GetReturn', { plant: this.api.plant, workshop: this.item.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (this.item.partPanel.findIndex(p => p.bundleNo === res.data.bundleNo) >= 0) {
-          this.insertError(`料箱${res.data.bundleNo}已扫描过，请扫描其他标签`);
+        let model = res.data;
+        if (this.item.partPanel.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
+          this.insertError(`料箱${model.bundleNo}已扫描过，请扫描其他标签`);
           return;
         }
-        if (res.data.actualReceivePieces > 0) {
-          this.item.partPanel.push(res.data);
+        if (model.actualReceivePieces > 0) {
+          model.max_parts = model.actualReceivePieces;
+          this.item.partPanel.push(model);
         }
         else {
-          this.insertError(`料箱${res.data.bundleNo}的剩余数量为小于1`);
+          this.insertError(`料箱${model.bundleNo}的剩余数量为小于1`);
           return;
         }        
       }
@@ -169,7 +170,8 @@ export class ReturnPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.actualReceivePieces,
+      max_parts: model.max_parts,
+      receivePieces: model.actualReceivePieces
     });
     _m.onDidDismiss(data => {
       if (data) {

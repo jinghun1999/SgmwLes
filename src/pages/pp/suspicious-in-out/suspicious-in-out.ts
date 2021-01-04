@@ -30,6 +30,7 @@ export class SuspiciousInOutPage extends BaseUI {
   item: any = {
     current_parts: 0,
     plant: '',
+    max_parts: 0,
     workshop: '',
     box_label: '',  //料箱号
     car_model: '',  //车模
@@ -37,6 +38,7 @@ export class SuspiciousInOutPage extends BaseUI {
     port_no: '',
     bundle_no: '',
     part_no: '',
+
     pressPart: [],  //要提交的零件列表
     feedingPort: [],  //要提交的上料口列表
   };
@@ -102,7 +104,6 @@ export class SuspiciousInOutPage extends BaseUI {
     this.api.get('PP/GetFrameLoad', { plant: this.item.plant, workshop: this.item.workshop }).subscribe((res: any) => {
       if (res.successful) {
         this.feedPort_list = res.data.feedingPort; 
-        //console.log(res.data.feedingPort);
         if (this.feedPort_list.find((f) => f.isSelect)) {
           let feedPort = this.feedPort_list.find((f) => f.isSelect);
           this.item.bundle_no = feedPort.bundle_no;
@@ -138,25 +139,21 @@ export class SuspiciousInOutPage extends BaseUI {
         let frame = res.data;
         if (frame.pressPart && frame.pressPart.length > 0) {
           this.pressPart_list = frame.pressPart;
-          let model = null;
-          if (this.pressPart_list.find((f) => f.isSelect)) {
-            model = this.pressPart_list.find((f) => f.isSelect)
-          }
-          else {
+          let model = this.pressPart_list.find((f) => f.isSelect);
+          if (!model) { 
             model = this.pressPart_list[0];
           }
           this.item.current_parts = model.packing_qty;
+          this.item.max_parts = model.packing_qty;
           this.item.part_no = model.part_no;
           this.item.car_model = model.car_model;
           this.item.box_mode = model.box_mode;
           this.item.part_no = model.part_no;
-
-          model.part_type == 3 ? this.changeFeed(model.part_no) : null;
+          model.part_type == 3 && this.changeFeed(model.part_no);
         }
         else {
           this.insertError("获取零件列表失败");
         }
-        //this.item.plant = frame.plant,
         this.item.box_label = frame.box_label
       }
       else {
@@ -189,9 +186,10 @@ export class SuspiciousInOutPage extends BaseUI {
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostFrameSuspicious', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.pressPart_list = [];
-        this.item.pressPart = [];
+        this.pressPart_list.length=0;
+        this.item.pressPart.length=0;
         this.item.current_parts = 0;
+        this.item.max_parts = 0;
         this.item.box_label = '';
         this.item.car_model = '';
         this.item.box_mode = '';
@@ -217,7 +215,8 @@ export class SuspiciousInOutPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.current_parts,
+      max_parts: model.max_parts,
+      receivePieces: model.current_parts
     });
     _m.onDidDismiss(data => {
       if (data) {
@@ -225,7 +224,7 @@ export class SuspiciousInOutPage extends BaseUI {
           this.insertError('装箱数量不能为0');
           return;
          }
-        this.item.current_parts = data.receive
+        model.current_parts = data.receive
       }
     });
     _m.present();
@@ -238,7 +237,6 @@ export class SuspiciousInOutPage extends BaseUI {
           this.feedPort_list = res.data;
           if (this.feedPort_list.find((f) => f.isSelect) && this.feedPort_list.length > 0) {
             this.item.bundle_no = this.feedPort_list.find((f) => f.isSelect).bundle_no;
-            //this.item.bundle_no = this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).bundle_no;
           }
           else {
             this.item.bundle_no = this.feedPort_list[0].bundle_no;
@@ -252,11 +250,16 @@ export class SuspiciousInOutPage extends BaseUI {
       });
     }
 
-    this.item.port_no=this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;
-    this.item.car_model = this.pressPart_list.find((f) =>  f.part_no == part_no ).car_model;
-    this.item.box_mode = this.pressPart_list.find((f) =>  f.part_no == part_no ).box_mode;
+    this.item.port_no = this.feedPort_list.find((f) => f.bundle_no == this.item.bundle_no).port_no;
+    let press = this.pressPart_list.find((f) => f.part_no == part_no);
+    if (!press) { 
+      return;
+    }
+    this.item.car_model = press.car_model;
+    this.item.box_mode = press.box_mode;
     this.item.pressPart.splice(0, 1, this.pressPart_list.find(f => f.part_no == this.item.part_no));
-    this.item.current_parts = this.pressPart_list.find(f => f.part_no == this.item.part_no).packing_qty;
+    this.item.current_parts = press.packing_qty;
+    this.item.max_parts=press.packing_qty;
   }
 
   cancel() {

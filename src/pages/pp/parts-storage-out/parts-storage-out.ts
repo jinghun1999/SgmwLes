@@ -139,10 +139,12 @@ export class PartsStorageOutPage extends BaseUI {
   scanSheet() {
     this.api.get('PP/GetPartsStorageOut', { plant: this.api.plant, workshop: this.item.target, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
-        if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
-          this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
+        let model = res.data;
+        if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
+          this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
           return;
         }
+        model.max_parts = model.currentParts;
         this.item.parts.splice(0, 0, res.data);
         this.resetScan();
       }
@@ -159,7 +161,8 @@ export class PartsStorageOutPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.currentParts,
+      max_parts: model.max_parts,
+      receivePieces: model.currentParts
     });
     _m.onDidDismiss(data => {
       if (data) {

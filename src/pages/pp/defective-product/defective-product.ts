@@ -26,6 +26,7 @@ export class DefectiveProductPage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
+  max_parts: number = 0;//最大可操作数
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
   item: any = {
@@ -124,6 +125,7 @@ export class DefectiveProductPage extends BaseUI {
           this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
           return;
         }
+        model.max_parts = model.currentParts;
         this.item.parts.splice(0, 0, model);
       }
       else {
@@ -174,7 +176,8 @@ export class DefectiveProductPage extends BaseUI {
  //非标跳转Modal页
   changeQty(model) {
   let _m = this.modalCtrl.create('ChangePiecesPage', {
-    max_parts: model.currentParts,
+    max_parts: model.max_parts,
+    receivePieces:model.currentParts
   });
   _m.onDidDismiss(data => {
     if (data) {

@@ -91,7 +91,6 @@ export class PartsStorageInPage extends BaseUI {
     this.api.get('system/GetFramePlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        console.log(res.data);  
         const yuan = res.data.find((t) => t.isSelect);
         if (yuan) {
           this.item.target = yuan;
@@ -104,7 +103,7 @@ export class PartsStorageInPage extends BaseUI {
       }
     },
       err => {
-        this.insertError('系统级别错误，请返回重试');
+        this.insertError('获取车间列表失败');
       });
   }
 
@@ -128,7 +127,6 @@ export class PartsStorageInPage extends BaseUI {
     return true;
   }
 
-
   //开始扫描
   scan() {
     if (this.checkScanCode()) {
@@ -148,6 +146,7 @@ export class PartsStorageInPage extends BaseUI {
           this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
           return;
         }
+        model.max_parts = model.currentParts;
         this.item.parts.splice(0, 0, model);
       }
       else {
@@ -163,7 +162,8 @@ export class PartsStorageInPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.currentParts,
+      max_parts: model.max_parts,
+      receivePieces:model.currentParts
     });
     _m.onDidDismiss(data => {
       if (data) {

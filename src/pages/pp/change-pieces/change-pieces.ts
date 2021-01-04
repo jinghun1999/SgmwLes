@@ -19,7 +19,7 @@ export class ChangePiecesPage {
     public loadingCtrl: LoadingController,
     public viewCtrl: ViewController) {
     this._parts = Number(this.navParams.get('max_parts'));
-    this.receivePieces = Number(this.navParams.get('max_parts'));
+    this.receivePieces = Number(this.navParams.get('receivePieces'));
     this.pressParts = this.navParams.get('pressParts');
     this.part = this.navParams.get('part');
   }

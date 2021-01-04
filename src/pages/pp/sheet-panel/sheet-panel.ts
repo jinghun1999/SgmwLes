@@ -114,10 +114,6 @@ export class SheetPanelPage extends BaseUI {
       this.resetScan();
       return ;
     }
-    if (this.item.bundles.length == 4) { 
-      this.insertError('最多只允许扫描4个捆包号');
-      return;
-    }
     this.api.get('PP/GetSheetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
@@ -127,6 +123,7 @@ export class SheetPanelPage extends BaseUI {
           return;
         }
         if (model.actualReceivePieces > 0) {
+          model.max_parts = model.actualReceivePieces;
           this.item.bundles.push(model);
         } else { 
           this.insertError(`捆包号${model.bundleNo}的剩余数量小于1`);
@@ -146,7 +143,8 @@ export class SheetPanelPage extends BaseUI {
   //非标跳转Modal页
   changeQty(model) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: model.actualReceivePieces,
+      max_parts: model.max_parts,
+      receivePieces: model.actualReceivePieces
     });
     _m.onDidDismiss(data => {
       if (data) {
@@ -196,10 +194,6 @@ export class SheetPanelPage extends BaseUI {
       this.insertError('请先扫描捆包号');
       return;
     };
-    // if (this.item.bundles.length> 4) { 
-    //   this.insertError('最多只允许提交4个捆包号');
-    //   return;
-    // }
     let loading = super.showLoading(this.loadingCtrl,'提交中...');
     this.api.post('PP/PostSheetPanelMaterial', {
       plant: this.api.plant,
