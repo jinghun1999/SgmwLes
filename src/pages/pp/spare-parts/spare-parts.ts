@@ -138,7 +138,7 @@ export class SparePartsPage extends BaseUI {
         let part = res.data;
         if (!part.pressParts) { //pressParts为null
           this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
-          this.spareItem.max_parts = his.spareItem.packingQty - this.spareItem.currentParts;
+          this.spareItem.max_parts = this.spareItem.packingQty - this.spareItem.currentParts;
         } else if (part.pressParts.length > 0) {   //=1:扫描的是实框
           let pressParts = part.pressParts.find(p => p.isSelect) ? part.pressParts.find(p => p.isSelect) : part.pressParts[0];
           this.spareItem.partNo = pressParts.part_no;
