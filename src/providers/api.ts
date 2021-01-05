@@ -49,7 +49,8 @@ export class Api {
     return this.http.patch(this.getUrl()+'/api' + '/' + endpoint, body, reqOpts);
   }
   private getUrl() { 
-     const url = localStorage.getItem('env');
-     return url ? url : this.api_host;
+    //  const url = localStorage.getItem('env');
+    //  return url ? url : this.api_host;
+    return 'http://192.168.1.6:8120';
    }
 }

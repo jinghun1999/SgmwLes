@@ -2,14 +2,14 @@
   <ion-navbar color="primary">
     <ion-title>退货管理</ion-title>
   </ion-navbar>
-</ion-header>
-
-<ion-content>
   <form (submit)="scan()">
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" name="code"
       (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
-  </form>  
+  </form>
+</ion-header>
+
+<ion-content>
   <div class="ds-box" *ngIf="item.partPanel.length">
     <div class="row" >
       <ion-input [(ngModel)]="item.remark" (ionFocus)="onFocus()" placeholder="退货原因"></ion-input>
@@ -27,29 +27,38 @@
       <div class="row">
         <ion-icon name="ios-contact"></ion-icon>{{part.supplier}}
       </div>
-      <div class="row">
-        <div class="col">
+      <div class="row"> 
+        <ion-col>
           <button ion-button item-end (click)="changeQty(part)" [color]='light'>修改退货信息</button>
-          <span style="font-size:small;color: red;margin:1rem;white-space:nowrap">
-            数量:{{part.actualReceivePieces}}            
-          </span>
-          <span style="float: right;"><button ion-button color="danger" (click)="delete(i)">X</button></span>
-          <br>  
-          <span style="font-size:small;color:silver;margin:1rem;white-space:nowrap">当前第{{i+1}}箱，共扫描{{item.partPanel.length}}箱</span>
-        </div>
+        </ion-col>  
+          <ion-col>
+            <span style="font-size:small;color: red;margin:1rem;white-space:nowrap">
+              数量:{{part.actualReceivePieces}}            
+            </span> 
+            <br>  
+            <span style="font-size:small;color:silver;margin:1rem;white-space:nowrap">当前第{{i+1}}箱，共扫描{{item.partPanel.length}}箱</span>
+          </ion-col>
+          <ion-col> 
+            <span style="float: right;"><button ion-button color="danger" (click)="delete(i)">X</button></span>
+          </ion-col>
       </div>
     </div>
   </div>
-  <message-list [data]="errors"></message-list>
 </ion-content>
 <ion-footer>
+  <ion-row *ngIf="!show" (click)="showErr()" >
+    <label  class="lbl_err">{{errors[errors.length-1]?errors[errors.length-1].message:''}}</label>
+  </ion-row>
+  <ion-row *ngIf="show" (click)="showErr()">
+    <message-list [data]="errors"></message-list>
+  </ion-row>
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">撤销</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large color="primary" [disabled]="!item.partPanel.length"
-        (click)="save()">提交</button>
+        (click)="showConfirm()">提交</button>
     </ion-col>
   </ion-row>
 </ion-footer>

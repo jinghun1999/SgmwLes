@@ -2,13 +2,13 @@
   <ion-navbar color="primary">
     <ion-title>板材上料管理</ion-title>
   </ion-navbar>
-</ion-header>
-
-<ion-content>
   <form (submit)="scan()">
     <ion-searchbar #searchbar placeholder="扫描上料口/产线，光标在此处" [(ngModel)]="code" name="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()">
     </ion-searchbar>
   </form>
+</ion-header>
+
+<ion-content>
   <ion-list>
     <ion-item>
       <ion-label color="primary">冲压线</ion-label>
@@ -36,16 +36,21 @@
       </div>
     </div>
   </div>
-  <message-list [data]="errors"></message-list>
 </ion-content>
-<ion-footer>  
+<ion-footer>
+<ion-row *ngIf="!show" (click)="showErr()" >
+  <label  class="lbl_err">{{errors[errors.length-1]?errors[errors.length-1].message:''}}</label>
+</ion-row>
+<ion-row *ngIf="show" (click)="showErr()">
+  <message-list [data]="errors"></message-list>
+</ion-row>  
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light"  (click)="cancel()">撤销</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large color="primary" [disabled]="!item.partPanel.length"
-        (click)="panelSubmit()">提交</button>
+        (click)="showConfirm()">提交</button>
     </ion-col>
   </ion-row>
 </ion-footer>

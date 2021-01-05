@@ -130,7 +130,28 @@ export class SparePartsPage extends BaseUI {
     }
     this.scanSheet();
   }
-
+ //确认提交
+ showConfirm() { 
+  let prompt = this.alertCtrl.create({
+    title: '操作提醒',
+    message: '是否确定要提交？',
+    buttons: [{
+      text: '取消',
+      handler: () => {
+        
+       }
+    }, {
+      text: '确定',
+      handler: () => {
+        this.save();
+      }
+    }]
+  });
+  prompt.present();
+}
+showErr() { 
+  this.show = !this.show;
+}
   //扫描执行的过程
   scanSheet() {
     this.api.get('pp/getSpareParts', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {

@@ -28,6 +28,7 @@ export class CloseFramePage extends BaseUI {
   keyPressed: any;
   canYa: number = 0;//合框数 因为目标料箱可合框数不可能为负数
   partNo: string = '';//零件号
+  show: boolean = false;
   parts: any[] = [];   //提交的料箱集合
   isSource: boolean = true; //true显示源料箱，false显示目标料箱。默认为true 
   workshop_list: any[] = [];//加载获取的的车间列表
@@ -308,4 +309,26 @@ export class CloseFramePage extends BaseUI {
     this.searchbar.setElementClass('bg-green', false);
     this.searchbar.setElementClass('bg-red', true);
   };
+  //确认提交
+  showConfirm() { 
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否确定要提交？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+          
+         }
+      }, {
+        text: '确定',
+        handler: () => {
+          this.save();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  showErr() { 
+    this.show = !this.show;
+  }
 }

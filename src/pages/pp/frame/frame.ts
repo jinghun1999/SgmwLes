@@ -236,8 +236,30 @@ export class FramePage extends BaseUI {
     this.setFocus();
   };
 
-  //提交
+   //确认提交
+   showConfirm() { 
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否确定要提交？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+          
+         }
+      }, {
+        text: '确定',
+        handler: () => {
+          this.save();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  showErr() { 
+    this.show = !this.show;
+  }
 
+  //提交
   save() {
     let err = '';
     if (!this.item.feedingPort.length) {

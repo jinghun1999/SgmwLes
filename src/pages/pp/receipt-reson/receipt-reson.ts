@@ -28,7 +28,7 @@ export class ReceiptResonPage extends BaseUI {
   }
 
   ionViewDidEnter() {
-   
+    
   }
   ionViewDidLoad() {
     console.log('ionViewDidLoad UnstandPage');

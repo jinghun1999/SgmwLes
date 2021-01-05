@@ -27,6 +27,7 @@ export class ReturnPage extends BaseUI {
   keyPressed: any;
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
+  show: boolean=false;
   item: any = {
     plant: '',
     workshop: '',
@@ -78,7 +79,8 @@ export class ReturnPage extends BaseUI {
   }
   insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
-      this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+      const myDate = new Date();
+      this.errors.splice(0, 0, { message: msg, type: t, time: myDate });
     });
   }
   ionViewDidLoad() {
@@ -162,7 +164,7 @@ export class ReturnPage extends BaseUI {
       }
     },
       err => {
-        this.insertError('扫描失败,'+err);
+        this.insertError('扫描失败');
       });
     this.resetScan();
   }
@@ -217,8 +219,28 @@ export class ReturnPage extends BaseUI {
     this.code = '';
     this.searchbar.setFocus();
   }
+  //确认提交
+  showConfirm() { 
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否确定要提交？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+          
+         }
+      }, {
+        text: '确定',
+        handler: () => {
+          this.save();
+        }
+      }]
+    });
+    prompt.present();
+  }
   //提交
   save() {
+
     if (this.item.partPanel.length == 0) {
       this.insertError('请先扫描料箱号');
       return;
@@ -234,15 +256,16 @@ export class ReturnPage extends BaseUI {
         this.item.partPanel = [];
       }
       else {
-        this.insertError(res.message);        
+        this.insertError(res.message); 
       }
       loading.dismiss();
     },
       err => {
-        this.insertError('提交失败,'+err);
+        this.insertError('提交失败');
         loading.dismiss();
       });
     this.resetScan();
+    console.log(this.errors);
   }
   focusInput = () => {
     this.searchbar.setElementClass('bg-red', false);
@@ -252,4 +275,7 @@ export class ReturnPage extends BaseUI {
     this.searchbar.setElementClass('bg-green', false);
     this.searchbar.setElementClass('bg-red', true);
   };
+  showErr() { 
+    this.show = !this.show;
+  }
 }

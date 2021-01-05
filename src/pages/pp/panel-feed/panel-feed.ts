@@ -21,6 +21,7 @@ import { fromEvent } from "rxjs/observable/fromEvent";
 export class PanelFeedPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   feedPort_list: any[] = []; //上料口选项
+  show: boolean = false;
   code: string = ''; //扫描的上料口或捆包号
   item: any = {
     plant: '', //工厂
@@ -213,8 +214,31 @@ export class PanelFeedPage extends BaseUI {
     _m.present();
   }
 
+
+   //确认提交
+   showConfirm() { 
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否确定要提交？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+          
+         }
+      }, {
+        text: '确定',
+        handler: () => {
+          this.save();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  showErr() { 
+    this.show = !this.show;
+  }
   //提交
-  panelSubmit() {
+  save() {
     let err = '';
     if (!this.item.portNo) {
       err = '请先选择冲压线';

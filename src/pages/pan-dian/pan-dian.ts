@@ -36,12 +36,11 @@ export class PanDianPage extends BaseUI {
   }
 
   loadData() {
-    this.api.get('inventory/getTaskPager', {page: this.pageNum, size: this.pageSize}).subscribe((result: any) => {
+    this.api.get('inventory/getTaskBoxPager', { page: this.pageNum, size: this.pageSize }).subscribe((result: any) => {
         this.loading && this.loading.dismiss();
         if (result.successful && result.data.rows.length == 0) {
           this.showNoContent = true;
         }
-        //debugger;
         this.pageNum++;
         this.total = result.data.total;
         this.list.splice(this.list.length, 0, ...result.data.rows);

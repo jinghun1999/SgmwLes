@@ -24,6 +24,7 @@ export class BundlePage extends BaseUI {
   barTextHolderText: string = '扫描捆包号,光标在此处';   //扫描文本框placeholder属性
   workshop: string; //初始化获取的车间
   keyPressed: any;
+  show: boolean = false;
   max_parts: number = 0;//最大修改数
   errors: any[] = [];
   item: any = {
@@ -98,8 +99,27 @@ export class BundlePage extends BaseUI {
       this.resetScan();
     }
   }
+  //确认提交
+  showConfirm() { 
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否确定要提交？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+          
+         }
+      }, {
+        text: '确定',
+        handler: () => {
+          this.save();
+        }
+      }]
+    });
+    prompt.present();
+  }
   //扫描执行的过程
-  scanSheet() {
+  save() {
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
@@ -126,6 +146,9 @@ export class BundlePage extends BaseUI {
       this.errSound();
     });
     this.resetScan();
+  }
+  showErr() { 
+    this.show = !this.show;
   }
 
   //非标跳转Modal页

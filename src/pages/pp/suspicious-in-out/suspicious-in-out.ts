@@ -26,6 +26,7 @@ export class SuspiciousInOutPage extends BaseUI {
   feedPort_list: any[] = [];  //获取的上料口列表
   part_name: string = '';//显示上料口的第二位置
   bundle_no: string = '';
+  show: boolean = false;
   box_label: string = '';  //扫描输入的料箱号
   item: any = {
     current_parts: 0,
@@ -261,7 +262,28 @@ export class SuspiciousInOutPage extends BaseUI {
     this.item.current_parts = press.packing_qty;
     this.item.max_parts=press.packing_qty;
   }
-
+ //确认提交
+ showConfirm() { 
+  let prompt = this.alertCtrl.create({
+    title: '操作提醒',
+    message: '是否确定要提交？',
+    buttons: [{
+      text: '取消',
+      handler: () => {
+        
+       }
+    }, {
+      text: '确定',
+      handler: () => {
+        this.save();
+      }
+    }]
+  });
+  prompt.present();
+}
+showErr() { 
+  this.show = !this.show;
+}
   cancel() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',

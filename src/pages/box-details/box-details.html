@@ -2,63 +2,59 @@
   <ion-navbar color="primary">
     <ion-title>盘点料箱</ion-title>
   </ion-navbar>
-</ion-header>
-
-<ion-content>
   <form (submit)="searchPart()">
-    <ion-searchbar #searchbar placeholder="扫描或录入零件箱标签" [(ngModel)]="label" name="code" maxlength="19"
+    <ion-searchbar #searchbar placeholder="扫描或录入零件箱标签" [(ngModel)]="label" name="label" 
       (ionFocus)="focusInput()" (ionBlur)="blurInput()"></ion-searchbar>
   </form>
-  <ion-list>
+</ion-header>
+
+<ion-content>  
+  <ion-list >
     <ion-item>
       <ion-grid>
         <ion-row>
           <ion-col>
-            <h1>六角法兰面螺母M6×1</h1>
+            <h1>{{parts[0]?parts[0].part_name:''}}</h1>
           </ion-col>
         </ion-row>
         <ion-row>
-          <ion-col>24541706</ion-col>
+          <ion-col>{{parts[0]?parts[0].part_no:''}}</ion-col>
         </ion-row>
         <ion-row>
           <ion-col>实盘箱数</ion-col>
-          <ion-col>4</ion-col>
-          <ion-col>实盘箱数</ion-col>
-          <ion-col>1000</ion-col>
+          <ion-col>{{box_Qty}}</ion-col>
+          <ion-col>实盘件数</ion-col>
+          <ion-col>{{box_part_Qty}}</ion-col>
         </ion-row>
       </ion-grid>
     </ion-item>
   </ion-list>
-  <div class="ds-box" >
+  <div class="ds-box" *ngFor="let part of parts?;let i=index">
     <ion-row>
-      <ion-col>
       <h4>散件库存</h4>
-      </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <button ion-button item-end (click)="changeQty()" [color]='light'>修改盘点数</button>
+        <button ion-button item-end (click)="changeQty(part)" [color]='light'>修改盘点数</button>
       </ion-col>
       <ion-col [ngStyle]="{'background-color':red}">
-        <span style="color: red;">数量:20</span>
+        <span style="color: red;">数量:{{part.real_qty}}</span>
         <br>
-        <span>当前第{{i+0}}箱，共4箱</span>
+        <!-- <span>当前第{{i+1}}箱，共{{parts?.length}}箱</span> -->
       </ion-col>
       <ion-col>
-        <span >未盘点</span>
+        <span [ngStyle]="{'color': part.box_status==1? 'red' : ''}">{{part.box_status==1?'未盘点':'已盘点'}}</span> 
       </ion-col>
     </ion-row>
   </div>
-
 </ion-content>
-
 <ion-footer>
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">取消</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large [disabled]="false" color="primary" (click)="save()">返回</button>
+      <button no-margin ion-button full large [disabled]="false" color="primary" (click)="showConfirm()">提交</button>
     </ion-col>
   </ion-row>
 </ion-footer>

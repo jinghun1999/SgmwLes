@@ -25,6 +25,7 @@ export class PartsStorageInPage extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
+  show: boolean = false;
   workshop_list: any[] = [];//加载获取的的车间列表
   errors: any[] = [];
   item: any = {
@@ -210,6 +211,28 @@ export class PartsStorageInPage extends BaseUI {
       this.code = '';
       this.searchbar.setFocus();
     });
+  }
+   //确认提交
+   showConfirm() { 
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否确定要提交？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+          
+         }
+      }, {
+        text: '确定',
+        handler: () => {
+          this.save();
+        }
+      }]
+    });
+    prompt.present();
+  }
+  showErr() { 
+    this.show = !this.show;
   }
   //提交
   save() {

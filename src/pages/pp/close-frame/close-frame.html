@@ -2,13 +2,14 @@
   <ion-navbar color="primary">
     <ion-title>冲压件合框</ion-title>
   </ion-navbar>
-</ion-header>
-
-<ion-content>
   <form (submit)="scan()">
     <ion-searchbar #searchbar placeholder="{{barTextHolderText}}" [(ngModel)]="code" (ionFocus)="focusInput()" (ionBlur)="blurInput()" name="code">
     </ion-searchbar>
   </form>
+</ion-header>
+
+<ion-content>
+  
   <ion-list *ngIf="sourceItem.parts.length">
     <ion-item>
       <span style="height: 10%;font-size: larger;">源料箱:</span>
@@ -69,16 +70,22 @@
       </div>
     </div>
   </div>
-  <message-list [data]="errors"></message-list>
 </ion-content>
 <ion-footer>  
+  <ion-row *ngIf="!show" (click)="showErr()" >
+    <label  class="lbl_err">{{errors[errors.length-1]?errors[errors.length-1].message:''}}</label>
+  </ion-row>
+  <ion-row *ngIf="show" (click)="showErr()">
+    <message-list [data]="errors"></message-list>
+  </ion-row>
+  <ion-row>
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large color="light" (click)="cancel()">撤销</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large color="primary" [disabled]="(sourceItem.parts.length + targetItem.parts.length)!=2"
-        (click)="save()">提交</button>
+        (click)="showConfirm()">提交</button>
     </ion-col>
   </ion-row>
 </ion-footer>
