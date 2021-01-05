@@ -29,7 +29,7 @@
       </ion-grid>
     </ion-item>
   </ion-list>
-  <div class="ds-box" *ngFor="let part of parts?;let i=index">
+  <div class="ds-box" *ngFor="let part of parts;let i=index">
     <ion-row>
       <h4>散件库存</h4>
     </ion-row>
@@ -40,7 +40,7 @@
       <ion-col [ngStyle]="{'background-color':red}">
         <span style="color: red;">数量:{{part.real_qty}}</span>
         <br>
-        <!-- <span>当前第{{i+1}}箱，共{{parts?.length}}箱</span> -->
+        <!-- <span>当前第{{i+1}}箱，共{{parts.length}}箱</span> -->
       </ion-col>
       <ion-col>
         <span [ngStyle]="{'color': part.box_status==1? 'red' : ''}">{{part.box_status==1?'未盘点':'已盘点'}}</span> 

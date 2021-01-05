@@ -119,7 +119,7 @@ export class BundlePage extends BaseUI {
     prompt.present();
   }
   //扫描执行的过程
-  save() {
+  scanSheet() {
     this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
@@ -192,7 +192,7 @@ export class BundlePage extends BaseUI {
     this.searchbar.setFocus();
   }
   //提交
-  outStock() {
+  save() {
     if (this.item.bundles.length==0) {
       this.insertError('请先扫描捆包号','i');
       this.errSound();

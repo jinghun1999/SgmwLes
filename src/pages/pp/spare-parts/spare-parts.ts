@@ -24,6 +24,7 @@ export class SparePartsPage extends BaseUI {
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
+  show: boolean = false;
   parts: any[] = [];   //提交的料箱集合
   errors: any[] = [];
   pressParts: any = {

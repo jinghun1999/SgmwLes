@@ -52,7 +52,7 @@ export class PanelFeedPage extends BaseUI {
         break;
       case 113:
         //f2
-        this.panelSubmit();
+        this.showConfirm();
         break;
     }
   }

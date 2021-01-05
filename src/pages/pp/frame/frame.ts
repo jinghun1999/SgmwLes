@@ -24,6 +24,7 @@ export class FramePage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   box_label: string = '';  //扫描输入的料箱号
   max_parts: number = 0;
+  show: boolean = false;
   item: any = {
     current_parts_group: 0,
     box_label_group: '',
