@@ -40,9 +40,12 @@ export class ChangePiecesPage {
     if (this.receivePieces) { 
       this.receivePieces = Number(this.receivePieces)
     }
-    if(this.receivePieces > this._parts) {
+    if (this.receivePieces > this._parts) {
       this.err = '已超过数量';
       return;
+    }
+    else { 
+      this.err = '';
     }
   }
 

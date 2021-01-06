@@ -20,7 +20,8 @@ import { Api } from "../../providers";
 })
 export class BoxInventoryPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
-
+  sum_box_Qty: number = 0;//累计实盘箱数
+  sum_box_partQty: number = 0;//累计实盘件数
   label: string = '';
   org: any;
   data: any = {
@@ -56,9 +57,7 @@ export class BoxInventoryPage extends BaseUI {
         loading.dismissAll();
         if (res.successful) {
           this.data = res.data;
-          //this.current_part_index = 0;
           this.part_total = this.data.parts.length;
-          //this.current_part = this.data.parts[this.current_part_index];
         } else {
           super.showToast(this.toastCtrl, res.message, 'error');
         }
@@ -76,56 +75,45 @@ export class BoxInventoryPage extends BaseUI {
     }
     if (err.length) {
       super.showToast(this.toastCtrl, err, 'error');
-      this.resetScan();
+      this.resetScan
+        ();
       return;
     }
     this.current_part = this.data.parts.find(p => p.box === this.label);
 
     if (this.current_part) {
-      this.current_part.real_qty += this.current_part.part_qty ? this.current_part.part_qty : 1;
-      this.current_part.box_status = 2;
-      this.current_part.box_Qty += this.current_part.box_Qty ? this.current_part.box_Qty : 1;
-      this.resetScan();
-    } else {
-      const prompt = this.alertCtrl.create({
-        title: '零件不存在',
-        message: "该零件不在盘点单列表中，您确定要添加该零件吗?",
-        buttons: [
-          {
-            text: '忽略',
-            handler: () => {
-              this.resetScan();
-            }
-          },
-          {
-            text: '我要新增',
-            handler: () => {
-              let addModal = this.modalCtrl.create('InventoryAddPartPage', {
-                item: {
-                  inventory_id: this.data.id,
-                  //plant: this.data.plant,
-                  //workshop: this.data.workshop,
-                  dloc: null,
-                  //supplier_id: supplier_num,
-                  supplier_name: null,
-                  //part_no: part_num,
-                  part_name: null,
-                  part_qty: null,
-                  real_qty: null,
-                }
-              });
-              addModal.onDidDismiss(item => {
-                if (item) {
-                  this.data.parts.push(item);
-                }
-                this.resetScan();
-              });
-              addModal.present();
-            }
+      if (this.current_part.box_status == 1) {   //扫描并提交操作
+        this.current_part.box_status = 2;
+        let part = this.data;
+        part.parts.length = 0;
+        part.parts.push(this.current_part);
+        this.api.post('inventory/PostBoxPart', part).subscribe((res: any) => {
+          if (res.successful) {
+            this.api.get('inventory/GetScanBoxCode', { code: this.org.code }).subscribe((result: any) => {
+              if (result.successful) {
+                this.data = result.data;
+              }
+              else {
+                super.showToast(this.toastCtrl, result.message, 'error');
+              }
+            });
+          } else {
+            super.showToast(this.toastCtrl, res.message, 'error');
           }
-        ]
-      });
-      prompt.present();
+        });
+      }
+      this.sum_box_Qty = 0;
+      this.sum_box_partQty = 0;
+      for (let i = 0; i < this.data.parts.length; i++) {
+        if (this.data.parts[i].part_no == this.current_part.part_no&&this.data.parts[i].box_status==2) {
+          this.sum_box_Qty++;
+          this.sum_box_partQty += Number(this.data.parts[i].real_qty);
+        }
+      }
+      this.resetScan();
+    }
+    else {
+      super.showToast(this.toastCtrl, '该零件不在盘点单列表中', 'error');
     }
   }
   get ok_count() {
@@ -139,8 +127,23 @@ export class BoxInventoryPage extends BaseUI {
   }
 
   cancel() {
-    if (this.navCtrl.canGoBack())
-      this.navCtrl.pop();
+    let prompt = this.alertCtrl.create({
+      title: '操作提醒',
+      message: '是否放弃盘点任务？',
+      buttons: [{
+        text: '取消',
+        handler: () => {
+
+        }
+      }, {
+        text: '确定',
+        handler: () => {
+          if (this.navCtrl.canGoBack())
+            this.navCtrl.pop();
+        }
+      }]
+    });
+    prompt.present();
   }
 
   close() {
@@ -193,14 +196,27 @@ export class BoxInventoryPage extends BaseUI {
       super.showToast(this.toastCtrl, '没有盘点数量', 'error');
       return;
     }
-    let o = this.current_part.real_qty;
-
     this.data.parts.length = 0;
     this.data.parts.push(this.current_part);
     this.api.post('inventory/postBoxPart', this.data).subscribe((res: any) => {
       if (res.successful) {
         super.showToast(this.toastCtrl, '已更新', 'success');
-        parseInt(this.current_part.box_partQty = this.current_part.real_qty);
+        this.api.get('inventory/GetScanBoxCode', { code: this.org.code }).subscribe((result: any) => {
+          if (result.successful) {
+            this.data = result.data;
+            this.sum_box_Qty = 0;
+            this.sum_box_partQty = 0;
+            for (let i = 0; i < this.data.parts.length; i++) {
+              if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status==2) {
+                this.sum_box_Qty ++;
+                this.sum_box_partQty += Number(this.data.parts[i].real_qty);
+              }
+            }
+          }
+          else {
+            super.showToast(this.toastCtrl, result.message, 'error');
+          }
+        });
       } else {
         super.showToast(this.toastCtrl, res.message, 'error');
       }
@@ -252,12 +268,14 @@ export class BoxInventoryPage extends BaseUI {
   //查询箱明细
   doDetailed(part_no) {
     let parts = [];
-    for (let i = 0; i < this.data.parts.length; i++) {
-      this.data.parts[i].part_no == part_no && parts.push(this.data.parts[i]);
-    }
+    this.api.get('inventory/GetScanBoxCode', { code: this.data.code }).subscribe((res: any) => {
+      for (let i = 0; i < res.data.parts.length; i++) {
+        res.data.parts[i].part_no == part_no && parts.push(res.data.parts[i]);
+      }
+    });
     let part = this.data;
-    part.parts=[];
-    part.parts.push(parts);
+    part.parts = [];
+    part.parts = parts;
     this.navCtrl.push('BoxDetailsPage', { parts: part });
   }
   doOK() { //零件盘点完成
@@ -266,12 +284,9 @@ export class BoxInventoryPage extends BaseUI {
     }
     this.api.post('inventory/PostBoxPart', this.data).subscribe((res: any) => {
       if (res.successful) {
+        this.current_part_index = 0;
+        this.current_part = null;
         super.showToast(this.toastCtrl, '盘点成功', 'success');
-        setTimeout(() => {
-          if (this.navCtrl.canGoBack()) {
-            this.navCtrl.popToRoot();
-          }
-        }, 1000);
       }
       else {
         super.showToast(this.toastCtrl, res.message, 'error');

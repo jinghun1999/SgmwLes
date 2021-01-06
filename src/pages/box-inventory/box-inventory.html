@@ -25,18 +25,18 @@
             <h1>{{data.workshop}}<small>车间</small></h1>
           </ion-col>
         </ion-row>
-        <ion-row>
+        <!-- <ion-row>
           <ion-col>{{data.type}}</ion-col>
           <ion-col>{{data.mode}}</ion-col>
         </ion-row>
         <ion-row *ngIf="data.remark">
           <ion-col>备注：{{data.remark}}</ion-col>
-        </ion-row>
+        </ion-row> -->
       </ion-grid>
     </ion-item>
   </ion-list>
 
-  <ion-grid no-padding no-margin *ngIf="false">
+  <!-- <ion-grid no-padding no-margin *ngIf="false">
     <ion-row no-padding no-margin>
       <ion-col no-padding no-margin>盘点零件(<b>{{current_part_index+1}}</b>/<b>{{part_total}}</b>) 已盘:{{rightCount}}
       </ion-col>
@@ -47,7 +47,7 @@
         </ion-buttons>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid> -->
 
   <div  *ngIf="current_part">
     <ion-row>
@@ -85,10 +85,8 @@
           [(ngModel)]="current_part.real_qty" placeholder="请输入实盘零件数"></ion-input>
       </ion-item>
       <ion-item>
-        <ion-label col-3>累计实盘箱数</ion-label>
-        <ion-label col-3>{{current_part.box_Qty}}</ion-label>
-        <ion-label col-3>累计实盘件数</ion-label>
-        <ion-label>{{current_part.box_partQty}}</ion-label>
+        <ion-label>累计实盘箱数:{{sum_box_Qty}}</ion-label>
+        <ion-label>累计实盘件数:{{sum_box_partQty}}</ion-label>
       </ion-item>
     </ion-list>
   </div>
@@ -100,7 +98,7 @@
       <button no-margin ion-button full large color="light" (click)="cancel()">返回</button>
     </ion-col>
     <ion-col no-padding>
-      <button no-margin ion-button full large [disabled]="false" color="primary" (click)="showConfirm(2)">盘点完成</button>
+      <button no-margin ion-button full large [disabled]="!current_part" color="primary" (click)="showConfirm(2)">盘点完成</button>
     </ion-col>
   </ion-row>
 </ion-footer>
