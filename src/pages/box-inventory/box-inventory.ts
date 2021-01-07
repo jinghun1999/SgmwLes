@@ -22,13 +22,25 @@ export class BoxInventoryPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   sum_box_Qty: number = 0;//累计实盘箱数
   sum_box_partQty: number = 0;//累计实盘件数
+  real_qty: number = 0;
   label: string = '';
   org: any;
   data: any = {
     code: null,
     parts: [],
   };
-
+  item: any = {
+    code: '',
+    plant: '',
+    workshop: '',
+    id: '',
+    mode: '',
+    belong: '',
+    status: '',
+    remark: '',
+    type: '',
+    parts: [],
+  };
   part_total: number = 0;
   current_part_index: number = 0;
   current_part: any = null;
@@ -45,11 +57,13 @@ export class BoxInventoryPage extends BaseUI {
 
   ionViewDidEnter() {
     setTimeout(() => {
-      this.searchSheet();
       this.searchbar.setFocus();
     });
   }
 
+  ionViewDidLoad() {
+    this.searchSheet();
+  }
   searchSheet() {
     let loading = super.showLoading(this.loadingCtrl, "查询中...");
     if (this.org && this.org.code) {
@@ -57,6 +71,15 @@ export class BoxInventoryPage extends BaseUI {
         loading.dismissAll();
         if (res.successful) {
           this.data = res.data;
+          this.item.code = this.data.code;
+          this.item.plant = this.data.plant;
+          this.item.workshop = this.data.workshop;
+          this.item.status = this.data.status;
+          this.item.type = this.data.type;
+          this.item.id = this.data.id;
+          this.item.mode = this.data.mode;
+          this.item.remark = this.data.remark;
+          this.item.belong = this.data.belong;
           this.part_total = this.data.parts.length;
         } else {
           super.showToast(this.toastCtrl, res.message, 'error');
@@ -82,30 +105,23 @@ export class BoxInventoryPage extends BaseUI {
     this.current_part = this.data.parts.find(p => p.box === this.label);
 
     if (this.current_part) {
+      this.real_qty = this.current_part.real_qty;
+      this.sum_box_Qty = 0;
+      this.sum_box_partQty = 0;
       if (this.current_part.box_status == 1) {   //扫描并提交操作
         this.current_part.box_status = 2;
-        let part = this.data;
-        part.parts.length = 0;
-        part.parts.push(this.current_part);
-        this.api.post('inventory/PostBoxPart', part).subscribe((res: any) => {
+        this.item.parts.length = 0;
+        this.item.parts.push(this.current_part);
+        this.api.post('inventory/PostBoxPart', this.item).subscribe((res: any) => {
           if (res.successful) {
-            this.api.get('inventory/GetScanBoxCode', { code: this.org.code }).subscribe((result: any) => {
-              if (result.successful) {
-                this.data = result.data;
-              }
-              else {
-                super.showToast(this.toastCtrl, result.message, 'error');
-              }
-            });
           } else {
             super.showToast(this.toastCtrl, res.message, 'error');
           }
         });
       }
-      this.sum_box_Qty = 0;
-      this.sum_box_partQty = 0;
+
       for (let i = 0; i < this.data.parts.length; i++) {
-        if (this.data.parts[i].part_no == this.current_part.part_no&&this.data.parts[i].box_status==2) {
+        if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status == 2) {
           this.sum_box_Qty++;
           this.sum_box_partQty += Number(this.data.parts[i].real_qty);
         }
@@ -192,31 +208,19 @@ export class BoxInventoryPage extends BaseUI {
   }
 
   changeQ() {
-    if (!this.current_part.real_qty) {
-      super.showToast(this.toastCtrl, '没有盘点数量', 'error');
-      return;
-    }
-    this.data.parts.length = 0;
-    this.data.parts.push(this.current_part);
-    this.api.post('inventory/postBoxPart', this.data).subscribe((res: any) => {
+    this.item.parts.length = 0;
+    this.item.parts.push(this.current_part);
+    this.api.post('inventory/postBoxPart', this.item).subscribe((res: any) => {
       if (res.successful) {
         super.showToast(this.toastCtrl, '已更新', 'success');
-        this.api.get('inventory/GetScanBoxCode', { code: this.org.code }).subscribe((result: any) => {
-          if (result.successful) {
-            this.data = result.data;
-            this.sum_box_Qty = 0;
-            this.sum_box_partQty = 0;
-            for (let i = 0; i < this.data.parts.length; i++) {
-              if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status==2) {
-                this.sum_box_Qty ++;
-                this.sum_box_partQty += Number(this.data.parts[i].real_qty);
-              }
-            }
+        this.item.parts.length = 0;
+        this.sum_box_partQty = 0;
+        for (let i = 0; i < this.data.parts.length; i++) {
+          if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status == 2) {
+            console.log(i);
+            this.sum_box_partQty += Number(this.data.parts[i].real_qty);
           }
-          else {
-            super.showToast(this.toastCtrl, result.message, 'error');
-          }
-        });
+        }
       } else {
         super.showToast(this.toastCtrl, res.message, 'error');
       }
@@ -267,16 +271,29 @@ export class BoxInventoryPage extends BaseUI {
   }
   //查询箱明细
   doDetailed(part_no) {
-    let parts = [];
+    this.item.parts.length = 0;
     this.api.get('inventory/GetScanBoxCode', { code: this.data.code }).subscribe((res: any) => {
       for (let i = 0; i < res.data.parts.length; i++) {
-        res.data.parts[i].part_no == part_no && parts.push(res.data.parts[i]);
+        res.data.parts[i].part_no == part_no && this.item.parts.push(res.data.parts[i]);
       }
     });
-    let part = this.data;
-    part.parts = [];
-    part.parts = parts;
-    this.navCtrl.push('BoxDetailsPage', { parts: part });
+    let _m = this.modalCtrl.create('BoxDetailsPage', {
+      parts: this.item
+    });
+    _m.onDidDismiss(data => {
+      if (data && data.length > 0) { 
+        this.current_part.real_qty = data.find(f=>f.box==this.current_part.box).real_qty;
+        this.sum_box_Qty = 0;
+        this.sum_box_partQty = 0;
+        for (let i = 0; i < data.length; i++) { 
+          if (data[i].part_no == this.current_part.part_no && data[i].box_status == 2) { 
+            this.sum_box_Qty++;
+            this.sum_box_partQty += data[i].real_qty;
+          }
+        }
+      }
+    });
+    _m.present();
   }
   doOK() { //零件盘点完成
     for (let i = 0; i < this.data.parts.length; i++) {

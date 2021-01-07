@@ -51,10 +51,12 @@ export class ChangePiecesPage {
 
   confirm() {    
     this.receivePieces = Number(this.receivePieces);
-    if (this.receivePieces == 0) {
-      this.err = '数量不能等于0';
-      return;
-     }
+    if (this._parts != 10000) {    //最大数=10000为盘点料箱的时候，可以为0
+      if (this.receivePieces == 0) {
+        this.err = '数量不能等于0';
+        return;
+       }
+    }
     if(this.receivePieces > this._parts) {
       this.err = '已超过数量';
       return;
@@ -70,10 +72,6 @@ export class ChangePiecesPage {
       this._parts = model.packing_qty;
     }
   }
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad UnstandPage');
-  }
-
   cancel() { this.viewCtrl.dismiss(); }
 }
 

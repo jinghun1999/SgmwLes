@@ -25,29 +25,9 @@
             <h1>{{data.workshop}}<small>车间</small></h1>
           </ion-col>
         </ion-row>
-        <!-- <ion-row>
-          <ion-col>{{data.type}}</ion-col>
-          <ion-col>{{data.mode}}</ion-col>
-        </ion-row>
-        <ion-row *ngIf="data.remark">
-          <ion-col>备注：{{data.remark}}</ion-col>
-        </ion-row> -->
       </ion-grid>
     </ion-item>
   </ion-list>
-
-  <!-- <ion-grid no-padding no-margin *ngIf="false">
-    <ion-row no-padding no-margin>
-      <ion-col no-padding no-margin>盘点零件(<b>{{current_part_index+1}}</b>/<b>{{part_total}}</b>) 已盘:{{rightCount}}
-      </ion-col>
-      <ion-col no-padding no-margin>
-        <ion-buttons end no-margin>
-          <button ion-button small (click)="prev()" [disabled]="current_part_index===0">上一个</button>
-          <button ion-button small (click)="next()" [disabled]="current_part_index===part_total-1">下一个</button>
-        </ion-buttons>
-      </ion-col>
-    </ion-row>
-  </ion-grid> -->
 
   <div  *ngIf="current_part">
     <ion-row>
