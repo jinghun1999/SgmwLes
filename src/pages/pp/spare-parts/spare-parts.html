@@ -27,7 +27,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col"><button ion-button item-end (click)="changeQty(spareItem)" [color]='light'>修改合框数</button>
+        <div class="col"><button ion-button item-end (click)="changeQty(spareItem)" [color]='light'>装箱数</button>
         </div>
         <div class="col">
           <span style="text-align: left;font-size:small;">散件库存数:{{spareItem.SJcurrentParts}}</span>
@@ -68,7 +68,7 @@
 </ion-content>
 <ion-footer>
   <ion-row *ngIf="!show" (click)="showErr()" >
-    <label  class="lbl_err">{{errors[errors.length-1]?errors[errors.length-1].message:''}}</label>
+    <label  class="lbl_err">{{errors[0]?errors[0].message:''}}</label>
   </ion-row>
   <ion-row *ngIf="show" (click)="showErr()">
     <message-list [data]="errors"></message-list>

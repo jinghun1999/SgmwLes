@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, NgZone } from '@angular/core';
 import {
   AlertController,
   IonicPage,
@@ -12,7 +12,6 @@ import {
 import { BaseUI } from "../baseUI";
 import { Api } from "../../providers";
 
-
 @IonicPage()
 @Component({
   selector: 'page-box-inventory',
@@ -23,7 +22,10 @@ export class BoxInventoryPage extends BaseUI {
   sum_box_Qty: number = 0;//累计实盘箱数
   sum_box_partQty: number = 0;//累计实盘件数
   real_qty: number = 0;
+  show: boolean= false;
   label: string = '';
+  errors: any[] = [];
+  new_data_list: any[] = [];
   org: any;
   data: any = {
     code: null,
@@ -46,6 +48,7 @@ export class BoxInventoryPage extends BaseUI {
   current_part: any = null;
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
+    private zone: NgZone,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public alertCtrl: AlertController,
@@ -60,7 +63,11 @@ export class BoxInventoryPage extends BaseUI {
       this.searchbar.setFocus();
     });
   }
-
+  insertError = (msg: string, t: string = 'e') => {
+    this.zone.run(() => {
+      this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
+    });
+  }
   ionViewDidLoad() {
     this.searchSheet();
   }
@@ -82,13 +89,15 @@ export class BoxInventoryPage extends BaseUI {
           this.item.belong = this.data.belong;
           this.part_total = this.data.parts.length;
         } else {
-          super.showToast(this.toastCtrl, res.message, 'error');
+          this.insertError(res.message);
         }
-        this.resetScan();
       }, err => {
-        super.showToast(this.toastCtrl, '系统错误，请重试', 'error');
+        loading.dismissAll();
+        this.insertError('系统错误，请重试');
       });
     }
+    loading.dismissAll();
+    this.resetScan();
   }
 
   searchPart() {
@@ -212,15 +221,17 @@ export class BoxInventoryPage extends BaseUI {
     this.item.parts.push(this.current_part);
     this.api.post('inventory/postBoxPart', this.item).subscribe((res: any) => {
       if (res.successful) {
-        super.showToast(this.toastCtrl, '已更新', 'success');
+        this.insertError('已更新','s');
         this.item.parts.length = 0;
         this.sum_box_partQty = 0;
-        for (let i = 0; i < this.data.parts.length; i++) {
-          if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status == 2) {
-            console.log(i);
-            this.sum_box_partQty += Number(this.data.parts[i].real_qty);
+        this.new_data_list = this.data.parts.filter(p => p.id != this.current_part.id);
+        for (let i = 0; i < this.new_data_list.length; i++) {
+          if (this.new_data_list[i].part_no === this.current_part.part_no && this.new_data_list[i].box_status == 2) {
+            this.sum_box_partQty += Number(this.new_data_list[i].real_qty);
           }
         }
+        this.sum_box_partQty += Number(this.current_part.real_qty);
+        this.data.parts = this.new_data_list.concat(this.current_part);
       } else {
         super.showToast(this.toastCtrl, res.message, 'error');
       }
@@ -281,14 +292,17 @@ export class BoxInventoryPage extends BaseUI {
       parts: this.item
     });
     _m.onDidDismiss(data => {
-      if (data && data.length > 0) { 
-        this.current_part.real_qty = data.find(f=>f.box==this.current_part.box).real_qty;
-        this.sum_box_Qty = 0;
+      if (data && data.length > 0) {
+        this.current_part.real_qty = data.find(f => f.box == this.current_part.box).real_qty;
         this.sum_box_partQty = 0;
-        for (let i = 0; i < data.length; i++) { 
-          if (data[i].part_no == this.current_part.part_no && data[i].box_status == 2) { 
+        this.new_data_list = this.data.parts.filter(p => p.part_no != data[0].part_no);
+        this.data.parts = this.new_data_list.concat(data);
+        this.sum_box_partQty = 0;
+        this.sum_box_Qty = 0;
+        for (let i = 0; i < this.data.parts.length; i++) {
+          if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status == 2) {
             this.sum_box_Qty++;
-            this.sum_box_partQty += data[i].real_qty;
+            this.sum_box_partQty += Number(this.data.parts[i].real_qty);
           }
         }
       }
@@ -315,6 +329,9 @@ export class BoxInventoryPage extends BaseUI {
       this.label = '';
       this.searchbar.setFocus();
     }, 500);
+  }
+  showErr() { 
+    this.show = !this.show;
   }
   focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
   blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }

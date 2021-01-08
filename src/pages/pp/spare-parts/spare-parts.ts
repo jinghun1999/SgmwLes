@@ -284,8 +284,8 @@ showErr() {
     this.spareItem.carModel = pressParts.car_model;
     this.spareItem.boxModel = pressParts.box_mode;
     this.spareItem.packingQty = pressParts.packing_qty;
-    this.spareItem.currentParts = pressParts.currentParts;
-    this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;
+    this.spareItem.currentParts = pressParts.currentParts;    
+    this.spareItem.closeframeParts = pressParts.closeframeParts;
 
     this.api.get('pp/getSwitchSpareParts', { plant: this.api.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
       if (res.successful) {
@@ -294,12 +294,12 @@ showErr() {
         const parts = this.spareItem.pressParts; //暂存零件列表
         this.spareItem = pressParts;
         this.spareItem.boxLabel = boxLabel;
-        this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;//合框数
+        this.spareItem.closeframeParts = pressParts.closeframeParts;
         this.spareItem.pressParts = parts;
       }
       else {
         //没有WM库存
-        this.insertError(res.message, 'i');
+        this.insertError(res.message);
       }
     });
   }

@@ -39,7 +39,7 @@
 </ion-content>
 <ion-footer>
 <ion-row *ngIf="!show" (click)="showErr()" >
-  <label  class="lbl_err">{{errors[errors.length-1]?errors[errors.length-1].message:''}}</label>
+  <label  class="lbl_err">{{errors[0]?errors[0].message:''}}</label>
 </ion-row>
 <ion-row *ngIf="show" (click)="showErr()">
   <message-list [data]="errors"></message-list>

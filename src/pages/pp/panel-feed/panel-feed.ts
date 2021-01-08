@@ -144,7 +144,7 @@ export class PanelFeedPage extends BaseUI {
               } else {
                 this.updateDropDownList(bundle.portNo);
               }
-            } else {   // 扫描的是捆包号              
+            } else {   // 扫描的是捆包号 
               // 已经扫描过捆包号，直接添加明细
               if (this.item.partPanel.length > 0) {
                 if (this.item.partPanel.length>=4) { 
@@ -161,7 +161,7 @@ export class PanelFeedPage extends BaseUI {
                     bundle.part[i].productionStatus = 3;//弹框捆包号的生产状态由使用中改为被替换                    
                   }                  
                   if (bundle.bundleNo) {  //把扫描的捆包号添加明细
-                    let part = bundle.part;
+                    let part =JSON.parse(JSON.stringify(bundle.part));
                     bundle.productionStatus = 1;
                     bundle.part.length = 0;
                     this.openDig(part,bundle);
@@ -188,7 +188,7 @@ export class PanelFeedPage extends BaseUI {
     this.setFocus();
   }
 
-  openDig = (parts: any,bundle:any) => {
+  openDig = (parts: any, bundle: any) => {
     const _m = this.modalCtrl.create('BundleListPage', {
       //1.1 弹框显示捆包号
       plant: this.api.plant,
