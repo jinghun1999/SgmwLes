@@ -45,7 +45,7 @@ export class LoginPage extends BaseUI {
       {
         id: 1,
         text: "开发环境",
-        value: "http://192.168.1.6:8120",
+        value: "http://192.168.43.113:8120",
       },
       {
         id: 2,
@@ -63,7 +63,7 @@ export class LoginPage extends BaseUI {
         value: "http://172.168.0.1:49280",
       },
     ];
-    this.gender = this.environment[1].value;
+    this.gender = this.environment[0].value;
   }
   //登录的时候存储
   changWS() {

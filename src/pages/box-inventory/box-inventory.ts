@@ -310,14 +310,18 @@ export class BoxInventoryPage extends BaseUI {
     _m.present();
   }
   doOK() { //零件盘点完成
-    for (let i = 0; i < this.data.parts.length; i++) {
-      this.data.parts[i].box_status = 2;
-    }
-    this.api.post('inventory/PostBoxPart', this.data).subscribe((res: any) => {
+    let parts = this.data.parts.filter(p => p.part_no == this.current_part.part_no);
+    this.item.parts = parts;
+    this.api.post('inventory/PostBoxPart', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.current_part_index = 0;
-        this.current_part = null;
-        super.showToast(this.toastCtrl, '盘点成功', 'success');
+        this.sum_box_Qty = 0;
+        this.sum_box_partQty = 0;
+        this.insertError('盘点成功','s');
+        for (let i = 0; i < this.item.parts.length; i++) { 
+          this.sum_box_Qty++;
+           this.sum_box_partQty += this.item.parts[i].real_qty;
+        }
+        this.item.parts.length = 0;
       }
       else {
         super.showToast(this.toastCtrl, res.message, 'error');
