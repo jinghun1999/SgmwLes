@@ -217,6 +217,10 @@ export class BoxInventoryPage extends BaseUI {
   }
 
   changeQ() {
+    if (this.current_part.real_qty > this.current_part.packing_qty) { 
+      this.insertError('数量不能大于包装数量');
+      return;
+    }
     this.item.parts.length = 0;
     this.item.parts.push(this.current_part);
     this.api.post('inventory/postBoxPart', this.item).subscribe((res: any) => {

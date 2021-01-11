@@ -12,9 +12,9 @@ export class Api {
   public plant: string = '1000';
   public version: string = 'P-201222';  
   public api_host: string = 'http://10.1.126.171/lesapi';   
+  
 
   constructor(public http: HttpClient, public events: Events, public alertCtrl: AlertController, public toastCtrl: ToastController, public storage: Storage, public modalCtrl: ModalController) {
-    //localStorage.removeItem('env');
   }
   get(endpoint: string, params?: any, reqOpts?: any) {
     if (!reqOpts) {
@@ -23,6 +23,7 @@ export class Api {
       };
     }
  
+
     // Support easy query params for GET requests
     if (params) {
       reqOpts.params = new HttpParams();
@@ -49,8 +50,7 @@ export class Api {
     return this.http.patch(this.getUrl()+'/api' + '/' + endpoint, body, reqOpts);
   }
   private getUrl() { 
-    //  const url = localStorage.getItem('env');
-    //  return url ? url : this.api_host;
-    return 'http://192.168.43.113:8120';
+     const url = localStorage.getItem('env');
+     return url ? url : this.api_host;
    }
 }

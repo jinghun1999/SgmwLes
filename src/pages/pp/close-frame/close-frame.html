@@ -7,14 +7,8 @@
     </ion-searchbar>
   </form>
 </ion-header>
-
-<ion-content>
-  
-  <ion-list *ngIf="sourceItem.parts.length">
-    <ion-item>
-      <span style="height: 10%;font-size: larger;">源料箱:</span>
-    </ion-item>
-  </ion-list>
+<ion-content >
+  <h3 *ngIf="sourceItem.parts.length">源料箱:</h3>
   <div>
     <div class="ds-box" *ngFor="let part of sourceItem.parts;let i=index">
       <div class="row">
@@ -41,12 +35,10 @@
       </div>
     </div>
   </div>
+  <ion-row>
 
-  <ion-list *ngIf="targetItem.parts.length">
-    <ion-item>
-      <span style="font-size: larger;">目标料箱：</span><ion-icon name='md-arrow-dropdown' style="font-size:larger;color:green;"></ion-icon>
-    </ion-item>
-  </ion-list>
+  </ion-row>
+  <h3 *ngIf="targetItem.parts.length">目标料箱:</h3>
   <div>
     <div class="ds-box" *ngFor="let part of targetItem.parts;let i=index">
       <div class="row">

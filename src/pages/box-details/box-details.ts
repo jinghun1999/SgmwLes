@@ -96,7 +96,7 @@ export class BoxDetailsPage extends BaseUI {
   //修改箱数
   changeQty(part) {
     let _m = this.modalCtrl.create('ChangePiecesPage', {
-      max_parts: 10000,
+      max_parts: part.packing_qty,
       receivePieces: Number(part.real_qty)
     });
     _m.onDidDismiss(data => {
@@ -104,12 +104,12 @@ export class BoxDetailsPage extends BaseUI {
         if (part.box_status == 1) {
           this.box_part_Qty += data.receive;
           part.box_status = 2;
-          this.box_Qty++;          
-          this.save(part);
+          this.box_Qty++;
         } else {
           this.box_part_Qty = this.box_part_Qty - Number(part.real_qty) + data.receive;
         }
         part.real_qty = data.receive;
+        this.save(part);
       }
     });
     _m.present();
