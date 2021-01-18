@@ -55,22 +55,19 @@ export class SetProfilePage extends BaseUI {
           (res: any) => {
             this.fetching = false;
             if (res.successful) {
+              if (res.data.length == 0) { 
+                this.workshop = '';
+              }
               this.list = res.data;
-
-              //this.plant_choose = res.data;
-              //this.plant = res.data[0].value;
-
               this.workshop_choose = res.data; 
-              //res.data[0].children;
-              //this.workshop = res.data[0].children[0].value;
-
               this.getConfig();
             } else {
               super.showToast(this.toastCtrl, res.message);
             }
           },
           (err) => {
-            this.fetching = false;
+            this.fetching = false
+              ;
             super.showToast(this.toastCtrl, "获取车间信息出现错误，请稍后再试");
           }
         );
@@ -96,7 +93,7 @@ export class SetProfilePage extends BaseUI {
       .then((res) => {
         this.viewCtrl.dismiss(this.workshop);
       })
-      .catch(() => {});
+      .catch(() => { });
   }
   cancel() {
     this.viewCtrl.dismiss();

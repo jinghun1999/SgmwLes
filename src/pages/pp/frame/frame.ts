@@ -164,9 +164,9 @@ export class FramePage extends BaseUI {
         if (!res.successful) {
           this.insertError(res.message);
           return;
-         }
+        }
         if (res.data.box_label == this.item.box_label || res.data.box_label == this.item.box_label) {
-          this.insertError('料箱号'+res.data.box_label+'已扫描');
+          this.insertError('料箱号' + res.data.box_label + '已扫描');
           return;
         }
 
@@ -237,16 +237,16 @@ export class FramePage extends BaseUI {
     this.setFocus();
   };
 
-   //确认提交
-   showConfirm() { 
+  //确认提交
+  showConfirm() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
       message: '是否确定要提交？',
       buttons: [{
         text: '取消',
         handler: () => {
-          
-         }
+
+        }
       }, {
         text: '确定',
         handler: () => {
@@ -256,7 +256,7 @@ export class FramePage extends BaseUI {
     });
     prompt.present();
   }
-  showErr() { 
+  showErr() {
     this.show = !this.show;
   }
 
@@ -390,8 +390,8 @@ export class FramePage extends BaseUI {
             this.item.feedingPortGroup = res.data.feedingPortGroup;//子捆包
             this.ziPart.bundle_no = res.data.feedingPortGroup.find(f => f.isSelect) ? res.data.feedingPortGroup.find(f => f.isSelect).bundle_no : res.data.feedingPortGroup[0].bundle_no;
           }
-          else { 
-           // console.log('当前上料口没有和它方向相同的捆包');
+          else {
+            // console.log('当前上料口没有和它方向相同的捆包');
             this.ziPart.bundle_no = '';
             this.item.feedingPortGroup.length = 0;
           }
@@ -438,10 +438,9 @@ export class FramePage extends BaseUI {
             this.item.pressPartGroup = res.data.pressPartGroup;//子零件
             this.ziPart.part_no = res.data.pressPartGroup.find(f => f.isSelect) ? res.data.pressPartGroup.find(f => f.isSelect).part_no : res.data.pressPartGroup[0].part_no;
 
-            //子捆包
-            if (res.data.feedingPortGroup.length > 0) {
+            if (res.data.feedingPortGroup.length > 0) {//子捆包
               this.item.feedingPortGroup = res.data.feedingPortGroup;
-            } else { 
+            } else {
               this.insertError('找不到对应的捆包号');
             }
             this.changeZi(this.ziPart.part_no);
@@ -449,6 +448,11 @@ export class FramePage extends BaseUI {
           else {
             this.item.pressPartGroup.length = 0;
             this.insertError('找不到对应的零件');
+          }
+          if (res.data.feedingPort.length) { //源捆包号
+            this.item.feedingPort = res.data.feedingPort;
+            const feed = res.data.feedingPort.find(item => item.isSelect);
+            this.item.bundle_no = feed ? feed.bundle_no : res.data.feedingPort[0].bundle_no;
           }
           this.item.parts_group = res.data.parts_group;
           this.ziPart.bundle_no = this.item.bundle_no;
@@ -463,6 +467,15 @@ export class FramePage extends BaseUI {
     }
 
     if (pressPart.part_type == 1) {   //单件单模
+      this.api.get('pp/getSwitchPressPart', { plant: this.item.plant, workshop: this.item.workshop, part_no: part_no }).subscribe((res: any) => {
+        if (res.successful) {
+          this.item.feedingPort = res.data.feedingPort;
+          if (res.data.feedingPort.length) {
+            const feed = res.data.feedingPort.find(f => f.isSelect);
+            this.item.bundle_no = feed ? feed.bundle_no : res.data.feedingPort[0].bundle_no;
+          }
+        }
+      });
       this.item.part_type = 1;
     }
     this.item.car_model = pressPart.car_model;

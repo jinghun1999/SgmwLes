@@ -10,8 +10,8 @@ import {
   ToastController, ModalController,
 } from 'ionic-angular';
 
-import { BaseUI } from "../baseUI";
-import { Api } from "../../providers";
+import { BaseUI } from "../../baseUI";
+import { Api } from "../../../providers";
 
 @IonicPage()
 @Component({

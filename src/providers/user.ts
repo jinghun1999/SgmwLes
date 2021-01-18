@@ -52,7 +52,6 @@ export class User {
       // this.storage.remove('TOKEN').then(res => {
       //   this._user = null;
       // });
-      window.localStorage.removeItem('env');
       window.localStorage.removeItem('TOKEN');
       this.storage.clear();
     }, err => {

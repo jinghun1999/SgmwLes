@@ -6,11 +6,12 @@ import {
   ModalController,
   NavController,
   ToastController,
+  Platform,
 } from "ionic-angular";
 import { Storage } from "@ionic/storage";
 import { Api, Menus, User } from "../../providers";
 import { BaseUI } from "../";
-//import { l } from "@angular/core/src/render3";
+import { AppVersion } from '@ionic-native/app-version/ngx';
 
 @IonicPage()
 @Component({
@@ -24,7 +25,11 @@ export class HomePage extends BaseUI {
   workshop: string;
   username: string;
   version: string;
-  
+  data: any = {
+    current_version:'',
+    version: '',
+    url:''
+  };
   constructor(
     public navCtrl: NavController,
     public items: Menus,
@@ -32,9 +37,11 @@ export class HomePage extends BaseUI {
     public loadingCtrl: LoadingController,
     public modalCtrl: ModalController,
     private storage: Storage,
+    private platform:Platform,
     private app: App,
     private user: User,
-    public api: Api
+    public api: Api,
+    private appVersion: AppVersion
   ) {
     super();
     //this.currentItems = this.items.query();
@@ -44,38 +51,67 @@ export class HomePage extends BaseUI {
     });
     //this.username = this.user._user.username;
     this.version = this.api.version;
+    // this.storage.remove('WORKSHOP').then((res) => { 
+    //   console.log(res);
+    // });
   }
 
   /**
    * The view loaded, let's query our items for the list
    */
-  ionViewDidLoad() {   
+  ionViewDidLoad() {
     this.getWorkshop();
+
+    if (this.platform.is('android')) {
+      this.appVersion.getVersionCode().then((val) => {
+        this.data.current_version = val;
+        //console.log(val);
+      });
+      this.api.get('system/getApkUpdate', {}).subscribe((res: any) => { 
+        console.log(res);
+        if (res.successful) { 
+          this.data.version = res.version;
+          this.data.url = res.url;
+          if (this.data.version < this.data.current_version) { 
+            this.navCtrl.push('UpgradePage', {data:this.data});
+          }
+        }
+      });
+
+     }
+    
   }
   getWorkshop = () => {
     this.storage.get("WORKSHOP").then((res) => {
-      if (!res) {
+      if (res === '') {
+        
+      } else if (!res) {
         this.setProfile();
-      } else {
-        //this.workshop = res;
       }
     });
     let loading = super.showLoading(this.loadingCtrl, "加载中...");
     this.api.get("system/getMenus").subscribe(
       (res: any) => {
-        if (res.successful) {
-          this.gridList = res.data;          
-        } else {
-          super.showToast(this.toastCtrl, res.message, "error");          
-        } 
         loading.dismiss();
+        if (res.successful) {
+          this.gridList = res.data;
+        } else {
+          super.showToast(this.toastCtrl, res.message, "error");
+        }        
       },
       (err) => {
-        super.showToast(this.toastCtrl, "系统错误", "error");
         loading.dismiss();
+        super.showToast(this.toastCtrl, "系统错误", "error");
       }
     );
   };
+  ionViewDidEnter(){
+    this.storage.get("WORKSHOP").then((res) => { 
+      if (res === '') { 
+        super.showToast(this.toastCtrl, "当前车间为空，请选择车间后再操作", "error");
+      }
+    });
+  } 
   // ionViewDidEnter(){
   //   document.addEventListener("keydown", this.keydown);
   // }
@@ -120,16 +156,16 @@ export class HomePage extends BaseUI {
 
   logout() {
     this.user.logout().subscribe((re) => {
-        setTimeout(() => {
-          this.app.getRootNav().setRoot(
-            "LoginPage", {},
-            {
-              animate: true,
-              direction: "forward",
-            }
-          );
-        });
-      },
+      setTimeout(() => {
+        this.app.getRootNav().setRoot(
+          "LoginPage", {},
+          {
+            animate: true,
+            direction: "forward",
+          }
+        );
+      });
+    },
       (r) => {
         alert("注销失败");
       }

@@ -9,10 +9,10 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-import {AppUpdate} from "@ionic-native/app-update/ngx";
-import { AppVersion } from '@ionic-native/app-version/ngx';
-import { NativeAudio } from '@ionic-native/native-audio/ngx';
-import { Vibration } from '@ionic-native/vibration/ngx';
+// import {AppUpdate} from "@ionic-native/app-update/ngx";
+ import { AppVersion } from '@ionic-native/app-version/ngx';
+// import { NativeAudio } from '@ionic-native/native-audio/ngx';
+// import { Vibration } from '@ionic-native/vibration/ngx';
 import { Menus } from '../mocks/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
@@ -79,10 +79,10 @@ export function provideSettings(storage: Storage) {
     Camera,
     SplashScreen,
     StatusBar,
-    AppUpdate,
-    AppVersion,
-    NativeAudio,
-    Vibration,
+    // AppUpdate,
+     AppVersion,
+    // NativeAudio,
+    // Vibration,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
     { provide: ErrorHandler, useClass: IonicErrorHandler },

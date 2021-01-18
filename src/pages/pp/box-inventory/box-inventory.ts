@@ -9,8 +9,8 @@ import {
   ToastController, ModalController,
 } from 'ionic-angular';
 
-import { BaseUI } from "../baseUI";
-import { Api } from "../../providers";
+import { BaseUI } from "../../baseUI";
+import { Api } from "../../../providers";
 
 @IonicPage()
 @Component({
@@ -22,7 +22,7 @@ export class BoxInventoryPage extends BaseUI {
   sum_box_Qty: number = 0;//累计实盘箱数
   sum_box_partQty: number = 0;//累计实盘件数
   real_qty: number = 0;
-  show: boolean= false;
+  show: boolean = false;
   label: string = '';
   errors: any[] = [];
   new_data_list: any[] = [];
@@ -59,9 +59,7 @@ export class BoxInventoryPage extends BaseUI {
   }
 
   ionViewDidEnter() {
-    setTimeout(() => {
-      this.searchbar.setFocus();
-    });
+    this.searchbar.setFocus();
   }
   insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
@@ -69,7 +67,7 @@ export class BoxInventoryPage extends BaseUI {
     });
   }
   ionViewDidLoad() {
-    this.searchSheet();
+    this.searchbar.setFocus();
   }
   searchSheet() {
     let loading = super.showLoading(this.loadingCtrl, "查询中...");
@@ -217,7 +215,7 @@ export class BoxInventoryPage extends BaseUI {
   }
 
   changeQ() {
-    if (this.current_part.real_qty > this.current_part.packing_qty) { 
+    if (this.current_part.real_qty > this.current_part.packing_qty) {
       this.insertError('数量不能大于包装数量');
       return;
     }
@@ -225,7 +223,7 @@ export class BoxInventoryPage extends BaseUI {
     this.item.parts.push(this.current_part);
     this.api.post('inventory/postBoxPart', this.item).subscribe((res: any) => {
       if (res.successful) {
-        this.insertError('已更新','s');
+        this.insertError('已更新', 's');
         this.item.parts.length = 0;
         this.sum_box_partQty = 0;
         this.new_data_list = this.data.parts.filter(p => p.id != this.current_part.id);
@@ -320,10 +318,10 @@ export class BoxInventoryPage extends BaseUI {
       if (res.successful) {
         this.sum_box_Qty = 0;
         this.sum_box_partQty = 0;
-        this.insertError('盘点成功','s');
-        for (let i = 0; i < this.item.parts.length; i++) { 
+        this.insertError('盘点成功', 's');
+        for (let i = 0; i < this.item.parts.length; i++) {
           this.sum_box_Qty++;
-           this.sum_box_partQty += this.item.parts[i].real_qty;
+          this.sum_box_partQty += this.item.parts[i].real_qty;
         }
         this.item.parts.length = 0;
       }
@@ -338,7 +336,7 @@ export class BoxInventoryPage extends BaseUI {
       this.searchbar.setFocus();
     }, 500);
   }
-  showErr() { 
+  showErr() {
     this.show = !this.show;
   }
   focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
