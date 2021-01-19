@@ -60,6 +60,7 @@ export class BoxInventoryPage extends BaseUI {
 
   ionViewDidEnter() {
     this.searchbar.setFocus();
+    this.searchSheet();
   }
   insertError = (msg: string, t: string = 'e') => {
     this.zone.run(() => {
@@ -132,12 +133,12 @@ export class BoxInventoryPage extends BaseUI {
           this.sum_box_Qty++;
           this.sum_box_partQty += Number(this.data.parts[i].real_qty);
         }
-      }
-      this.resetScan();
+      }      
     }
     else {
       super.showToast(this.toastCtrl, '该零件不在盘点单列表中', 'error');
     }
+    this.resetScan();
   }
   get ok_count() {
     let c = 0;

@@ -54,8 +54,8 @@ export class LoginPage extends BaseUI {
       },
       {
         id: 3,
-        text: "厂外使用",
-        value: "http://192.168.0.1:49280",
+        text: "冲压测试环境",
+        value: "http://10.1.126.171/CYWEBAPI",
       },
       {
         id: 4,
