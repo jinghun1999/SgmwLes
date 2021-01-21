@@ -21,6 +21,10 @@ export class BoxInventoryPage extends BaseUI {
   @ViewChild(Searchbar) searchbar: Searchbar;
   sum_box_Qty: number = 0;//累计实盘箱数
   sum_box_partQty: number = 0;//累计实盘件数
+
+  total_wuliao: number = 0; //总共多少种物料
+  alr_wuliao: number = 0; //已盘物料数量
+  total_boxs: number = 0; //该物料共多少箱
   real_qty: number = 0;
   show: boolean = false;
   label: string = '';
@@ -87,6 +91,12 @@ export class BoxInventoryPage extends BaseUI {
           this.item.remark = this.data.remark;
           this.item.belong = this.data.belong;
           this.part_total = this.data.parts.length;
+          this.total_wuliao = this.data.parts.length;
+          this.data.parts.forEach(item => {
+            if (item.box_status == 2) {
+              this.alr_wuliao++;
+            }
+          });
         } else {
           this.insertError(res.message);
         }
@@ -114,8 +124,7 @@ export class BoxInventoryPage extends BaseUI {
 
     if (this.current_part) {
       this.real_qty = this.current_part.real_qty;
-      this.sum_box_Qty = 0;
-      this.sum_box_partQty = 0;
+      
       if (this.current_part.box_status == 1) {   //扫描并提交操作
         this.current_part.box_status = 2;
         this.item.parts.length = 0;
@@ -127,29 +136,14 @@ export class BoxInventoryPage extends BaseUI {
           }
         });
       }
-
-      for (let i = 0; i < this.data.parts.length; i++) {
-        if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status == 2) {
-          this.sum_box_Qty++;
-          this.sum_box_partQty += Number(this.data.parts[i].real_qty);
-        }
-      }      
+      this.upDataList(this.data.parts);  
     }
     else {
       super.showToast(this.toastCtrl, '该零件不在盘点单列表中', 'error');
     }
     this.resetScan();
   }
-  get ok_count() {
-    let c = 0;
-    this.data.parts.forEach((item, index) => {
-      if (item.real_qty || item.real_qty === 0) {
-        c++;
-      }
-    });
-    return c;
-  }
-
+  
   cancel() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
@@ -205,16 +199,6 @@ export class BoxInventoryPage extends BaseUI {
     prompt.present();
   }
 
-  get noSubmit() {
-    return this.part_total === 0 || this.ok_count < this.part_total;
-  }
-  prev() {
-    this.current_part_index > 0 && this.current_part_index--;
-  }
-  next() {
-    this.current_part_index < this.part_total - 1 && this.current_part_index++;
-  }
-
   changeQ() {
     if (this.current_part.real_qty > this.current_part.packing_qty) {
       this.insertError('数量不能大于包装数量');
@@ -225,14 +209,10 @@ export class BoxInventoryPage extends BaseUI {
     this.api.post('inventory/postBoxPart', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('已更新', 's');
-        this.item.parts.length = 0;
-        this.sum_box_partQty = 0;
+        
         this.new_data_list = this.data.parts.filter(p => p.id != this.current_part.id);
-        for (let i = 0; i < this.new_data_list.length; i++) {
-          if (this.new_data_list[i].part_no === this.current_part.part_no && this.new_data_list[i].box_status == 2) {
-            this.sum_box_partQty += Number(this.new_data_list[i].real_qty);
-          }
-        }
+        this.upDataList(this.new_data_list);  
+
         this.sum_box_partQty += Number(this.current_part.real_qty);
         this.data.parts = this.new_data_list.concat(this.current_part);
       } else {
@@ -275,7 +255,8 @@ export class BoxInventoryPage extends BaseUI {
         super.showToast(this.toastCtrl, '已完成盘点', 'success');
         setTimeout(() => {
           if (this.navCtrl.canGoBack()) {
-            this.navCtrl.popToRoot();
+            //this.navCtrl.push('PanDianPage');
+            this.navCtrl.pop();
           }
         }, 1000);
       } else {
@@ -297,17 +278,12 @@ export class BoxInventoryPage extends BaseUI {
     _m.onDidDismiss(data => {
       if (data && data.length > 0) {
         this.current_part.real_qty = data.find(f => f.box == this.current_part.box).real_qty;
-        this.sum_box_partQty = 0;
+        
         this.new_data_list = this.data.parts.filter(p => p.part_no != data[0].part_no);
         this.data.parts = this.new_data_list.concat(data);
-        this.sum_box_partQty = 0;
-        this.sum_box_Qty = 0;
-        for (let i = 0; i < this.data.parts.length; i++) {
-          if (this.data.parts[i].part_no === this.current_part.part_no && this.data.parts[i].box_status == 2) {
-            this.sum_box_Qty++;
-            this.sum_box_partQty += Number(this.data.parts[i].real_qty);
-          }
-        }
+
+        this.upDataList(this.data.parts);
+
       }
     });
     _m.present();
@@ -340,6 +316,22 @@ export class BoxInventoryPage extends BaseUI {
   showErr() {
     this.show = !this.show;
   }
+  //遍历集合重新赋值,为3个变量赋值
+  upDataList(parts_array) {
+    this.sum_box_partQty = 0;
+    this.sum_box_Qty = 0;
+    this.total_boxs = 0;
+    parts_array.forEach(item => {
+      if (item.part_no === this.current_part.part_no) {
+        this.total_boxs++;
+        if (item.box_status == 2) {
+          this.sum_box_Qty++;
+          this.sum_box_partQty += Number(item.real_qty);
+        }
+      }
+    });
+  }
+
   focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
   blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
 }

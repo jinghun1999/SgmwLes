@@ -92,12 +92,12 @@ export class PartsStorageInPage extends BaseUI {
     this.api.get('system/GetFramePlants', { plant: this.api.plant }).subscribe((res: any) => {
       if (res.successful) {
         this.workshop_list = res.data;
-        const yuan = res.data.find((t) => t.isSelect).value;
+        let yuan = res.data.find((t) => t.isSelect);
         if (yuan) {
-          this.item.target = yuan;
+          this.item.target = yuan.value;
         }
-        else {
-          res.data.length ? this.item.target = res.data[0].value : null;
+        else if(res.data.length) {
+           this.item.target = res.data[0].value ;
         }
       } else {
         this.insertError(res.message);

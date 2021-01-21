@@ -11,6 +11,14 @@
 
 <ion-content>
   <div>
+    <ion-list>
+      <ion-item>
+        <ion-label color="primary">退货原因</ion-label>
+        <ion-select [(ngModel)]="reson" interface="popover"  okText="选择" cancelText="取消" placeholder="请选择">
+          <ion-option  *ngFor="let t of reson_list" value="{{t.code_value}}">{{t.code_name}}</ion-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
     <div class="ds-box" *ngFor="let part of item.parts;let i=index">
       <div class="row">
         <div class="col" style="color:green;font-size:x-large;white-space:nowrap;letter-spacing:-1px"><span><svg

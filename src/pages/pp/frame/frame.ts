@@ -151,6 +151,7 @@ export class FramePage extends BaseUI {
     }
     if (this.item.box_label.length && this.item.bundle_no.length) { //第二次扫描料箱
       if (this.item.part_type == 1) {
+        this.setFocus();
         this.insertError('单件单模零件只能扫一个料箱');
         return;
       }

@@ -24,8 +24,9 @@ export class DefectiveProductPage extends BaseUI {
 
   code: string = '';                      //记录扫描编号
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
-  workshop: string; //初始化获取的车间
   keyPressed: any;
+  reson: string;  //退货原因
+  reson_list: [];//退货原因列表
   show: boolean = false;
   max_parts: number = 0;//最大可操作数
   workshop_list: any[] = [];//加载获取的的车间列表
@@ -33,8 +34,8 @@ export class DefectiveProductPage extends BaseUI {
   item: any = {
     plant: '',
     workshop: '',
-    target: '',
-    parts: []
+    parts: [],
+    codeDetailInfos: []
   };
   constructor(public navParams: NavParams,
     public toastCtrl: ToastController,
@@ -86,9 +87,15 @@ export class DefectiveProductPage extends BaseUI {
   ionViewDidLoad() {
     this.storage.get('WORKSHOP').then((val) => {
       this.item.plant = this.api.plant;
-      this.workshop = val;
+      this.item.workshop = val;
     });
-  }  
+    this.api.get('pp/getDefectiveLoad').subscribe((res: any) => {
+      if (res.successful) {
+        this.reson_list = res.data;
+        this.reson = res.data[0].code_value;
+      }
+    });
+  }
 
   //校验扫描
   checkScanCode() {
@@ -106,8 +113,6 @@ export class DefectiveProductPage extends BaseUI {
     }
     return true;
   }
-
-
   //开始扫描
   scan() {
     if (this.checkScanCode()) {
@@ -119,7 +124,7 @@ export class DefectiveProductPage extends BaseUI {
   }
   //扫描执行的过程
   scanSheet() {
-    this.api.get('PP/GetDefectiveProduct', { plant: this.api.plant, workshop: this.workshop, box_label: this.code }).subscribe((res: any) => {
+    this.api.get('PP/GetDefectiveProduct', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
       if (res.successful) {
         let model = res.data;
         if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
@@ -127,7 +132,7 @@ export class DefectiveProductPage extends BaseUI {
           return;
         }
         model.max_parts = model.currentParts;
-        this.item.parts.splice(0, 0, model);
+        this.item.parts.push(model);
       }
       else {
         this.insertError(res.message);
@@ -159,8 +164,8 @@ export class DefectiveProductPage extends BaseUI {
   cancel_do() {
     this.insertError('正在撤销...');
     this.code = '';
-    this.item.parts = [];
-    this.insertError("撤销成功",'s');
+    this.item.parts.length = 0;
+    this.insertError("撤销成功", 's');
     this.resetScan();
   }
 
@@ -174,23 +179,23 @@ export class DefectiveProductPage extends BaseUI {
     this.searchbar.setFocus();
   }
 
- //非标跳转Modal页
+  //非标跳转Modal页
   changeQty(model) {
-  let _m = this.modalCtrl.create('ChangePiecesPage', {
-    max_parts: model.max_parts,
-    receivePieces:model.currentParts
-  });
-  _m.onDidDismiss(data => {
-    if (data) {
-      if (data.receive == 0) {
-        this.insertError('数量必须大于0');
-        return;
-       }
-      model.currentParts = data.receive
-    }
-  });
-  _m.present();
-}
+    let _m = this.modalCtrl.create('ChangePiecesPage', {
+      max_parts: model.max_parts,
+      receivePieces: model.currentParts
+    });
+    _m.onDidDismiss(data => {
+      if (data) {
+        if (data.receive == 0) {
+          this.insertError('数量必须大于0');
+          return;
+        }
+        model.currentParts = data.receive
+      }
+    });
+    _m.present();
+  }
 
   //提交
   save() {
@@ -198,26 +203,30 @@ export class DefectiveProductPage extends BaseUI {
       this.insertError('请先扫描料箱号');
       return;
     };
-
     if (new Set(this.item.parts).size !== this.item.parts.length) {
       this.insertError("提交的数据中存在重复的数据，请检查！");
       return;
     };
-
-    let loading = super.showLoading(this.loadingCtrl,'提交中');
+    this.item.codeDetailInfos.length = 0;
+    let reson = this.reson_list.find(r => r.code_value == this.reson);
+    if (reson) {
+      this.item.codeDetailInfos.push(reson);
+    }
+    let loading = super.showLoading(this.loadingCtrl, '提交中');
     this.api.post('PP/PostDefectiveProduct', {
-      plant: this.api.plant,
-      workshop: this.workshop,
+      plant: this.item.plant,
+      workshop: this.item.workshop,
+      codeDetailInfos: this.item.codeDetailInfos,
       parts: this.item.parts
     }).subscribe((res: any) => {
+      loading.dismiss();
       if (res.successful) {
-        this.item.parts = [];
+        this.item.parts.length = 0;
         this.insertError('提交成功', 's');
       }
       else {
         this.insertError(res.message);
       }
-      loading.dismiss();
     },
       err => {
         this.insertError('提交失败');
@@ -234,15 +243,15 @@ export class DefectiveProductPage extends BaseUI {
     this.searchbar.setElementClass('bg-red', true);
   };
   //确认提交
-  showConfirm() { 
+  showConfirm() {
     let prompt = this.alertCtrl.create({
       title: '操作提醒',
       message: '是否确定要提交？',
       buttons: [{
         text: '取消',
         handler: () => {
-          
-         }
+
+        }
       }, {
         text: '确定',
         handler: () => {
@@ -252,7 +261,7 @@ export class DefectiveProductPage extends BaseUI {
     });
     prompt.present();
   }
-  showErr() { 
+  showErr() {
     this.show = !this.show;
   }
 }

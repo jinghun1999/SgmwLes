@@ -28,6 +28,7 @@
     </ion-item>
   </ion-list>
   <div  *ngIf="current_part">
+    <span [ngClass]="{'text-detailed': true}">共{{total_wuliao}}种物料，已盘点{{alr_wuliao}}种物料，该物料共{{total_boxs}}箱</span>
     <ion-row>
       <ion-col no-padding>
         <button no-margin ion-button full auto color="balanced" (click)="doDetailed(this.current_part.part_no)">查询箱明细</button>
@@ -79,7 +80,7 @@
   </ion-row>
   <ion-row>
     <ion-col no-padding>
-      <button no-margin ion-button full large color="light" (click)="cancel()">返回</button>
+      <button no-margin ion-button full large color="light" (click)="cancel()">撤销</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large [disabled]="!current_part" color="primary" (click)="showConfirm(2)">盘点完成</button>
