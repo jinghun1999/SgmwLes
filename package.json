@@ -21,7 +21,7 @@
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/app-update": "^5.2.0",
-    "@ionic-native/app-version": "^4.20.0",
+    "@ionic-native/app-version": "^4.0.0",
     "@ionic-native/camera": "4.3.3",
     "@ionic-native/core": "~4.17.0",
     "@ionic-native/file": "^4.1.0",

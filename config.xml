@@ -3,7 +3,7 @@
     <name>HX LES PDA</name>
     <description>上汽通用五菱物流执行终端</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Microsoft service team</author>
-    <content original-src="index.html" src="http://192.168.137.229:8100" />
+    <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

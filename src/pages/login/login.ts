@@ -63,17 +63,8 @@ export class LoginPage extends BaseUI {
         value: "http://172.168.0.1:49280",
       },
     ];
-    const env = localStorage.getItem('env');
-    if (env) {
-      this.gender = env;
-    }
-    else {
-      this.gender = this.environment[1].value;
-    }
-  }
-  //登录的时候存储
-  changWS() {
-    setTimeout(localStorage.setItem("env", this.gender), 300);
+    const env = localStorage.getItem('les_env');
+    this.api.api_host = env ? env : this.environment[1].value;
   }
   doLogin() {
     if (!this.account.name || !this.account.password) {
@@ -81,12 +72,11 @@ export class LoginPage extends BaseUI {
       this.setFocus();
       return;
     }
-    this.changWS();
     let loading = super.showLoading(this.loadingCtrl, "登录中...");
     this.user.login(this.account).subscribe(
       (resp) => {
         loading.dismiss();
-
+        localStorage.setItem('les_env', this.api.api_host);
         this.navCtrl.setRoot(
           HomePage,
           {},

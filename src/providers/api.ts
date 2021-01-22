@@ -3,16 +3,11 @@ import { Injectable } from '@angular/core';
 import { AlertController, Events, ToastController, ModalController } from 'ionic-angular';
 import { Storage } from "@ionic/storage";
 
-
-/**
- * Api is a generic REST Api handler. Set your API url first.
- */
 @Injectable()
 export class Api {
   public plant: string = '1000';
-  public version: string = 'P-201222';  
-  public api_host: string = 'http://10.1.126.171/lesapi';   
-  
+  public version: string = 'P-201222';   
+  public api_host: string;   //api接口地址,在login.ts配置
 
   constructor(public http: HttpClient, public events: Events, public alertCtrl: AlertController, public toastCtrl: ToastController, public storage: Storage, public modalCtrl: ModalController) {
   }
@@ -23,34 +18,28 @@ export class Api {
       };
     }
  
-
-    // Support easy query params for GET requests
     if (params) {
       reqOpts.params = new HttpParams();
       for (let k in params) {
         reqOpts.params = reqOpts.params.set(k, params[k]);
       }
     }
-    return this.http.get(this.getUrl() + '/api' + '/' + endpoint, reqOpts);
+    return this.http.get(this.api_host + '/api' + '/' + endpoint, reqOpts);
   }
 
   post(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.post(this.getUrl()+'/api' + '/' + endpoint, body, reqOpts);
+    return this.http.post(this.api_host+'/api' + '/' + endpoint, body, reqOpts);
   }
 
   put(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.put(this.getUrl()+'/api' + '/' + endpoint, body, reqOpts);
+    return this.http.put(this.api_host+'/api' + '/' + endpoint, body, reqOpts);
   }
 
   delete(endpoint: string, reqOpts?: any) {
-    return this.http.delete(this.getUrl()+'/api' + '/' + endpoint, reqOpts);
+    return this.http.delete(this.api_host+'/api' + '/' + endpoint, reqOpts);
   }
 
   patch(endpoint: string, body: any, reqOpts?: any) {
-    return this.http.patch(this.getUrl()+'/api' + '/' + endpoint, body, reqOpts);
+    return this.http.patch(this.api_host+'/api' + '/' + endpoint, body, reqOpts);
   }
-  private getUrl() { 
-     const url = localStorage.getItem('env');
-     return url ? url : this.api_host;
-   }
 }

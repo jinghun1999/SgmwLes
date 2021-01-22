@@ -9,7 +9,10 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
- import { AppVersion } from '@ionic-native/app-version';
+import { AppVersion } from '@ionic-native/app-version';
+import { File } from '@ionic-native/file';
+import { FileOpener } from '@ionic-native/file-opener';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { Menus } from '../mocks/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
@@ -69,6 +72,10 @@ export function provideSettings(storage: Storage) {
     Camera,
     SplashScreen,
     StatusBar,
+    FileTransfer,
+    FileOpener,
+    FileTransferObject,
+    File,
     // AppUpdate,
      AppVersion,
     // NativeAudio,
