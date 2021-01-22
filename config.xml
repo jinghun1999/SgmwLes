@@ -3,7 +3,7 @@
     <name>HX LES PDA</name>
     <description>上汽通用五菱物流执行终端</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Microsoft service team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://192.168.137.229:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -86,4 +86,5 @@
     <plugin name="cordova-plugin-app-version" spec="0.1.9" />
     <plugin name="cordova-plugin-nativeaudio" spec="3.0.9" />
     <engine name="android" spec="7.1.4" />
+    <allow-navigation href="http://192.168.137.229:8100" />
 </widget>

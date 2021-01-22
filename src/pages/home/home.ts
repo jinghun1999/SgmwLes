@@ -11,7 +11,7 @@ import {
 import { Storage } from "@ionic/storage";
 import { Api, Menus, User } from "../../providers";
 import { BaseUI } from "../";
-import { AppVersion } from '@ionic-native/app-version/ngx';
+import { AppVersion } from '@ionic-native/app-version';
 
 @IonicPage()
 @Component({
@@ -52,32 +52,7 @@ export class HomePage extends BaseUI {
   }
   ionViewDidLoad() {
     this.getWorkshop();
-    // this.api.get('system/getApkUpdate').subscribe((res: any) => {
-    //   console.log(res.data.version);
-    //  });
-    if (this.platform.is('android')) {
-      this.data.version = '0.0.1';
-      this.data.current_version = '0.0.2';
-      this.data.url = 'http://www.baidu.com';
-      this.navCtrl.push('UpgradePage', { data: this.data });
-      // this.appVersion.getVersionNumber().then((val) => {
-      //   this.data.version = val;
-      //   this.data.current_version = 0.02;
-      //   this.data.url = 'http://www.baidu.com';
-      //   this.navCtrl.push('UpgradePage', { data: this.data });
-      // });
-      // this.data.current_version = 1;
-      // this.api.get('system/getApkUpdate').subscribe((res: any) => {
-      //   if (res.successful) {
-      //     alert(res.data.version);
-      //     // if (this.data.current_version < res.data.version) {
-      //     //   this.data.version = res.data.version;
-      //     //   this.data.url = res.data.url;
-      //     //   this.navCtrl.push('UpgradePage', { data: this.data });
-      //     // }
-      //   }
-      // });
-    }
+    //this.doUpData();
   }
   getWorkshop = () => {
     this.storage.get("WORKSHOP").then((res) => {
@@ -164,5 +139,24 @@ export class HomePage extends BaseUI {
         alert("注销失败");
       }
     );
+  }
+  //校验更新
+  doUpData() {
+    if (this.platform.is('android')) {
+      this.appVersion.getVersionNumber().then(val => { 
+        if (val) { 
+          this.api.get('system/getApkUpdate').subscribe((res: any) => { 
+            if (res.successful) { 
+              if (res.version > val) { 
+                this.data.current_version = val;
+                this.data.version = res.version;
+                this.data.url = res.url;
+                this.navCtrl.push('UpgradePage', {data:this.data});
+              }
+            }
+          });
+        }
+      });      
+    }
   }
 }

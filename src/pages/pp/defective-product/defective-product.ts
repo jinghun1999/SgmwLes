@@ -26,7 +26,7 @@ export class DefectiveProductPage extends BaseUI {
   barTextHolderText: string = '扫描料箱号，光标在此处';   //扫描文本框placeholder属性
   keyPressed: any;
   reson: string;  //退货原因
-  reson_list: [];//退货原因列表
+  reson_list: any[]=[];//退货原因列表
   show: boolean = false;
   max_parts: number = 0;//最大可操作数
   workshop_list: any[] = [];//加载获取的的车间列表

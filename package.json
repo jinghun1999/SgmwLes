@@ -21,12 +21,16 @@
     "@angular/platform-browser": "5.2.11",
     "@angular/platform-browser-dynamic": "5.2.11",
     "@ionic-native/app-update": "^5.2.0",
-    "@ionic-native/app-version": "^5.30.0",
+    "@ionic-native/app-version": "^4.20.0",
     "@ionic-native/camera": "4.3.3",
     "@ionic-native/core": "~4.17.0",
-    "@ionic-native/native-audio": "^5.2.0",
+    "@ionic-native/file": "^4.1.0",
+    "@ionic-native/file-opener": "^4.20.0",
+    "@ionic-native/file-transfer": "^5.30.0",
+    "@ionic-native/native-audio": "^5.30.0",
     "@ionic-native/splash-screen": "~4.17.0",
     "@ionic-native/status-bar": "~4.17.0",
+    "@ionic-native/transfer": "^3.14.0",
     "@ionic-native/vibration": "^5.30.0",
     "@ionic/storage": "2.2.0",
     "@ngx-translate/core": "8.0.0",
@@ -69,7 +73,10 @@
       "cordova-plugin-app-update": {},
       "cordova-plugin-app-version": {},
       "cordova-plugin-nativeaudio": {},
-      "cordova-plugin-vibration": {}
+      "cordova-plugin-vibration": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-file-opener2": {},
+      "cordova-plugin-file-transfer": {}
     },
     "platforms": [
       "android"

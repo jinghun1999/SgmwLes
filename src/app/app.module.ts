@@ -9,28 +9,18 @@ import { IonicStorageModule, Storage } from '@ionic/storage';
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-// import {AppUpdate} from "@ionic-native/app-update/ngx";
- import { AppVersion } from '@ionic-native/app-version/ngx';
-// import { NativeAudio } from '@ionic-native/native-audio/ngx';
-// import { Vibration } from '@ionic-native/vibration/ngx';
+ import { AppVersion } from '@ionic-native/app-version';
 import { Menus } from '../mocks/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
 import { SuspiciousProvider } from '../providers/suspicious';
 
-// The translate loader needs to know where to load i18n files
-// in Ionic's static asset pipeline.
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
 
 export function provideSettings(storage: Storage) {
-  /**
-   * The Settings provider takes a set of default settings for your app.
-   *
-   * You can add new settings options at any time. Once the settings are saved,
-   * these values will not overwrite the saved values (this can be done manually if desired).
-   */
+
   return new Settings(storage, {
     option1: true,
     option2: 'Ionitron J. Framework',
