@@ -80,17 +80,6 @@ export class HomePage extends BaseUI {
   ionViewDidEnter() {
     this.doUpData();
   }
-  // ionViewDidEnter(){
-  //   document.addEventListener("keydown", this.keydown);
-  // }
-  // ionViewWillUnload(){
-  //   document.removeEventListener("keydown", this.keydown);
-  //   alert('remove home')
-  // }
-  /**
-   * Prompt the user to add a new item. This shows our ItemCreatePage in a
-   * modal and then adds the new item to our data source if the user created one.
-   */
   setProfile() {
     let addModal = this.modalCtrl.create(
       "SetProfilePage",
@@ -143,7 +132,7 @@ export class HomePage extends BaseUI {
   doUpData() {
     if (this.platform.is('android')) {
       let t = this;
-      this.appVersion.getVersionNumber().then(ver => {
+      this.appVersion.getVersionNumber().then(ver => {       
         t.api.get('system/getApkUpdate').subscribe((res: any) => {
           if (res.data.version > ver) {
             let dt = {
