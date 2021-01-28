@@ -46,25 +46,30 @@ export class LoginPage extends BaseUI {
         id: 1,
         text: "开发环境",
         value: "http://localhost:49280",
-      },
+      },      
       {
         id: 2,
-        text: "测试环境",
-        value: "http://10.1.126.171/lesapi",
-      },
-      {
-        id: 3,
         text: "冲压测试环境",
         value: "http://10.1.126.171/CYWEBAPI",
       },
       {
+        id: 3,
+        text: "厂内环境",
+        value: "http://10.1.126.171/lesapi",
+      },
+      {
         id: 4,
-        text: "厂内使用",
-        value: "http://172.168.0.1:49280",
+        text: "厂外环境",
+        value: "http://222.84.126.54:8081",
       },
     ];
     const env = localStorage.getItem('les_env');
-    this.api.api_host = env ? env : this.environment[1].value;
+    if (this.environment.findIndex(e => e.value == env) === -1) {
+      this.api.api_host = this.environment[3].value;
+    }
+    else { 
+      this.api.api_host = env ;
+    }    
   }
   doLogin() {
     if (!this.account.name || !this.account.password) {
@@ -73,10 +78,10 @@ export class LoginPage extends BaseUI {
       return;
     }
     let loading = super.showLoading(this.loadingCtrl, "登录中...");
+    localStorage.setItem('les_env', this.api.api_host);
     this.user.login(this.account).subscribe(
       (resp) => {
         loading.dismiss();
-        localStorage.setItem('les_env', this.api.api_host);
         this.navCtrl.setRoot(
           HomePage,
           {},

@@ -52,7 +52,6 @@ export class HomePage extends BaseUI {
   }
   ionViewDidLoad() {
     this.getWorkshop();
-    //this.doUpData();
   }
   getWorkshop = () => {
     this.storage.get("WORKSHOP").then((res) => {
@@ -79,7 +78,7 @@ export class HomePage extends BaseUI {
     );
   };
   ionViewDidEnter() {
-
+    this.doUpData();
   }
   // ionViewDidEnter(){
   //   document.addEventListener("keydown", this.keydown);
@@ -143,20 +142,26 @@ export class HomePage extends BaseUI {
   //校验更新
   doUpData() {
     if (this.platform.is('android')) {
-      this.appVersion.getVersionNumber().then(val => { 
-        if (val) { 
-          this.api.get('system/getApkUpdate').subscribe((res: any) => { 
-            if (res.successful) { 
-              if (res.version > val) { 
-                this.data.current_version = val;
-                this.data.version = res.version;
-                this.data.url = res.url;
-                this.navCtrl.push('UpgradePage', {data:this.data});
+      let t = this;
+      this.appVersion.getVersionNumber().then(ver => {
+        t.api.get('system/getApkUpdate').subscribe((res: any) => {
+          if (res.data.version > ver) {
+            let dt = {
+              current_version: ver,
+              version: res.data.version,
+              url: res.data.url
+            };
+            //跳转到升级页面
+            t.app.getRootNav().setRoot(
+              "UpgradePage", { data: dt },
+              {
+                animate: true,
+                direction: "forward",
               }
-            }
-          });
-        }
-      });      
+            );
+          }
+        });
+      });
     }
-  }
+  };
 }

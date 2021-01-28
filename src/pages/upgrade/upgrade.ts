@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 //import {Platform, AlertController} from 'ionic-angular';
-import {File} from '@ionic-native/file';
+import { File } from '@ionic-native/file';
 import { FileOpener } from '@ionic-native/file-opener';
-import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
 
 @IonicPage()
 @Component({
@@ -27,7 +27,7 @@ export class UpgradePage {
   ionViewDidEnter() {
   }
   downloadApp() {
-    const { url, version } = this.data;
+    const url = this.data.url;
     // 4.下载apk
     // const targetUrl = 'http://127.0.0.1:8080/test.apk';
     const fileTransfer: FileTransferObject = this.transfer.create();

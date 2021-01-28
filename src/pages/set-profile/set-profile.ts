@@ -55,8 +55,9 @@ export class SetProfilePage extends BaseUI {
           (res: any) => {
             this.fetching = false;
             if (res.successful) {
-              if (res.data.length == 0) { 
+              if ( res.data.length == 0) { 
                 this.workshop = '';
+                return;
               }
               this.list = res.data;
               this.workshop_choose = res.data; 

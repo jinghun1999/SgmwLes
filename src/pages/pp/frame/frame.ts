@@ -170,9 +170,8 @@ export class FramePage extends BaseUI {
           this.insertError('料箱号' + res.data.box_label + '已扫描');
           return;
         }
-
-        if (res.data.box_mode != this.item.box_mode) {
-          this.insertError('子零件的料箱型号与该框的料框型号不一致');
+        if (res.data.box_mode != this.ziPart.box_mode) {
+          this.insertError('子零件的料箱型号与该框的料箱型号不一致');
           this.setFocus();
           return;
         }
