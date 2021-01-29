@@ -6,7 +6,6 @@ import {
   LoadingController,
   AlertController,
 } from "ionic-angular";
-
 import { Api, User } from "../../providers";
 import { HomePage, BaseUI } from "../";
 
@@ -26,7 +25,6 @@ export class LoginPage extends BaseUI {
     name: "",
     password: "",
   };
-
   constructor(
     public navCtrl: NavController,
     public user: User,
@@ -61,7 +59,7 @@ export class LoginPage extends BaseUI {
         id: 4,
         text: "厂外环境",
         value: "http://222.84.126.54:8081",
-      },
+      }
     ];
     const env = localStorage.getItem('les_env');
     if (this.environment.findIndex(e => e.value == env) === -1) {

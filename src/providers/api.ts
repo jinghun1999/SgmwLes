@@ -10,7 +10,7 @@ export class Api {
   public api_host: string;   //api接口地址,在login.ts配置
 
   constructor(public http: HttpClient, public events: Events, public alertCtrl: AlertController, public toastCtrl: ToastController, public storage: Storage, public modalCtrl: ModalController) {
-    
+    this.api_host= localStorage.getItem('les_env');
   }
   get(endpoint: string, params?: any, reqOpts?: any) {
     if (!reqOpts) {

@@ -51,6 +51,7 @@ export class HomePage extends BaseUI {
 
   }
   ionViewDidLoad() {
+    this.doUpData();
     this.getWorkshop();
   }
   getWorkshop = () => {
@@ -77,9 +78,9 @@ export class HomePage extends BaseUI {
       }
     );
   };
-  ionViewDidEnter() {
-    this.doUpData();
-  }
+  // ionViewDidEnter() {
+  //   //this.doUpData();
+  // }
   setProfile() {
     let addModal = this.modalCtrl.create(
       "SetProfilePage",
@@ -89,7 +90,7 @@ export class HomePage extends BaseUI {
     addModal.onDidDismiss((item) => {
       this.getWorkshop();
       if (item) {
-        //this.items.add(item);
+
       }
     });
     addModal.present();
@@ -134,7 +135,7 @@ export class HomePage extends BaseUI {
       let t = this;
       this.appVersion.getVersionNumber().then(ver => {       
         t.api.get('system/getApkUpdate').subscribe((res: any) => {
-          if (res.data.version > ver) {
+          if (res.data.version>ver) { 
             let dt = {
               current_version: ver,
               version: res.data.version,

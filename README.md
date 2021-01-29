@@ -45,3 +45,21 @@ ionic serve
 ```Bash
 ionic build --prod -- --base-href=/lesapp/
 ```
+### APK在线升级插件
+
+```Bash
+cordova plugin add cordova-plugin-app-version@0.1.9
+npm install --save @ionic-native/app-version@4.0.0
+
+cordova plugin add cordova-plugin-file
+npm install --save @ionic-native/file@4.1.0
+
+cordova plugin add cordova-plugin-file-opener2@2.2.0
+npm install --save @ionic-native/file-opener@4.20.0
+
+cordova plugin add cordova-plugin-file-transfer@1.7.1
+npm install --save @ionic-native/transfer@4
+(或者:ionic cordova plugin add cordova-plugin-file-transfer
+ npm install @ionic-native/file-transfer )
+
+```
