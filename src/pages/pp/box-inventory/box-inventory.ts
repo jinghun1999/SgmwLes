@@ -108,7 +108,7 @@ export class BoxInventoryPage extends BaseUI {
     loading.dismissAll();
     this.resetScan();
   }
-
+//扫描
   searchPart() {
     let err = '';
     if (!this.label.length) {
@@ -121,13 +121,12 @@ export class BoxInventoryPage extends BaseUI {
       return;
     }
     this.current_part = this.data.parts.find(p => p.box === this.label);
-
     if (this.current_part) {
       this.real_qty = this.current_part.real_qty;
-      
       if (this.current_part.box_status == 1) {   //扫描并提交操作
         this.current_part.box_status = 2;
         this.item.parts.length = 0;
+        this.alr_wuliao++;
         this.item.parts.push(this.current_part);
         this.api.post('inventory/PostBoxPart', this.item).subscribe((res: any) => {
           if (res.successful) {
@@ -316,16 +315,18 @@ export class BoxInventoryPage extends BaseUI {
   showErr() {
     this.show = !this.show;
   }
-  //遍历集合重新赋值,为3个变量赋值
+  //遍历集合重新赋值
   upDataList(parts_array) {
     this.sum_box_partQty = 0;
     this.sum_box_Qty = 0;
     this.total_boxs = 0;
+    this.alr_wuliao = 0;
     parts_array.forEach(item => {
       if (item.part_no === this.current_part.part_no) {
         this.total_boxs++;
         if (item.box_status == 2) {
           this.sum_box_Qty++;
+          this.alr_wuliao++;
           this.sum_box_partQty += Number(item.real_qty);
         }
       }

@@ -26,9 +26,9 @@
         </ion-row>
       </ion-grid>
     </ion-item>
+    <span [ngClass]="{'text-detailed': true}">共{{total_wuliao}}种物料，已盘点{{alr_wuliao}}种物料，该物料共{{total_boxs}}箱</span>
   </ion-list>
   <div  *ngIf="current_part">
-    <span [ngClass]="{'text-detailed': true}">共{{total_wuliao}}种物料，已盘点{{alr_wuliao}}种物料，该物料共{{total_boxs}}箱</span>
     <ion-row>
       <ion-col no-padding>
         <button no-margin ion-button full auto color="balanced" (click)="doDetailed(this.current_part.part_no)">查询箱明细</button>
