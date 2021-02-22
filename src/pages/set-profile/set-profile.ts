@@ -67,8 +67,7 @@ export class SetProfilePage extends BaseUI {
             }
           },
           (err) => {
-            this.fetching = false
-              ;
+            this.fetching = false;
             super.showToast(this.toastCtrl, "获取车间信息出现错误，请稍后再试");
           }
         );

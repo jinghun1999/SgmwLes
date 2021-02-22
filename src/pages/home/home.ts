@@ -13,6 +13,13 @@ import { Api, Menus, User } from "../../providers";
 import { BaseUI } from "../";
 import { AppVersion } from '@ionic-native/app-version';
 
+import { HttpErrorResponse } from '@angular/common/http';
+import { TimeoutError } from 'rxjs';
+//import { timeout }  from 'rxjs/operators';
+
+
+
+
 @IonicPage()
 @Component({
   selector: "page-home",
@@ -57,30 +64,16 @@ export class HomePage extends BaseUI {
   getWorkshop = () => {
     this.storage.get("WORKSHOP").then((res) => {
       if (res === '') {
-        super.showToast(this.toastCtrl, "当前车间为空，请选择车间后再操作", "error");
+        super.showToast(this.toastCtrl, "注意：当前车间为空！", "error");
+        this.getMenus();
       } else if (!res) {
         this.setProfile();
       }
-    });
-    let loading = super.showLoading(this.loadingCtrl, "加载中...");
-    this.api.get("system/getMenus").subscribe(
-      (res: any) => {
-        loading.dismiss();
-        if (res.successful) {
-          this.gridList = res.data;
-        } else {
-          super.showToast(this.toastCtrl, res.message, "error");
-        }
-      },
-      (err) => {
-        loading.dismiss();
-        super.showToast(this.toastCtrl, "系统错误", "error");
+      else { 
+        this.getMenus();
       }
-    );
+    });
   };
-  // ionViewDidEnter() {
-  //   //this.doUpData();
-  // }
   setProfile() {
     let addModal = this.modalCtrl.create(
       "SetProfilePage",
@@ -133,9 +126,9 @@ export class HomePage extends BaseUI {
   doUpData() {
     if (this.platform.is('android')) {
       let t = this;
-      this.appVersion.getVersionNumber().then(ver => {       
+      this.appVersion.getVersionNumber().then(ver => {
         t.api.get('system/getApkUpdate').subscribe((res: any) => {
-          if (res.data.version>ver) { 
+          if (res.data.version > ver) {
             let dt = {
               current_version: ver,
               version: res.data.version,
@@ -154,4 +147,47 @@ export class HomePage extends BaseUI {
       });
     }
   };
+  //请求超时，跳转到登录页
+  goLoginPage() { 
+    window.localStorage.removeItem('TOKEN');
+    this.storage.clear();
+    this.navCtrl.push("LoginPage", {});
+    this.app.getRootNav().setRoot(
+      "LoginPage", {},
+      {
+        animate: true,
+        direction: "forward",
+      }
+    );
+  }
+  //获取菜单
+  getMenus() { 
+    let loading = super.showLoading(this.loadingCtrl, "加载中...");
+    this.api.get("system/getMenus").subscribe(
+      (res: any) => {
+        loading.dismiss();
+        if (res.successful) {
+          this.gridList = res.data;
+        } else {
+          super.showToast(this.toastCtrl, res.message, "error");
+        }
+      },
+      (err) => {
+        loading.dismiss();
+        let errMsg = '';
+        if (err instanceof TimeoutError) {
+          errMsg = '服务器连接超时';
+          //this.goLoginPage();
+        } else if (err instanceof HttpErrorResponse) {
+          errMsg = '网络连接异常';
+          //this.goLoginPage();
+        } else {
+          errMsg = '未知原因，请求失败';
+          //this.goLoginPage();
+        }
+        this.goLoginPage();
+        super.showToast(this.toastCtrl, errMsg, "error");
+      }
+    );
+  }
 }

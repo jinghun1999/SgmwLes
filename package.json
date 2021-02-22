@@ -76,7 +76,9 @@
       "cordova-plugin-app-update": {},
       "cordova-plugin-app-version": {},
       "cordova-plugin-nativeaudio": {},
-      "cordova-plugin-file-opener2": {},
+      "cordova-plugin-file-opener2": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      },
       "cordova-plugin-file-transfer": {},
       "cordova-plugin-file": {},
       "cordova-plugin-inappbrowser": {}

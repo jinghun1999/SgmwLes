@@ -1,8 +1,7 @@
 import 'rxjs/add/operator/toPromise';
-
 import {Injectable} from '@angular/core';
 import {Storage} from '@ionic/storage';
-import {Api} from './api';
+import { Api } from './api';
 
 /**
  * Most apps have the concept of a User. This is a simple provider

@@ -6,6 +6,10 @@ import {
   LoadingController,
   AlertController,
 } from "ionic-angular";
+
+import { HttpErrorResponse  } from '@angular/common/http'
+import { TimeoutError } from 'rxjs';
+import { timeout }  from 'rxjs/operators';
 import { Api, User } from "../../providers";
 import { HomePage, BaseUI } from "../";
 
@@ -90,8 +94,17 @@ export class LoginPage extends BaseUI {
         );
       },
       (err) => {
-        loading.dismiss();
-        super.showToast(this.toastCtrl, "登录失败" + err);
+        loading.dismiss();        
+        let errMsg = '';
+        if (err instanceof TimeoutError) {
+          errMsg = '服务器连接超时';          
+        } else if (err instanceof HttpErrorResponse) {
+          errMsg = '网络连接异常';
+        } else {
+          errMsg = '未知原因，请求失败';
+        }
+        super.showToast(this.toastCtrl, errMsg, "error");
+        //super.showToast(this.toastCtrl, '登录失败', 'error');
       }
     );
   }
