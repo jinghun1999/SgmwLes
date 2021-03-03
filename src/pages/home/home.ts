@@ -177,13 +177,10 @@ export class HomePage extends BaseUI {
         let errMsg = '';
         if (err instanceof TimeoutError) {
           errMsg = '服务器连接超时';
-          //this.goLoginPage();
         } else if (err instanceof HttpErrorResponse) {
           errMsg = '网络连接异常';
-          //this.goLoginPage();
         } else {
           errMsg = '未知原因，请求失败';
-          //this.goLoginPage();
         }
         this.goLoginPage();
         super.showToast(this.toastCtrl, errMsg, "error");

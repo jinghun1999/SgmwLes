@@ -9,7 +9,6 @@ import {
 
 import { HttpErrorResponse  } from '@angular/common/http'
 import { TimeoutError } from 'rxjs';
-import { timeout }  from 'rxjs/operators';
 import { Api, User } from "../../providers";
 import { HomePage, BaseUI } from "../";
 
@@ -43,11 +42,12 @@ export class LoginPage extends BaseUI {
 
   ionViewDidLoad() {
     this.setFocus();
+    //配置登录环境
     this.environment = [
       {
         id: 1,
         text: "开发环境",
-        value: "http://localhost:49280",
+        value: "http://127.0.0.1:49280", 
       },      
       {
         id: 2,

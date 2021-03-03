@@ -224,7 +224,7 @@ export class SheetPanelPage extends BaseUI {
       partPanel: this.item.bundles
     }).subscribe((res: any) => {
       if (res.successful) {
-        this.item.bundles = [];
+        this.item.bundles.length=0;
         this.insertError('提交成功', 's')
       }
       else {

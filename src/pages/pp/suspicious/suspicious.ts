@@ -197,7 +197,7 @@ showErr() {
   cancel_do() {
     this.insertError('正在撤销...');
     this.code = '';
-    this.item.parts = [];
+    this.item.parts.length=0;
     this.insertError("撤销成功");
     this.resetScan();
   }
@@ -227,7 +227,7 @@ showErr() {
     this.api.post('PP/PostSuspiciousInOut', this.item).subscribe((res: any) => {
       if (res.successful) {
         this.insertError('提交成功', 's');
-        this.item.parts = [];
+        this.item.parts.length=0;
       }
       else {
         this.insertError(res.message);
@@ -240,17 +240,13 @@ showErr() {
       });
     this.resetScan();
   }
-  //移入返修区
-  inRepair() {
-    this.item.InOut = 1;    
-    this.item.parts = [];
+  //移入或者移出返修区，value=1移入，value=0移出
+  inOrOutRepair(value) { 
+    this.item.InOut = value;
+     this.item.parts.length = 0;
     this.resetScan();
   }
-  outRepair() { 
-    this.item.InOut = 0;
-    this.item.parts = [];
-    this.resetScan();
-  }
+
   focusInput = () => {
     this.searchbar.setElementClass('bg-red', false);
     this.searchbar.setElementClass('bg-green', true);

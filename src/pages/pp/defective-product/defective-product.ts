@@ -250,7 +250,7 @@ export class DefectiveProductPage extends BaseUI {
       buttons: [{
         text: '取消',
         handler: () => {
-
+          
         }
       }, {
         text: '确定',
