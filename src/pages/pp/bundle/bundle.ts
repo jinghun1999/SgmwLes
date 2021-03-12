@@ -175,7 +175,7 @@ export class BundlePage extends BaseUI {
       }, {
         text: '确认撤销',
         handler: () => {
-          this.navCtrl.popToRoot();
+            this.navCtrl.popToRoot();
         }
       }]
     });

@@ -201,14 +201,10 @@ export class PanelFeedPage extends BaseUI {
       if (data) {
         if (data.successful) {
           this.updateDropDownList(this.item.portNo);  //更新下拉框上料口
-          this.insertError('提交成功', 's');
+          //this.insertError('提交成功', 's');
           bundle ? this.item.partPanel.splice(0, 0, bundle) : null;
         } else if (data.isCancel && data.isCancel) { //选择"关闭"操作
           this.item.partPanel.length = 0;;
-        }
-        else {
-          //提交失败
-          this.insertError(data.message);
         }
       }
     });
