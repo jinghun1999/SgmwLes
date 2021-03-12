@@ -13,6 +13,7 @@ import { AppVersion } from '@ionic-native/app-version';
 import { File } from '@ionic-native/file';
 import { FileOpener } from '@ionic-native/file-opener';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer';
+import { NativeAudio } from '@ionic-native/native-audio';
 import { Menus } from '../mocks/menus';
 import { Settings, User, Api, InterceptorService } from '../providers';
 import { MyApp } from './app.component';
@@ -77,8 +78,8 @@ export function provideSettings(storage: Storage) {
     FileTransferObject,
     File,
     // AppUpdate,
-     AppVersion,
-    // NativeAudio,
+    AppVersion,
+    NativeAudio,
     // Vibration,
     { provide: Settings, useFactory: provideSettings, deps: [Storage] },
     // Keep this to enable Ionic's runtime error handling during development
