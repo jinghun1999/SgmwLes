@@ -32,16 +32,18 @@ export class BundleListPage extends BaseUI {
     this.plant = navParams.get('plant').toString();//工厂
   }
 
-  confirm() {
-    let loading = super.showLoading(this.loadingCtrl, '提交中...');
-    this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {      
-      this.viewCtrl.dismiss(res);   
-      loading.dismiss();
-    }, error => { 
-        this.viewCtrl.dismiss(error); 
-        loading.dismiss();  
-    }     
-    );
+    confirm() {
+        let res = {"successful":true};
+        this.viewCtrl.dismiss(res);
+    // let loading = super.showLoading(this.loadingCtrl, '提交中...');
+    // this.api.post('PP/PostFeedingPort', { plant: this.plant, workshop: this.workshop, portNo: this.port_no, partPanel: this.bundle_list }).subscribe((res) => {      
+    //   this.viewCtrl.dismiss(res);   
+    //   loading.dismiss();
+    // }, error => { 
+    //     this.viewCtrl.dismiss(error); 
+    //     loading.dismiss();  
+    // }     
+    // );
   }
   cancel() {
     let data = { 'isCancel': this.isCancel };

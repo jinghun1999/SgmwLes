@@ -177,7 +177,7 @@ export class CloseFramePage extends BaseUI {
       }
     },
       err => {
-        this.insertError('扫描过程出错,' + err);
+        this.insertError('扫描过程出错');
       });
     this.resetScan();
   }
@@ -196,7 +196,7 @@ export class CloseFramePage extends BaseUI {
     _m.onDidDismiss(data => {
       if (data) {
         if (data.receive > this.canYa) {
-          this.insertError('合框数不能大于' + this.canYa + '');
+          this.insertError('合框数不能大于' + this.canYa);
           return;
         }
         model.closeframeParts = data.receive;

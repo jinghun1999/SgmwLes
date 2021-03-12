@@ -156,7 +156,7 @@ export class BoxInventoryPage extends BaseUI {
         text: '确定',
         handler: () => {
           if (this.navCtrl.canGoBack())
-            this.navCtrl.pop();
+                this.navCtrl.pop();            
         }
       }]
     });
