@@ -45,6 +45,7 @@ ionic serve
 ```Bash
 ionic build --prod -- --base-href=/lesapp/
 ```
+
 ### APK在线升级插件
 
 ```Bash
@@ -62,4 +63,17 @@ npm install --save @ionic-native/transfer@4
 (或者:ionic cordova plugin add cordova-plugin-file-transfer
  npm install @ionic-native/file-transfer )
 
+```
+
+### 调试常见问题
+
+下载安装依赖包时安装不了，提示错误如下：
+
+error An unexpected error occurred: "EPERM: operation not permitted, folder 'D:\\work\\sgmwLes\\node_modules\\@****************'".
+
+可以试试清理缓存
+两种清除缓存的方法
+
+```Bash
+npm cache clean -f  和 yarn cache clean
 ```
