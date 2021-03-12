@@ -11,7 +11,7 @@ import { HttpErrorResponse  } from '@angular/common/http'
 import { TimeoutError } from 'rxjs';
 import { Api, User } from "../../providers";
 import { HomePage, BaseUI } from "../";
-
+import { NativeAudio } from '@ionic-native/native-audio';
 @IonicPage()
 @Component({
   selector: "page-login",
@@ -28,17 +28,25 @@ export class LoginPage extends BaseUI {
     name: "",
     password: "",
   };
+  private onSuccess: any;
+  private onError: any;
   constructor(
     public navCtrl: NavController,
     public user: User,
     public toastCtrl: ToastController,
     public loadingCtrl: LoadingController,
     public alertCtrl: AlertController,
+    private nativeAudio: NativeAudio,
     public api: Api
   ) {
     super();
     this.version = this.api.version;
-  }
+    //uniqueId1为音频文件的唯一ID
+    //assetPath音频资产的相对路径或绝对URL（包括http：//）
+    //官网还有更多的配置，这里只需要两个参数就行了，后面的回调记得带上
+    this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+    this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+  } 
 
   ionViewDidLoad() {
     this.setFocus();
@@ -74,6 +82,10 @@ export class LoginPage extends BaseUI {
     }    
   }
   doLogin() {
+    // play yes audio when suceessed.
+    this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+    // play no audio when failed.
+    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
     if (!this.account.name || !this.account.password) {
       super.showToast(this.toastCtrl, "请输入用户名密码");
       this.setFocus();

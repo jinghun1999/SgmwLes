@@ -126,22 +126,20 @@
   resolved "https://registry.npm.taobao.org/@ionic-native/file-opener/download/@ionic-native/file-opener-4.20.0.tgz#35102e5d17ec5052ee74c97aef8e7522b1eef65b"
   integrity sha1-NRAuXRfsUFLudMl67451IrHu9ls=
 
-"@ionic-native/file-transfer@^5.30.0":
-  version "5.31.1"
-  resolved "https://registry.npm.taobao.org/@ionic-native/file-transfer/download/@ionic-native/file-transfer-5.31.1.tgz#ca73ec0127bcbf8f493bd5ebbe578dfb1f9df2df"
-  integrity sha1-ynPsASe8v49JO9XrvleN+x+d8t8=
-  dependencies:
-    "@types/cordova" latest
+"@ionic-native/file-transfer@^4.20.0":
+  version "4.20.0"
+  resolved "https://registry.npm.taobao.org/@ionic-native/file-transfer/download/@ionic-native/file-transfer-4.20.0.tgz#ddece9f30ad65169220529b210f856034427144c"
+  integrity sha1-3ezp8wrWUWkiBSmyEPhWA0QnFEw=
 
 "@ionic-native/file@^4.1.0":
   version "4.20.0"
   resolved "https://registry.npm.taobao.org/@ionic-native/file/download/@ionic-native/file-4.20.0.tgz#1ec91a0431253ee41109443437571bb835984d2d"
   integrity sha1-HskaBDElPuQRCUQ0N1cbuDWYTS0=
 
-"@ionic-native/native-audio@^5.30.0":
+"@ionic-native/in-app-browser@^5.30.0":
   version "5.31.1"
-  resolved "https://registry.npm.taobao.org/@ionic-native/native-audio/download/@ionic-native/native-audio-5.31.1.tgz#fe5a4ae2b30cd560a9c0dc73df3c189eecf41707"
-  integrity sha1-/lpK4rMM1WCpwNxz3zwYnuz0Fwc=
+  resolved "https://registry.npm.taobao.org/@ionic-native/in-app-browser/download/@ionic-native/in-app-browser-5.31.1.tgz#207df353e6b8d433f57eb9d38497582fbc4dcd7c"
+  integrity sha1-IH3zU+a41DP1frnThJdYL7xNzXw=
   dependencies:
     "@types/cordova" latest
 
@@ -159,13 +157,6 @@
   version "3.14.0"
   resolved "https://registry.npm.taobao.org/@ionic-native/transfer/download/@ionic-native/transfer-3.14.0.tgz#43fb7b91272f245133063b0a1a5947927b09b21a"
   integrity sha1-Q/t7kScvJFEzBjsKGllHknsJsho=
-
-"@ionic-native/vibration@^5.30.0":
-  version "5.31.1"
-  resolved "https://registry.npm.taobao.org/@ionic-native/vibration/download/@ionic-native/vibration-5.31.1.tgz#7858c181199c4435e3bf7a962b5568a05e4073df"
-  integrity sha1-eFjBgRmcRDXjv3qWK1VooF5Ac98=
-  dependencies:
-    "@types/cordova" latest
 
 "@ionic/app-scripts@3.2.1":
   version "3.2.1"
@@ -289,6 +280,13 @@ android-versions@1.4.0:
   integrity sha1-gH6ilB1+V4Dm3WHF2be288Bwbgk=
   dependencies:
     semver "^5.4.1"
+
+angular-progress-bar@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.npm.taobao.org/angular-progress-bar/download/angular-progress-bar-1.0.11.tgz#eef680179ac1f3711cf16343e916099ecea70f1f"
+  integrity sha1-7vaAF5rB83Ec8WND6RYJns6nDx8=
+  dependencies:
+    tslib "^1.9.0"
 
 ansi-regex@^2.0.0:
   version "2.1.1"
@@ -1114,6 +1112,26 @@ cordova-plugin-device@^2.0.2:
   resolved "https://registry.npm.taobao.org/cordova-plugin-device/download/cordova-plugin-device-2.0.3.tgz#c2b41b7efd0455dd097f89356d85bfdd5dadeb0f"
   integrity sha1-wrQbfv0EVd0Jf4k1bYW/3V2t6w8=
 
+cordova-plugin-file-opener2@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.npm.taobao.org/cordova-plugin-file-opener2/download/cordova-plugin-file-opener2-3.0.5.tgz#3bf481a724bcec9cfa2257a71915309df5ea5b4d"
+  integrity sha1-O/SBpyS87Jz6IlenGRUwnfXqW00=
+
+cordova-plugin-file-transfer@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.npm.taobao.org/cordova-plugin-file-transfer/download/cordova-plugin-file-transfer-1.7.1.tgz#a75d8be2ebc3bb9b23c5b1bbd199214ec267586b"
+  integrity sha1-p12L4uvDu5sjxbG70ZkhTsJnWGs=
+
+cordova-plugin-file@^6.0.2:
+  version "6.0.2"
+  resolved "https://registry.npm.taobao.org/cordova-plugin-file/download/cordova-plugin-file-6.0.2.tgz#f3911479f8357e9aacb5576674f8d95b31a1fb20"
+  integrity sha1-85EUefg1fpqstVdmdPjZWzGh+yA=
+
+cordova-plugin-inappbrowser@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.npm.taobao.org/cordova-plugin-inappbrowser/download/cordova-plugin-inappbrowser-4.1.0.tgz#6010809d1cd813c546f65e4e41dc2b9ed97179e4"
+  integrity sha1-YBCAnRzYE8VG9l5OQdwrntlxeeQ=
+
 cordova-plugin-ionic-keyboard@^2.1.3:
   version "2.2.0"
   resolved "https://registry.npm.taobao.org/cordova-plugin-ionic-keyboard/download/cordova-plugin-ionic-keyboard-2.2.0.tgz#53ba9ccd5e765165446a094cfe042a2ddd87d81d"
@@ -1138,11 +1156,6 @@ cordova-plugin-statusbar@^2.4.2:
   version "2.4.3"
   resolved "https://registry.npm.taobao.org/cordova-plugin-statusbar/download/cordova-plugin-statusbar-2.4.3.tgz#cc557aef66c27484e0f7f045004040d03321f82d"
   integrity sha1-zFV672bCdITg9/BFAEBA0DMh+C0=
-
-cordova-plugin-vibration@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.npm.taobao.org/cordova-plugin-vibration/download/cordova-plugin-vibration-3.1.1.tgz#38fcdd9a7675cfb44d86339c1b2cb129017e9e00"
-  integrity sha1-OPzdmnZ1z7RNhjOcGyyxKQF+ngA=
 
 cordova-plugin-whitelist@^1.3.3:
   version "1.3.4"
@@ -3009,9 +3022,9 @@ node-libs-browser@^2.0.0:
     util "^0.11.0"
     vm-browserify "^1.0.1"
 
-node-sass@^4.10.0, node-sass@^4.12.0:
+node-sass@^4.10.0, node-sass@^4.14.1:
   version "4.14.1"
-  resolved "https://registry.npm.taobao.org/node-sass/download/node-sass-4.14.1.tgz?cache=0&sync_timestamp=1604150619472&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnode-sass%2Fdownload%2Fnode-sass-4.14.1.tgz#99c87ec2efb7047ed638fb4c9db7f3a42e2217b5"
+  resolved "https://registry.npm.taobao.org/node-sass/download/node-sass-4.14.1.tgz?cache=0&sync_timestamp=1604150645761&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnode-sass%2Fdownload%2Fnode-sass-4.14.1.tgz#99c87ec2efb7047ed638fb4c9db7f3a42e2217b5"
   integrity sha1-mch+wu+3BH7WOPtMnbfzpC4iF7U=
   dependencies:
     async-foreach "^0.1.3"
@@ -4376,7 +4389,7 @@ tsickle@^0.27.2:
     source-map "^0.6.0"
     source-map-support "^0.5.0"
 
-tslib@^1.0.0, tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1:
+tslib@^1.0.0, tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
   resolved "https://registry.npm.taobao.org/tslib/download/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha1-zy04vcNKE0vK8QkcQfZhni9nLQA=
