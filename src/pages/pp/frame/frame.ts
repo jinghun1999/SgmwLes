@@ -13,6 +13,7 @@ import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
 import { fromEvent } from "rxjs/observable/fromEvent";
 import { Storage } from "@ionic/storage";
+import { NativeAudio } from '@ionic-native/native-audio';
 
 @IonicPage()
 @Component({
@@ -65,9 +66,12 @@ export class FramePage extends BaseUI {
         private zone: NgZone,
         public alertCtrl: AlertController,
         public modalCtrl: ModalController,
-        public storage: Storage
+        public storage: Storage,
+        public nativeAudio:NativeAudio
     ) {
         super();
+        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -146,50 +150,57 @@ export class FramePage extends BaseUI {
         if (!this.box_label.trim()) {
             err = '无效的料箱号，请重试';
         }
-
-        if (this.item.box_label.length && this.ziPart.box_label.length) {
+        else if (this.item.box_label.length && this.ziPart.box_label.length) {
             err = '不能过多的扫描';
         }
+
         if (err.length > 0) {
             this.insertError(err);
             this.setFocus();
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
             return;
         }
         if (this.item.box_label.length && this.item.bundle_no.length) { //第二次扫描料箱
-            if (this.item.part_type == 1) {
+            let err = '';
+            if (this.item.part_type == 1) {  
+                err = '单件单模零件只能扫一个料箱';
+            }
+            else if (this.box_label == this.ziPart.box_label) {                
+                err = '料箱号' + this.box_label + '已扫描!';
+            }
+            if (err.length > 0) { 
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.setFocus();
-                this.insertError('单件单模零件只能扫一个料箱');
                 return;
             }
 
-            if (this.box_label == this.ziPart.box_label) {
-                this.insertError('料箱号' + this.box_label + '已扫描');
-                this.setFocus();
-                return;
-            }
             this.api.get('pp/getFrameAgainBox', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
                 if (!res.successful) {
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     this.insertError(res.message);
                     return;
                 }
+                this.insertError(" ");
                 if (res.data.box_label == this.item.box_label || res.data.box_label == this.item.box_label) {
                     this.insertError('料箱号' + res.data.box_label + '已扫描');
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
                 }
                 if (res.data.box_mode != this.ziPart.box_mode) {
                     this.insertError('子零件的料箱型号与该框的料箱型号不一致');
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     this.setFocus();
                     return;
                 }
+                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 this.ziPart.box_label = res.data.box_label;
-            });
-            this.setFocus();
-            return;
+            });            
         }
         //扫描第一个料箱
         this.api.get('pp/getFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
             if (res.successful) {
                 this.insertError(" ");
+                //this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 let frame = res.data;
                 this.item.pressPart = frame.pressPart;
                 this.item.feedingPort = frame.feedingPort;
@@ -236,10 +247,12 @@ export class FramePage extends BaseUI {
                 }
             }
             else {
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         }, error => {
-            this.insertError('获取料箱信息失败');
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+            this.insertError('获取料箱信息失败,请重新扫描！');
         });
         this.setFocus();
     };

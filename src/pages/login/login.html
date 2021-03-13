@@ -25,6 +25,9 @@
           <ion-option *ngFor="let t of environment;let i=index" value="{{t.value}}">{{t.text}}</ion-option>
         </ion-select>
       </ion-item>
+      <ion-item>
+        <ion-label>当前访问服务：{{api.api_host}}/api</ion-label>
+      </ion-item>
       <div padding>
         <button ion-button color="primary" block>登 录</button>
       </div>

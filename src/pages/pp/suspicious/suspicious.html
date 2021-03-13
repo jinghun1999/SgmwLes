@@ -13,11 +13,11 @@
   <ion-row>
     <ion-col no-padding>
       <button no-margin ion-button full large [ngStyle]="{'background-color':item.InOut == 1 ? 'Aquamarine' : '#C0C0C0' }"
-        (click)="inOrOutRepair(1)">移入返修区</button>
+        (click)="inOrOutRepair(1)">移入冷作库</button>
     </ion-col>
     <ion-col no-padding>
       <button no-margin ion-button full large [ngStyle]="{'background-color':item.InOut == 0 ? 'Aquamarine' : '#C0C0C0' }"
-        (click)="inOrOutRepair(0)">移出返修区</button>
+        (click)="inOrOutRepair(0)">移出冷作库</button>
     </ion-col>
   </ion-row>
   <div>
