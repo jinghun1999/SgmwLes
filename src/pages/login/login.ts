@@ -76,7 +76,7 @@ export class LoginPage extends BaseUI {
         ];
         const env = localStorage.getItem('les_env');
         if (this.environment.findIndex(e => e.value == env) === -1) {
-            this.api.api_host = this.environment[3].value;
+            this.api.api_host = this.environment[1].value;
         }
         else {
             this.api.api_host = env;

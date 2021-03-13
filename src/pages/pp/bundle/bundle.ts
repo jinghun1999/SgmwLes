@@ -7,7 +7,8 @@ import {
     NavController,
     AlertController,
     ModalController,
-    Searchbar
+    Searchbar,
+    Content
 } from 'ionic-angular';
 import { Api } from '../../../providers';
 import { BaseUI } from '../../baseUI';
@@ -20,7 +21,7 @@ import { NativeAudio } from '@ionic-native/native-audio';
 })
 export class BundlePage extends BaseUI {
     @ViewChild(Searchbar) searchbar: Searchbar;
-
+    @ViewChild(Content) content: Content;
     code: string = '';                      //记录扫描编号
     barTextHolderText: string = '扫描捆包号,光标在此处';   //扫描文本框placeholder属性
     workshop: string; //初始化获取的车间
@@ -54,6 +55,7 @@ export class BundlePage extends BaseUI {
     ionViewDidEnter() {
         setTimeout(() => {
             this.searchbar.setFocus();
+            this.content.scrollToBottom();
         });
     }
     insertError = (msg: string, t: string = 'e') => {
@@ -126,7 +128,7 @@ export class BundlePage extends BaseUI {
     scanSheet() {
         this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
             if (res.successful) {
-                this.setRollerDown();
+                this.scrollToBottom();
                 this.insertError(" ");                
                 let model = res.data;
                 if (this.item.bundles.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
@@ -241,10 +243,11 @@ export class BundlePage extends BaseUI {
     }
 
     focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
-    blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
-    
-    setRollerDown() { 
-        document.getElementById("body").scrollTop = document.getElementById("body").scrollHeight;
-        document.body.scrollTop = document.body.scrollHeight;
+    blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }  
+    //每次扫描后都滚动到最下面
+    scrollToBottom() { 
+        let x = 0; //X轴坐标
+        let y = document.getElementById("body").offsetHeight; //Y轴坐标
+        this.content.scrollTo(x, y);
     }
 }
