@@ -151,7 +151,6 @@ export class ReturnPage extends BaseUI {
     scanSheet() {
         this.api.get('PP/GetReturn', { plant: this.api.plant, workshop: this.item.workshop, bundle_no: this.code }).subscribe((res: any) => {
             if (res.successful) {
-
                 if (this.item.partPanel.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
                     this.insertError(`料箱${res.data.bundleNo}已扫描过，请扫描其他标签`);
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
@@ -165,7 +164,7 @@ export class ReturnPage extends BaseUI {
                 }
                 else {
                     this.insertError(`料箱${model.bundleNo}的剩余数量为小于1`);
-                    this.nativeAudio.play'no').then(this.onSuccess, this.onError);
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
                 }
             }
