@@ -47,6 +47,8 @@ export class CloseFramePage extends BaseUI {
         target: '',
         parts: []
     };
+    private onError: any;
+    private onSuccess: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -89,8 +91,7 @@ export class CloseFramePage extends BaseUI {
             this.keyDown(event);
         });
     }
-    onError() { }
-    onSuccess() { }
+    
     removekey = () => {
         this.keyPressed.unsubscribe();
     }
@@ -153,14 +154,14 @@ export class CloseFramePage extends BaseUI {
                 else if (this.partNo.length > 0) {
                     if (this.partNo != model.partNo) {
                         this.insertError('扫描料箱的零件号必须一致');
-                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                        this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                         return;
                     }
                 }
                 else {
                     this.partNo = model.partNo;                    
                 }
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                
                 //源料箱
                 if (this.sourceItem.parts.length == 0) {
                     if (this.canYa != 0) {
@@ -183,6 +184,7 @@ export class CloseFramePage extends BaseUI {
                     model.type = 2;
                     this.targetItem.parts.push(model);
                 }
+                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
             }
             else {
                 this.nativeAudio.play('no').then(this.onSuccess, this.onError);

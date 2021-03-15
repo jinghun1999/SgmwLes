@@ -64,7 +64,8 @@ export class SparePartsPage extends BaseUI {
         workshop: '',
         parts: []
     }
-
+    private onSuccess: any;
+    private onError: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -77,8 +78,8 @@ export class SparePartsPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
     keyDown(event) {
         switch (event.keyCode) {
@@ -125,12 +126,12 @@ export class SparePartsPage extends BaseUI {
     scan() {
         let err = '';
         if (this.code.trim() == '') {
-            err = '请扫描料箱号！';
-            this.insertError(err);
+            err = '请扫描料箱号！';            
         }
 
         if (err.length > 0) {
             this.insertError(err);
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
             this.resetScan();
             return;
         }
@@ -163,7 +164,7 @@ export class SparePartsPage extends BaseUI {
         this.api.get('pp/getSpareParts', { plant: this.api.plant, workshop: this.item.workshop, box_label: this.code }).subscribe((res: any) => {
             if (res.successful) {
                 this.insertError(" ");
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                
                 let part = res.data;
                 if (!part.pressParts) { //pressParts为null
                     this.spareItem.closeframeParts = this.spareItem.packingQty - this.spareItem.currentParts;//可合框数
@@ -183,14 +184,15 @@ export class SparePartsPage extends BaseUI {
                     this.spareItem.pressParts = part.pressParts;
                     this.spareItem.max_parts = part.closeframeParts;
                 }
+                this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
             }
             else {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         },
             err => {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                 this.insertError('扫描过程出错,请重新扫描！');
             });
         this.resetScan();
@@ -286,8 +288,6 @@ export class SparePartsPage extends BaseUI {
             });
         this.resetScan();
     }
-    onSuccess() { }
-    onError() { }
     //切换散件
     changePress(part_no) {
         let pressParts = this.spareItem.pressParts.find(p => p.part_no == part_no);

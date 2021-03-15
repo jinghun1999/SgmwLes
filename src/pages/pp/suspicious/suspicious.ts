@@ -37,6 +37,9 @@ export class SuspiciousPage extends BaseUI {
         target: '',
         parts: [],
     };
+    private onError: any;
+    private onSuccess: any;
+
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -49,8 +52,8 @@ export class SuspiciousPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -79,8 +82,7 @@ export class SuspiciousPage extends BaseUI {
             this.keyDown(event);
         });
     }
-    onSuccess() { }
-    onError() { }
+   
     removekey = () => {
         this.keyPressed.unsubscribe();
     }
@@ -144,6 +146,7 @@ export class SuspiciousPage extends BaseUI {
             this.insertError(err);
             this.searchbar.setFocus();
             this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+
             return false;
         }
         return true;
@@ -167,20 +170,21 @@ export class SuspiciousPage extends BaseUI {
                 this.insertError(" ");
                 if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
                     this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
-                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                    this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+
                     return;
-                }
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                }               
                 let model = res.data;
                 this.item.parts.splice(0, 0, model);
+                this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
             }
             else {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         },
             err => {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                 this.insertError('扫描失败,请重新扫描！');
             });
         this.resetScan();

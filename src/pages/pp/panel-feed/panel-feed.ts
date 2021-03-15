@@ -34,6 +34,8 @@ export class PanelFeedPage extends BaseUI {
     };
     keyPressed: any;
     errors: any[] = [];
+    private onSuccess: any;
+    private onError: any;
     constructor(
         public navParams: NavParams,
         public toastCtrl: ToastController,
@@ -111,12 +113,6 @@ export class PanelFeedPage extends BaseUI {
                 this.insertError('获取');
             };
     }
-    private onSuccess() { 
-
-    }
-    private onError() { 
-
-    }
     //扫描
     scan() {
         let err = '';
@@ -140,11 +136,11 @@ export class PanelFeedPage extends BaseUI {
                 selectPort_no: this.item.portNo,
             }).subscribe(
                 (res: any) => {
-                    if (res.successful) {
-                        this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                    if (res.successful) {                        
                         const bundle = res.data;
                         if (this.item.partPanel.findIndex((p: any) => p.bundleNo === bundle.bundleNo) >= 0) {
                             this.insertError(bundle.bundleNo + "已在扫描列表中，不能重复扫描");
+                            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                             return;
                         }
                         if (bundle.type == 1) {   //type=1，扫描的是上料口
@@ -165,6 +161,7 @@ export class PanelFeedPage extends BaseUI {
                                 this.item.partPanel.splice(0, 0, bundle);
                             } else if (this.item.partPanel.length == 8) {
                                 this.insertError(`最多只能扫描8个捆包号`);
+                                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                                 return;
                             }
                             else {
@@ -190,6 +187,7 @@ export class PanelFeedPage extends BaseUI {
                                 }
                             }
                         }
+                        this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                     } else {
                         this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                         this.insertError(res.message);
@@ -215,7 +213,6 @@ export class PanelFeedPage extends BaseUI {
             if (data) {
                 if (data.successful) {
                     this.updateDropDownList(this.item.portNo);  //更新下拉框上料口
-                    //this.insertError('提交成功', 's');
                     bundle ? this.item.partPanel.splice(0, 0, bundle) : null;
                 } else if (data.isCancel && data.isCancel) { //选择"关闭"操作
                     this.item.partPanel.length = 0;;

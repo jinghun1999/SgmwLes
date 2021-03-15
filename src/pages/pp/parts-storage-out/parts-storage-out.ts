@@ -36,6 +36,8 @@ export class PartsStorageOutPage extends BaseUI {
         target: '', //源仓库
         parts: [],
     };
+    private onSuccess: any;
+    private onError: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -48,11 +50,9 @@ export class PartsStorageOutPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
-    onError() { }
-    onSuccess() { }
     keyDown(event) {
         switch (event.keyCode) {
             case 112:

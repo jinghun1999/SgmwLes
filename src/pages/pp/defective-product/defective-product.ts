@@ -38,6 +38,8 @@ export class DefectiveProductPage extends BaseUI {
         parts: [],
         codeDetailInfos: []
     };
+    private onSuccess: any;
+    private onError: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -80,8 +82,6 @@ export class DefectiveProductPage extends BaseUI {
             this.keyDown(event);
         });
     }
-    onSuccess() { }
-    onError() { }
     removekey = () => {
         this.keyPressed.unsubscribe();
     }
@@ -136,13 +136,13 @@ export class DefectiveProductPage extends BaseUI {
                 this.insertError(" ");
                 if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
                     this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
                 }
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 let model = res.data;
                 model.max_parts = model.currentParts;
                 this.item.parts.push(model);
+                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
             }
             else {
                 this.nativeAudio.play('no').then(this.onSuccess, this.onError);

@@ -46,6 +46,8 @@ export class SuspiciousInOutPage extends BaseUI {
     };
     keyPressed: any;
     errors: any[] = [];
+    private onSuccess: any;
+    private onError: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -58,11 +60,9 @@ export class SuspiciousInOutPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
-    onSuccess() { }
-    onError() { }
     keyDown(event) {
         switch (event.keybox_label) {
             case 112:
@@ -140,7 +140,6 @@ export class SuspiciousInOutPage extends BaseUI {
             this.setFocus();
             return;
         }
-
         this.api.get('PP/GetFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
             if (res.successful) {
                 this.insertError(" ");
@@ -159,11 +158,11 @@ export class SuspiciousInOutPage extends BaseUI {
                     this.item.part_no = model.part_no;
                     model.part_type == 3 && this.changeFeed(model.part_no);
                 }
-                else {
-                    
+                else {                    
                     this.insertError("获取零件列表失败");
                 }
-                this.item.box_label = frame.box_label
+                this.item.box_label = frame.box_label;
+                this.nativeAudio.play('yes').then(this.onSuccess, this.onError);
             }
             else {
                 this.nativeAudio.play('no').then(this.onSuccess, this.onError);

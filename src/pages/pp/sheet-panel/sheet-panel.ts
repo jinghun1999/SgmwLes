@@ -38,6 +38,8 @@ export class SheetPanelPage extends BaseUI {
     workshop_list: any[] = []; //页面加载时获取车间列表，选中的就是item的target
     keyPressed: any;
     errors: any[] = [];
+    private onError: any;
+    private onSuccess: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -51,8 +53,8 @@ export class SheetPanelPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -112,30 +114,36 @@ export class SheetPanelPage extends BaseUI {
 
     //扫描执行的过程
     scan() {
+        let err = '';
         if (!this.bundle_no) {
-            this.insertError('请扫描捆包号！');
+           err='请扫描捆包号！';
             return;
         }
-        if (this.item.bundles.findIndex(p => p.bundleNo === this.bundle_no) >= 0) {
-            this.insertError(`捆包号${this.bundle_no}已扫描，请扫描其他捆包号`);
-            this.resetScan();
+        else if (this.item.bundles.findIndex(p => p.bundleNo === this.bundle_no) >= 0) {
+            err=`捆包号${this.bundle_no}已扫描，请扫描其他捆包号`;
             return;
+        }
+        if (err.length > 0) { 
+            this.insertError(err);
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
         }
         this.api.get('PP/GetSheetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
             if (res.successful) {
                 if (this.item.bundles.findIndex(p => p.bundleNo === res.data.bundleNo) >= 0) {
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     this.insertError(`捆包号${res.data.bundleNo}已扫描，请扫描其他捆包号`);
-                    this.resetScan();
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
                 }
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                
                 let model = res.data;
                 if (model.actualReceivePieces > 0) {
                     model.max_parts = model.actualReceivePieces;
                     this.item.bundles.push(model);
+                    this.nativeAudio.play('yes').then(this.onSuccess, this.onError);
                 } else {
                     this.insertError(`捆包号${model.bundleNo}的剩余数量小于1`);
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
                 }
             }
@@ -150,8 +158,6 @@ export class SheetPanelPage extends BaseUI {
             });
         this.resetScan();
     }
-    private onSuccess() { }
-    private onError() { }
     //非标跳转Modal页
     changeQty(model) {
         let _m = this.modalCtrl.create('ChangePiecesPage', {

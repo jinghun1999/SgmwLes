@@ -35,6 +35,8 @@ export class PartsStorageInPage extends BaseUI {
         target: '', //目标仓库
         parts: [],
     };
+    private onError: any;
+    private onSuccess: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -77,8 +79,6 @@ export class PartsStorageInPage extends BaseUI {
             this.keyDown(event);
         });
     }
-    onError() { }
-    onSuccess() { }
     removekey = () => {
         this.keyPressed.unsubscribe();
     }
@@ -128,6 +128,7 @@ export class PartsStorageInPage extends BaseUI {
         }
 
         if (err.length > 0) {
+            this.nativeAudio.play('error').then(this.onSuccess, this.onError);
             this.searchbar.setFocus();
             return false;
         }
@@ -151,20 +152,20 @@ export class PartsStorageInPage extends BaseUI {
                 let model = res.data;
                 if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
                     this.insertError(`料箱${model.boxLabel}已扫描过，请扫描其他标签`);
-                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                    this.nativeAudio.play('error').then(this.onSuccess, this.onError);
                     return;
                 }
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('success').then(this.onSuccess, this.onError);
                 model.max_parts = model.currentParts;
                 this.item.parts.splice(0, 0, model);
             }
             else {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('error').then(this.onSuccess, this.onError);
                 this.insertError(res.message,);
             }
         },
             error => {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('error').then(this.onSuccess, this.onError);
                 this.insertError('扫描失败');
             });
         this.resetScan();
@@ -206,7 +207,7 @@ export class PartsStorageInPage extends BaseUI {
         this.insertError('正在撤销...', 'i');
         this.code = '';
         //this.errors = [];
-        this.item.parts = [];
+        this.item.parts.length = 0;;
         this.insertError("撤销成功", 's');
         this.resetScan();
     }

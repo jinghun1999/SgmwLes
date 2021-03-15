@@ -38,6 +38,8 @@ export class ReceiptReturnPage extends BaseUI {
         InOut: '1',
         parts: []
     };
+    private onError: any;
+    private onSuccess: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -50,8 +52,8 @@ export class ReceiptReturnPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -66,8 +68,6 @@ export class ReceiptReturnPage extends BaseUI {
                 break;
         }
     }
-    private onError() { }
-    private onSuccess() { }
     ionViewDidEnter() {
         setTimeout(() => {
             this.addkey();
@@ -107,7 +107,7 @@ export class ReceiptReturnPage extends BaseUI {
         }
 
         if (err.length > 0) {
-            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+            this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
             this.insertError(err);
             this.searchbar.setFocus();
             return false;
@@ -130,22 +130,22 @@ export class ReceiptReturnPage extends BaseUI {
             if (res.successful) {
                 if (this.item.parts.findIndex(p => p.boxLabel === model.boxLabel) >= 0) {
                     this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他料箱`);
-                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                    this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                     return;
                 }
                 this.insertError(" ");
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
                 let model = res.data;
                 model.max_parts = model.currentParts;
                 this.item.parts.splice(0, 0, model);
             }
             else {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         },
             err => {
-                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                 this.insertError('扫描失败');
             });
         this.resetScan();

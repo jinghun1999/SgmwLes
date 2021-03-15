@@ -58,6 +58,8 @@ export class FramePage extends BaseUI {
 
     keyPressed: any;
     errors: any[] = [];
+    private onError: any;
+    private onSuccess: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -94,12 +96,6 @@ export class FramePage extends BaseUI {
     }
     ionViewWillUnload() {
         this.removekey();
-    }
-    onSuccess() { 
-        console.log("播放成功");
-    }
-    onError() { 
-        console.log("播放失败");
     }
     addkey = () => {
         this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
@@ -189,6 +185,7 @@ export class FramePage extends BaseUI {
                 if (res.data.box_mode != this.ziPart.box_mode) {
                     this.insertError('子零件的料箱型号与该框的料箱型号不一致');
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+                    
                     this.setFocus();
                     return;
                 }
@@ -200,7 +197,6 @@ export class FramePage extends BaseUI {
         this.api.get('pp/getFrame', { plant: this.item.plant, workshop: this.item.workshop, box_label: this.box_label }).subscribe((res: any) => {
             if (res.successful) {
                 this.insertError(" ");
-                //this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 let frame = res.data;
                 this.item.pressPart = frame.pressPart;
                 this.item.feedingPort = frame.feedingPort;
@@ -245,13 +241,14 @@ export class FramePage extends BaseUI {
                 } else {
                     this.item.pressPartGroup.length = 0;
                 }
+                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
             }
             else {
                 this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         }, error => {
-            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);;
             this.insertError('获取料箱信息失败,请重新扫描！');
         });
         this.setFocus();

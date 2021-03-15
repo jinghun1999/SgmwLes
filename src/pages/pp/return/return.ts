@@ -36,6 +36,8 @@ export class ReturnPage extends BaseUI {
         remark: '',
         partPanel: [],
     };
+    private onSuccess: any;
+    private onError: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -48,8 +50,8 @@ export class ReturnPage extends BaseUI {
         private nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -73,8 +75,6 @@ export class ReturnPage extends BaseUI {
     ionViewWillUnload() {
         this.removekey();
     }
-    onSuccess() { }
-    onError() { }
     addkey = () => {
         this.keyPressed = fromEvent(document, 'keydown').subscribe(event => {
             this.keyDown(event);
@@ -105,7 +105,7 @@ export class ReturnPage extends BaseUI {
             }
         },
             err => {
-                this.insertError('扫描失败');
+                //this.insertError('扫描失败');
             });
     }
 
@@ -162,9 +162,11 @@ export class ReturnPage extends BaseUI {
                 if (model.actualReceivePieces > 0) {
                     model.max_parts = model.actualReceivePieces;
                     this.item.partPanel.push(model);
+                    this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
                 }
                 else {
                     this.insertError(`料箱${model.bundleNo}的剩余数量为小于1`);
+                    this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
                     return;
                 }
             }

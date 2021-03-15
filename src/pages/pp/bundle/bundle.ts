@@ -31,7 +31,9 @@ export class BundlePage extends BaseUI {
     errors: any[] = [];
     item: any = {
         bundles: [],
-    };    
+    };
+      private onSuccess: any;
+      private onError: any;
     constructor(public navParams: NavParams,
         public toastCtrl: ToastController,
         public loadingCtrl: LoadingController,
@@ -44,20 +46,17 @@ export class BundlePage extends BaseUI {
         public storage: Storage
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
-    }
-    public errSound() {
-    }
-    public okSound() {
-    }
-
+        this.nativeAudio.preloadSimple('ok', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+       this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+     }
+    
     ionViewDidEnter() {
         setTimeout(() => {
             this.searchbar.setFocus();
             this.content.scrollToBottom();
-        });
+        });        
     }
+
     insertError = (msg: string, t: string = 'e') => {
         this.zone.run(() => {
             this.errors.splice(0, 0, { message: msg, type: t, time: new Date() });
@@ -68,8 +67,6 @@ export class BundlePage extends BaseUI {
             this.workshop = val;
         });
     }
-    onSuccess() { }
-    onError() { }
     //修改带T的时间格式
     dateFunction(time) {
         let data = time.replace(/T/g, " ");
@@ -89,7 +86,7 @@ export class BundlePage extends BaseUI {
         if (err.length > 0) {
             this.insertError(err);
             this.searchbar.setFocus();
-            this.errSound();
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
             return false;
         }
         return true;
@@ -129,11 +126,12 @@ export class BundlePage extends BaseUI {
         this.api.get('PP/GetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.code }).subscribe((res: any) => {
             if (res.successful) {
                 this.scrollToBottom();
-                this.insertError(" ");                
+                this.insertError(" ");
                 let model = res.data;
                 if (this.item.bundles.findIndex(p => p.bundleNo === model.bundleNo) >= 0) {
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     this.insertError(`捆包${model.bundleNo}已扫描过，请扫描其他捆包`);
-                    this.errSound();
+                    return;
                 } else {
                     if (model.weight < 0 || model.weight.length == 0) {
                         model.weight = 0;
@@ -141,17 +139,17 @@ export class BundlePage extends BaseUI {
                     this.max_parts = model.actualReceivePieces;
                     model.max_parts = model.actualReceivePieces;
                     this.item.bundles.push(model);
-                    this.okSound();
+                    this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 }
             }
             else {
                 this.insertError(res.message);
-                this.errSound();
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
             }
         },
             err => {
-                this.insertError('扫描出错');
-                this.errSound();
+            this.nativeAudio.play('no').then(this.onSuccess, this.onError);
+            this.insertError('扫描出错');
             });
         this.resetScan();
     }
@@ -187,7 +185,7 @@ export class BundlePage extends BaseUI {
                     this.max_parts = 0;
                     this.item.bundles.length = 0;
                     this.show = false;
-                    this.insertError('撤销成功','s');
+                    this.insertError('撤销成功', 's');
                 }
             }]
         });
@@ -207,13 +205,11 @@ export class BundlePage extends BaseUI {
     save() {
         if (this.item.bundles.length == 0) {
             this.insertError('请先扫描捆包号', 'i');
-            this.errSound();
             return;
         };
 
         if (new Set(this.item.bundles).size !== this.item.bundles.length) {
             this.insertError("提交的数据中存在重复的捆包号，请检查！", 'i');
-            this.errSound();
             return;
         };
         let loading = super.showLoading(this.loadingCtrl, '提交中');
@@ -226,28 +222,26 @@ export class BundlePage extends BaseUI {
             if (res.successful) {
                 this.insertError('提交成功', 's');
                 this.item.bundles = [];
-                this.okSound();
             }
             else {
                 this.insertError(res.message);
-                this.errSound();
             }
             loading.dismiss();
         },
             err => {
                 this.insertError('提交失败');
-                this.errSound();
                 loading.dismiss();
             });
         this.resetScan();
     }
 
     focusInput = () => { this.searchbar.setElementClass('bg-red', false); this.searchbar.setElementClass('bg-green', true); }
-    blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }  
+    blurInput = () => { this.searchbar.setElementClass('bg-green', false); this.searchbar.setElementClass('bg-red', true); }
     //每次扫描后都滚动到最下面
-    scrollToBottom() { 
+    scrollToBottom() {
         let x = 0; //X轴坐标
         let y = document.getElementById("body").offsetHeight; //Y轴坐标
         this.content.scrollTo(x, y);
     }
+
 }
