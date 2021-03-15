@@ -243,5 +243,4 @@ export class BundlePage extends BaseUI {
         let y = document.getElementById("body").offsetHeight; //Y轴坐标
         this.content.scrollTo(x, y);
     }
-
 }
