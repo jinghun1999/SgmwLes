@@ -28,8 +28,8 @@ export class LoginPage extends BaseUI {
         name: "",
         password: "",
     };
-    //   private onSuccess: any;
-    //   private onError: any;
+    // private onSuccess: any;
+    // private onError: any;
     constructor(
         public navCtrl: NavController,
         public user: User,
@@ -77,8 +77,6 @@ export class LoginPage extends BaseUI {
             this.api.api_host = this.envs[0].value;
         }
     }
-    onSuccess() { }
-    onError() { }
     doLogin() {
         // // play yes audio when suceessed.
         // this.nativeAudio.play('yes').then(this.onSuccess, this.onError);
