@@ -72,8 +72,8 @@ export class FramePage extends BaseUI {
         public nativeAudio:NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('ok', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -185,7 +185,6 @@ export class FramePage extends BaseUI {
                 if (res.data.box_mode != this.ziPart.box_mode) {
                     this.insertError('子零件的料箱型号与该框的料箱型号不一致');
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
-                    
                     this.setFocus();
                     return;
                 }

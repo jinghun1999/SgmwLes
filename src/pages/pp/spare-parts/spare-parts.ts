@@ -184,15 +184,15 @@ export class SparePartsPage extends BaseUI {
                     this.spareItem.pressParts = part.pressParts;
                     this.spareItem.max_parts = part.closeframeParts;
                 }
-                this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('yes').then(this.onSuccess, this.onError);
             }
             else {
-                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         },
             err => {
-                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.insertError('扫描过程出错,请重新扫描！');
             });
         this.resetScan();

@@ -48,8 +48,8 @@ export class PanelFeedPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('ok', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     keyDown(event) {
@@ -110,7 +110,7 @@ export class PanelFeedPage extends BaseUI {
             }
         }),
             (err) => {
-                this.insertError('获取');
+                //this.insertError('获取');
             };
     }
     //扫描

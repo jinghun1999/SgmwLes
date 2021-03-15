@@ -56,8 +56,8 @@ export class BoxDetailsPage extends BaseUI {
         super();
         this.data = this.navParams.get('parts');
         this.part_list = this.data.parts;
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('ok', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     ionViewDidEnter() {
@@ -70,7 +70,6 @@ export class BoxDetailsPage extends BaseUI {
         }
         let part = this.data.parts.find(p => p.box === this.label);
         if (part) {
-            this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
             if (part.box_status == 1) {
                 part.box_status = 2;
                 this.box_Qty++;
@@ -82,6 +81,7 @@ export class BoxDetailsPage extends BaseUI {
                     this.box_part_Qty += Number(this.data.parts[i].real_qty);
                 }
             }
+            this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
         }
         else {
             this.nativeAudio.play('no').then(this.onSuccess, this.onError);

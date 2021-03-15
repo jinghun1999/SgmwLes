@@ -50,7 +50,7 @@ export class PartsStorageOutPage extends BaseUI {
         public nativeAudio: NativeAudio
     ) {
         super();
-        this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('ok', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
         this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
     keyDown(event) {

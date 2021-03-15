@@ -170,21 +170,21 @@ export class SuspiciousPage extends BaseUI {
                 this.insertError(" ");
                 if (this.item.parts.findIndex(p => p.boxLabel === res.data.boxLabel) >= 0) {
                     this.insertError(`料箱${res.data.boxLabel}已扫描过，请扫描其他标签`);
-                    this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
 
                     return;
                 }               
                 let model = res.data;
                 this.item.parts.splice(0, 0, model);
-                this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('yes').then(this.onSuccess, this.onError);
             }
             else {
-                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.insertError(res.message);
             }
         },
             err => {
-                this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 this.insertError('扫描失败,请重新扫描！');
             });
         this.resetScan();

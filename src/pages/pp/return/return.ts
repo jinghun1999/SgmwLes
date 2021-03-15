@@ -157,16 +157,15 @@ export class ReturnPage extends BaseUI {
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
                 }
-                this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 let model = res.data;
                 if (model.actualReceivePieces > 0) {
                     model.max_parts = model.actualReceivePieces;
                     this.item.partPanel.push(model);
-                    this.nativeAudio.preloadSimple('yes', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+                    this.nativeAudio.play('yes').then(this.onSuccess, this.onError);
                 }
                 else {
                     this.insertError(`料箱${model.bundleNo}的剩余数量为小于1`);
-                    this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+                    this.nativeAudio.play'no').then(this.onSuccess, this.onError);
                     return;
                 }
             }

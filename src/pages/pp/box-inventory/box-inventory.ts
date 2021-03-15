@@ -64,8 +64,8 @@ export class BoxInventoryPage extends BaseUI {
         private api: Api) {
         super();
         this.org = navParams.get('item');
-        this.nativeAudio.preloadSimple('success', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
-        this.nativeAudio.preloadSimple('error', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('ok', 'assets/audio/yes.wav').then(this.onSuccess, this.onError);
+        this.nativeAudio.preloadSimple('no', 'assets/audio/no.wav').then(this.onSuccess, this.onError);
     }
 
     ionViewDidEnter() {
@@ -85,8 +85,7 @@ export class BoxInventoryPage extends BaseUI {
         if (this.org && this.org.code) {
             this.api.get('inventory/GetScanBoxCode', { code: this.org.code }).subscribe((res: any) => {
                 loading.dismissAll();
-                if (res.successful) {
-                    this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
+                if (res.successful) {                    
                     this.data = res.data;
                     this.item.code = this.data.code;
                     this.item.plant = this.data.plant;
@@ -104,11 +103,13 @@ export class BoxInventoryPage extends BaseUI {
                             this.alr_wuliao++;
                         }
                     });
+                    this.nativeAudio.play('ok').then(this.onSuccess, this.onError);
                 } else {
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     this.insertError(res.message);
                 }
             }, err => {
+                this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                 loading.dismissAll();
                 this.insertError('系统错误，请重试');
             });

@@ -130,7 +130,6 @@ export class SheetPanelPage extends BaseUI {
         this.api.get('PP/GetSheetPanelMaterial', { plant: this.api.plant, workshop: this.workshop, bundle_no: this.bundle_no }).subscribe((res: any) => {
             if (res.successful) {
                 if (this.item.bundles.findIndex(p => p.bundleNo === res.data.bundleNo) >= 0) {
-                    this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     this.insertError(`捆包号${res.data.bundleNo}已扫描，请扫描其他捆包号`);
                     this.nativeAudio.play('no').then(this.onSuccess, this.onError);
                     return;
