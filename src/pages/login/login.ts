@@ -53,19 +53,19 @@ export class LoginPage extends BaseUI {
         //配置登录环境
         this.envs = [
             //生产环境不显示
-              {
-                id: 1,
-                text: "开发环境",
-                value: "http://localhost:49280",   
-              },
+            //   {
+            //     id: 1,
+            //     text: "开发环境",
+            //     value: "http://localhost:49280",   
+            //   },
             {
                 id: 2,
                 text: "生产环境",
-                value: "https://hxlesapp.sgmw.com.cn",
+                value: "https://hxlesapp.sgmw.com.cn:4445",
             },
             {
                 id: 3,
-                text: "测试环境",
+                text: "测试环境(仅测试使用)",
                 value: "http://10.1.126.171/lesapi",
             }
         ];
